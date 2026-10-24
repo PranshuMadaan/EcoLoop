@@ -1,0 +1,2318 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoLoop | Citizen Dashboard — My Green Account</title>
+  <meta name="description" content="EcoLoop Citizen Portal: Track your garbage pickup, earn Green Credits, redeem Woohoo Pine Labs vouchers, and monitor driver location in real-time.">
+
+  <!-- Google Fonts: Outfit (Headings & Numbers) + Plus Jakarta Sans (Body & UI Copy) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet.js for Real OpenStreetMap Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/sp38=" crossorigin=""></script>
+
+  <style>
+    /* ================================================================
+       1. DESIGN SYSTEM CSS CUSTOM PROPERTIES (DUAL-THEME)
+       ================================================================ */
+    :root {
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Dark Luxury Defaults */
+      --bg-main: #0a0e17;
+      --bg-card: rgba(18, 24, 38, 0.78);
+      --bg-card-hover: rgba(26, 35, 54, 0.88);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(16, 185, 129, 0.5);
+
+      --emerald-400: #34d399;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --cyan-400: #22d3ee;
+      --sky-400: #38bdf8;
+      --violet-400: #a78bfa;
+      --amber-400: #fbbf24;
+      --rose-400: #fb7185;
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --shadow-glow: 0 0 35px rgba(16, 185, 129, 0.15);
+      --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 9999px;
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Clean Solar Light Mode Overrides */
+    [data-theme="light"] {
+      --bg-main: #f8fafc;
+      --bg-card: rgba(255, 255, 255, 0.94);
+      --bg-card-hover: #ffffff;
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --border-focus: rgba(16, 185, 129, 0.6);
+
+      --emerald-400: #059669;
+      --emerald-500: #10b981;
+      --emerald-600: #047857;
+      --cyan-400: #0284c7;
+      --sky-400: #0284c7;
+      --violet-400: #7c3aed;
+      --amber-400: #d97706;
+      --rose-400: #e11d48;
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+
+      --shadow-glow: 0 4px 25px rgba(16, 185, 129, 0.12);
+      --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+      background-color: var(--bg-main);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.09) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(6, 182, 212, 0.09) 0%, transparent 45%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    [data-theme="light"] body {
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(6, 182, 212, 0.05) 0%, transparent 45%);
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: var(--font-heading);
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 99px; }
+
+    /* ---- GRADIENT SIGNATURE ---- */
+    .gradient-text {
+      background: linear-gradient(135deg, var(--emerald-400), var(--cyan-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ---- GLASSMORPHIC CARD STANDARD ---- */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
+    }
+    .glass-card:hover {
+      border-color: rgba(16, 185, 129, 0.35);
+      box-shadow: var(--shadow-card), var(--shadow-glow);
+    }
+
+    /* ---- 48PX MIN TOUCH BUTTONS ---- */
+    .btn-eco-primary {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.4rem;
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--emerald-500), var(--emerald-600));
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.32);
+      transition: var(--transition);
+      cursor: pointer;
+      border: none;
+    }
+    .btn-eco-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.45);
+    }
+    .btn-eco-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-eco-secondary {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .btn-eco-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    [data-theme="light"] .btn-eco-secondary {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+    [data-theme="light"] .btn-eco-secondary:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    /* ---- THEME TOGGLE BUTTON (DESIGN SYSTEM SPEC) ---- */
+    .theme-toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      font-size: 1.15rem;
+      transition: var(--transition);
+      color: var(--text-main);
+    }
+    .theme-toggle-btn:hover {
+      border-color: var(--emerald-400);
+      transform: scale(1.08);
+    }
+    .theme-icon-moon { display: none; }
+    .theme-icon-sun  { display: inline-block; }
+    [data-theme="light"] .theme-icon-sun  { display: none; }
+    [data-theme="light"] .theme-icon-moon { display: inline-block; }
+
+    /* ---- CITIZEN CREDIT CARD (HIGH CONTRAST GLASS) ---- */
+    .credit-card {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.9) 0%, rgba(5, 150, 105, 0.85) 45%, rgba(13, 148, 136, 0.85) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 60px -12px rgba(6, 78, 59, 0.55);
+      backdrop-filter: blur(16px);
+    }
+    .credit-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .credit-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 180px; height: 180px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+
+    /* ---- MAP CONTAINER ---- */
+    #live-map { width: 100%; height: 440px; border-radius: var(--radius-lg); }
+
+    /* ---- RAGPICKER ANIMATION ---- */
+    @keyframes ragpickerPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+      50% { box-shadow: 0 0 0 16px rgba(16,185,129,0); }
+    }
+    .ragpicker-dot { animation: ragpickerPulse 1.6s infinite; }
+
+    /* ---- SVG CREDIT SCORE RING ---- */
+    .credit-ring-bg { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 8; }
+    .credit-ring-fill {
+      fill: none; stroke-width: 8;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ---- WOOHOO VOUCHER CARD ---- */
+    .voucher-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
+    }
+    .voucher-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(16, 185, 129, 0.35);
+      box-shadow: var(--shadow-card), var(--shadow-glow);
+    }
+    .voucher-notch-l {
+      position: absolute;
+      left: -12px; top: 58%;
+      transform: translateY(-50%);
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      z-index: 10;
+    }
+    .voucher-notch-r {
+      position: absolute;
+      right: -12px; top: 58%;
+      transform: translateY(-50%);
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-subtle);
+      z-index: 10;
+    }
+
+    /* ---- CHAT BUBBLES ---- */
+    .chat-bubble-bot {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      border-radius: 16px 16px 16px 4px;
+    }
+    .chat-bubble-user {
+      background: linear-gradient(135deg, var(--emerald-500), #0d9488);
+      color: white;
+      border-radius: 16px 16px 4px 16px;
+    }
+
+    /* ---- TYPING INDICATOR ---- */
+    .typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); animation: typingBounce 1.2s infinite; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    /* ---- SCORE BAR ---- */
+    .score-bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    [data-theme="light"] .score-bar { background: #e2e8f0; }
+    .score-bar-fill { height: 100%; border-radius: 99px; transition: width 1.2s ease; }
+
+    /* ---- PULSE DOT LEGEND ---- */
+    .pulse-green { background: #10b981; box-shadow: 0 0 0 0 rgba(16,185,129,0.5); animation: pulseG 2s infinite; }
+    .pulse-yellow { background: #f59e0b; box-shadow: 0 0 0 0 rgba(245,158,11,0.5); animation: pulseY 2s infinite; }
+    .pulse-red { background: #f43f5e; box-shadow: 0 0 0 0 rgba(244,63,94,0.5); animation: pulseR 2s infinite; }
+    @keyframes pulseG { 70% { box-shadow: 0 0 0 9px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+    @keyframes pulseY { 70% { box-shadow: 0 0 0 9px rgba(245,158,11,0); } 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); } }
+    @keyframes pulseR { 70% { box-shadow: 0 0 0 9px rgba(244,63,94,0); } 100% { box-shadow: 0 0 0 0 rgba(244,63,94,0); } }
+
+    /* ---- SPLASH LOADER ---- */
+    #user-splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: radial-gradient(circle at 50% 20%, #064e3b 0%, #09131f 60%, #020617 100%);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    #user-splash.fade-out { opacity: 0; pointer-events: none; }
+
+    /* ---- LEAFLET OVERRIDES ---- */
+    .leaflet-popup-content-wrapper { 
+      background: var(--bg-card) !important; 
+      color: var(--text-main) !important;
+      border: 1px solid var(--border-subtle) !important;
+      border-radius: 14px !important; 
+      box-shadow: var(--shadow-card) !important; 
+      backdrop-filter: blur(12px) !important;
+    }
+    .leaflet-popup-tip { background: var(--bg-card) !important; }
+  </style>
+</head>
+<body class="antialiased">
+
+<!-- ================================================================ -->
+<!-- SPLASH SCREEN LOADER                                              -->
+<!-- ================================================================ -->
+<div id="user-splash">
+  <div class="text-center space-y-6 max-w-sm w-full px-6">
+    <!-- Animated Logo -->
+    <div class="relative flex items-center justify-center mx-auto w-24 h-24">
+      <div class="absolute w-24 h-24 rounded-full border-2 border-emerald-400/30 animate-ping"></div>
+      <div class="absolute w-20 h-20 rounded-full border border-emerald-400/20 animate-pulse"></div>
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl shadow-emerald-500/40">
+        <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </div>
+    </div>
+
+    <div>
+      <div class="text-4xl font-black text-white tracking-tight font-heading">Eco<span class="text-emerald-400">Loop</span></div>
+      <div class="text-emerald-300 text-xs font-mono mt-1 tracking-widest uppercase" data-i18n="splash_subtitle">Citizen Green Portal • Pune</div>
+    </div>
+
+    <div id="splash-greeting" class="text-slate-300 text-sm font-medium"></div>
+
+    <!-- Progress Bar -->
+    <div class="space-y-2">
+      <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+        <div id="splash-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 w-0"></div>
+      </div>
+      <div id="splash-status" class="text-xs text-slate-400 font-mono" data-i18n="splash_loading">Initializing secure telemetry...</div>
+    </div>
+
+    <button onclick="enterDashboard()" class="w-full btn-eco-primary">
+      <span data-i18n="btn_enter_dashboard">Enter Citizen Dashboard →</span>
+    </button>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TOP NAVIGATION HEADER (DUAL-THEME RESILIENT NAVBAR)               -->
+<!-- ================================================================ -->
+<header class="sticky top-0 z-40 backdrop-blur-xl border-b border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-xs transition-colors">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-16 gap-3">
+
+      <!-- Brand Logo -->
+      <a href="index.html" class="flex items-center gap-3 group shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </div>
+        <div>
+          <div class="font-black text-lg leading-tight font-heading gradient-text">EcoLoop</div>
+          <div class="text-[10px] text-[var(--text-dim)] font-medium" data-i18n="nav_tagline">Citizen Green Portal</div>
+        </div>
+      </a>
+
+      <!-- Center Controls: Language Selector + Theme Toggle Button -->
+      <div class="flex items-center gap-2">
+        <!-- 5-Language Selector -->
+        <div class="flex items-center gap-1 bg-[var(--bg-main)] rounded-xl p-1 text-xs font-semibold border border-[var(--border-subtle)]">
+          <button onclick="setLang('en')" id="lang-en" class="lang-btn px-2.5 py-1.5 rounded-lg bg-[var(--bg-card)] text-[var(--text-main)] shadow-xs transition-all">🇺🇸 EN</button>
+          <button onclick="setLang('hi')" id="lang-hi" class="lang-btn px-2.5 py-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all">🇮🇳 हिन्दी</button>
+          <button onclick="setLang('mr')" id="lang-mr" class="lang-btn px-2.5 py-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all">🔵 मराठी</button>
+          <button onclick="setLang('ta')" id="lang-ta" class="lang-btn px-2.5 py-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all">🟡 தமிழ்</button>
+          <button onclick="setLang('bn')" id="lang-bn" class="lang-btn px-2.5 py-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all">🟢 বাংলা</button>
+        </div>
+
+        <!-- Official DESIGN_SYSTEM Theme Switcher Button -->
+        <button id="btn-theme-toggle" class="theme-toggle-btn" aria-label="Toggle light/dark theme" title="Toggle Clean Solar Light / Dark Luxury mode">
+          <span class="theme-icon-sun">☀️</span>
+          <span class="theme-icon-moon">🌙</span>
+        </button>
+      </div>
+
+      <!-- User Profile & Woohoo Status -->
+      <div class="flex items-center gap-2.5 shrink-0">
+        <!-- Neon PostgreSQL DBMS Status Pill -->
+        <a href="login.html" id="nav-neon-badge" class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-semibold transition-colors" title="Neon Serverless PostgreSQL status">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="nav-neon-text">Neon DB</span>
+        </a>
+
+        <!-- Woohoo Pine Labs Badge -->
+        <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-mono font-semibold">
+          <span class="w-2 h-2 rounded-full bg-violet-500 animate-pulse"></span>
+          <span>Woohoo API: LIVE</span>
+        </div>
+
+        <!-- Citizen Avatar & Sign-out/Switch Account Action -->
+        <div class="flex items-center gap-2 bg-[var(--bg-card)] rounded-xl p-1.5 pr-2.5 transition-colors border border-[var(--border-subtle)]">
+          <div id="nav-user-initials" class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-xs font-heading">
+            AK
+          </div>
+          <div class="hidden sm:block text-left">
+            <div id="nav-user-name" class="text-xs font-bold text-[var(--text-main)]">Arjun Kumar</div>
+            <div class="text-[10px] text-[var(--emerald-400)] font-mono font-semibold" data-i18n="badge_tier">Green Citizen ★★★</div>
+          </div>
+          <a href="login.html" class="p-1 text-[var(--text-dim)] hover:text-rose-400 transition-colors ml-1" title="Switch Account / Sign in via Neon DBMS">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- ================================================================ -->
+<!-- MAIN APP CONTENT                                                  -->
+<!-- ================================================================ -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8 pb-32">
+
+  <!-- ============================================================== -->
+  <!-- SECTION 1: SALUTATION & ASSIGNED DRIVER HERO CARD              -->
+  <!-- ============================================================== -->
+  <section class="glass-card p-6 sm:p-8 relative overflow-hidden border border-emerald-500/20">
+    <div class="absolute right-0 top-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute left-0 bottom-0 w-60 h-60 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+
+      <!-- Salutation (Left, 7 cols) -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="salutation-emoji" class="text-2xl">🌅</span>
+          <span class="text-xs font-mono font-bold text-[var(--emerald-400)] bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+            SHIVAJINAGAR, PUNE • WARD 14
+          </span>
+          <span class="text-xs font-mono text-[var(--text-muted)] bg-[var(--bg-main)] px-2.5 py-1 rounded-full border border-[var(--border-subtle)]">
+            Citizen ID: #PMC-W14-AK-0342
+          </span>
+        </div>
+
+        <div>
+          <h2 id="salutation-text" class="text-2xl sm:text-4xl font-black leading-tight tracking-tight font-heading text-[var(--text-main)]">
+            Good Morning, Arjun! 👋
+          </h2>
+          <p id="salutation-sub" class="text-sm sm:text-base text-[var(--text-muted)] mt-2 font-normal leading-relaxed">
+            Your assigned Green Technician <strong class="text-[var(--emerald-400)] font-semibold">Ramesh Kale</strong> is en route in an EV Tricycle, approximately <strong class="text-[var(--text-main)]">12 minutes away</strong>.
+          </p>
+        </div>
+
+        <!-- Status Badges -->
+        <div class="flex items-center gap-2.5 flex-wrap pt-1">
+          <span class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-xs font-semibold text-[var(--emerald-400)]">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span data-i18n="status_pickup_active">Pickup Active & Tracking</span>
+          </span>
+          <span class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-xs font-semibold text-[var(--amber-400)]">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span data-i18n="status_vouchers_expiring">2 Vouchers Expiring</span>
+          </span>
+          <span class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-xs font-semibold text-teal-400">
+            <svg class="w-3.5 h-3.5 text-teal-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <span data-i18n="status_credits_earned">147 Credits Earned</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Assigned Driver Card (Right, 5 cols) -->
+      <div class="lg:col-span-5 bg-[var(--bg-main)] border border-[var(--border-subtle)] rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between pb-2 border-b border-[var(--border-subtle)]">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="text-xs font-mono font-bold text-[var(--emerald-400)] uppercase tracking-wider" data-i18n="driver_assigned_title">ASSIGNED GREEN DRIVER</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-[var(--emerald-400)] border border-emerald-500/30">
+            SWaCH Verified
+          </span>
+        </div>
+
+        <!-- Driver Profile Details -->
+        <div class="flex items-center gap-4">
+          <div class="relative shrink-0">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-0.5 shadow-lg">
+              <div class="w-full h-full rounded-2xl bg-[var(--bg-main)] flex items-center justify-center text-2xl font-black text-emerald-400">
+                👨🏽‍🔧
+              </div>
+            </div>
+            <div class="absolute -bottom-1 -right-1 bg-emerald-500 rounded-full w-5 h-5 flex items-center justify-center text-white text-[10px] border-2 border-[var(--bg-main)] font-bold">
+              ✓
+            </div>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1">
+              <h3 class="font-black text-[var(--text-main)] text-base tracking-tight truncate font-heading" id="driver-name-display">
+                Ramesh Kale
+              </h3>
+              <span class="flex items-center gap-1 text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                ★ 4.92
+              </span>
+            </div>
+            <div class="text-xs text-[var(--text-muted)] font-mono mt-0.5 flex items-center gap-2">
+              <span>#SW-342</span>
+              <span>•</span>
+              <span class="text-[var(--emerald-400)] font-semibold">1,420 Pickups</span>
+            </div>
+            <div class="text-[11px] text-[var(--text-dim)] mt-1 flex items-center gap-1">
+              <span>🛵</span>
+              <span class="truncate" data-i18n="driver_vehicle_desc">EcoLoop EV Tricycle • MH-12-EQ-8842</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Driver Telemetry Bar -->
+        <div class="grid grid-cols-3 gap-2 bg-[var(--bg-card)] rounded-xl p-2.5 text-center border border-[var(--border-subtle)] font-mono">
+          <div>
+            <div class="text-[10px] text-[var(--text-dim)]" data-i18n="stat_eta">ETA</div>
+            <div class="text-sm font-bold text-[var(--emerald-400)] font-heading" id="driver-eta-stat">12 mins</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-[var(--text-dim)]" data-i18n="stat_distance">DISTANCE</div>
+            <div class="text-sm font-bold text-[var(--text-main)] font-heading" id="driver-dist-stat">0.8 km</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-[var(--text-dim)]" data-i18n="stat_stop">NEXT STOP</div>
+            <div class="text-sm font-bold text-teal-400 font-heading">#House 18</div>
+          </div>
+        </div>
+
+        <!-- Action Buttons (48px Touch Compliant) -->
+        <div class="flex items-center gap-2 pt-1">
+          <a href="tel:+919822044821" class="flex-1 btn-eco-secondary text-xs">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            <span data-i18n="btn_call_driver">Call Ramesh</span>
+          </a>
+          <button onclick="document.getElementById('live-map').scrollIntoView({behavior:'smooth'})" class="flex-1 btn-eco-primary text-xs">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span data-i18n="btn_track_live">Track Live</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- SECTION 2: CREDIT SCORE CARD (CITIZEN LEDGER & FINANCIAL TIERS) -->
+  <!-- ================================================================ -->
+  <section>
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="text-xl font-bold tracking-tight font-heading text-[var(--text-main)]" data-i18n="sec_credit_title">Green Credit Score System</h3>
+        <p class="text-xs text-[var(--text-muted)]" data-i18n="sec_credit_desc">Earned automatically for each verified collection by the driver & quality segregation</p>
+      </div>
+      <a href="#credit-history" class="text-xs font-semibold text-[var(--emerald-400)] hover:underline flex items-center gap-1">
+        <span data-i18n="link_view_history">View History</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+      <!-- Credit Card Visual (8 Cols) -->
+      <div class="lg:col-span-8">
+        <div class="credit-card p-6 sm:p-7 text-white min-h-[220px] flex flex-col justify-between relative">
+          <div class="relative z-10 flex items-start justify-between">
+            <div>
+              <div class="text-[10px] font-mono opacity-85 uppercase tracking-widest" data-i18n="card_label">EcoLoop Municipal Citizen Card</div>
+              <div class="text-base font-bold mt-0.5 font-heading">Arjun Kumar</div>
+            </div>
+            <div class="text-right">
+              <div class="text-[10px] font-mono opacity-85 uppercase tracking-widest" data-i18n="card_citizen_id">Citizen ID</div>
+              <div class="text-xs font-mono font-bold mt-0.5">#PMC-W14-AK-0342</div>
+            </div>
+          </div>
+
+          <!-- Score Ring & Central Stats -->
+          <div class="relative z-10 flex items-center gap-6 my-3 flex-wrap sm:flex-nowrap">
+            <!-- SVG Score Ring -->
+            <div class="relative shrink-0">
+              <svg width="96" height="96" viewBox="0 0 96 96">
+                <circle class="credit-ring-bg" cx="48" cy="48" r="40"/>
+                <circle id="credit-ring" class="credit-ring-fill" stroke="#34d399"
+                  cx="48" cy="48" r="40"
+                  stroke-dasharray="251.32"
+                  stroke-dashoffset="55.29"/>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <div id="credit-score-num" class="text-2xl font-black leading-none font-heading text-white">78</div>
+                <div class="text-[9px] opacity-80 font-mono">/ 100</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-3xl sm:text-4xl font-black font-mono tracking-tight font-heading text-white" id="citizen-points-balance">
+                147 <span class="text-lg font-semibold opacity-80">pts</span>
+              </div>
+              <div class="text-xs opacity-85 mt-0.5" data-i18n="card_lifetime_credits">Lifetime Green Credits Earned</div>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-[10px] font-mono font-bold tracking-wider" data-i18n="card_tier_emerald">
+                  ★★★ EMERALD TIER
+                </span>
+                <span class="text-[11px] opacity-85 font-mono" data-i18n="card_cash_equiv">≈ ₹147 Woohoo Value</span>
+              </div>
+            </div>
+
+            <div class="sm:ml-auto text-left sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-white/10 w-full sm:w-auto">
+              <div class="text-[10px] opacity-75 font-mono uppercase" data-i18n="card_this_month">THIS MONTH</div>
+              <div class="text-lg font-bold text-emerald-300 font-mono font-heading">+38 pts</div>
+              <div class="text-[10px] opacity-75 font-mono mt-1 uppercase" data-i18n="card_ward_rank">WARD 14 RANK</div>
+              <div class="text-base font-bold font-heading">#12 / 850 Households</div>
+            </div>
+          </div>
+
+          <!-- Card Bottom Strip -->
+          <div class="relative z-10 flex items-center justify-between pt-3 border-t border-white/20 text-xs">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full border border-white/50 bg-white/20 flex items-center justify-center">
+                <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <span class="opacity-85" data-i18n="card_swach_verified">SWaCH Certified Household</span>
+            </div>
+            <div class="font-mono text-[11px] opacity-75">Valid: 2026–2028 • CPCB EPR Linked</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credit Score Breakdown (4 Cols) -->
+      <div class="lg:col-span-4 glass-card p-5 space-y-4 flex flex-col justify-between">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-wider font-mono mb-3 text-[var(--text-muted)]" data-i18n="score_breakdown_title">Score Breakdown</div>
+
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-[var(--text-muted)]" data-i18n="factor_pickup">Pickup Compliance</span>
+                <span class="font-mono font-bold text-[var(--emerald-400)]">94%</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-bar-fill bg-emerald-500 w-[94%]"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-[var(--text-muted)]" data-i18n="factor_segregation">Segregation Quality</span>
+                <span class="font-mono font-bold text-teal-400">82%</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-bar-fill bg-teal-500 w-[82%]"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-[var(--text-muted)]" data-i18n="factor_adherence">Schedule Adherence</span>
+                <span class="font-mono font-bold text-amber-400">68%</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-bar-fill bg-amber-500 w-[68%]"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-[var(--text-muted)]" data-i18n="factor_false_flags">False Declarations</span>
+                <span class="font-mono font-bold text-[var(--emerald-400)]" data-i18n="val_zero_flags">0 Flags (Clean)</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-bar-fill bg-emerald-400 w-[100%]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Credit Tiers Legend -->
+        <div class="pt-3 border-t border-[var(--border-subtle)] space-y-1.5 text-xs">
+          <div class="font-bold text-[var(--text-dim)] uppercase font-mono text-[10px] tracking-wider" data-i18n="tier_legend_title">Score Tiers & Dot Colors</div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full pulse-green"></span><span class="text-[var(--text-main)]" data-i18n="tier_green">Green Dot (80–100 pts)</span></div>
+            <span class="font-mono font-bold text-[var(--emerald-400)]" data-i18n="tier_green_reward">Max Vouchers</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full pulse-yellow"></span><span class="text-[var(--text-main)]" data-i18n="tier_yellow">Yellow Dot (50–79 pts)</span></div>
+            <span class="font-mono font-bold text-amber-400" data-i18n="tier_yellow_reward">Standard</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full pulse-red"></span><span class="text-[var(--text-main)]" data-i18n="tier_red">Red Dot (0–49 pts)</span></div>
+            <span class="font-mono font-bold text-rose-400" data-i18n="tier_red_reward">Basic</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- SECTION 3: REALTIME LIVE RAGPICKER MOVEMENT TRACKING MAP       -->
+  <!-- ================================================================ -->
+  <section>
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="text-xl font-bold tracking-tight font-heading text-[var(--text-main)]" data-i18n="sec_tracking_title">Live Ragpicker & Vehicle Tracking</h3>
+        <p class="text-xs text-[var(--text-muted)]" data-i18n="sec_tracking_desc">Real-time GPS telemetry of Green Driver Ramesh Kale approaching your doorstep</p>
+      </div>
+
+      <!-- Live Driver Status Indicator -->
+      <div class="flex items-center gap-2">
+        <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[var(--emerald-400)] text-xs font-semibold shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <span>Driver: <strong class="font-bold text-[var(--text-main)]">Ramesh Kale</strong> (#SW-342)</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Map Dot Legend -->
+    <div class="flex items-center gap-4 mb-3 flex-wrap text-xs glass-card p-3 shadow-xs">
+      <div class="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
+        <span class="w-3 h-3 rounded-full pulse-green"></span>
+        <span data-i18n="legend_green">Green: Max Credit (80–100)</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
+        <span class="w-3 h-3 rounded-full pulse-yellow"></span>
+        <span data-i18n="legend_yellow">Yellow: Mid Credit (50–79)</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
+        <span class="w-3 h-3 rounded-full pulse-red"></span>
+        <span data-i18n="legend_red">Red: Low Credit (0–49)</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-semibold text-[var(--emerald-400)]">
+        <span>🛵</span>
+        <span data-i18n="legend_driver">Driver Ramesh (EV Trike)</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-semibold text-sky-400">
+        <span>🏠</span>
+        <span data-i18n="legend_home">Your Home (Arjun)</span>
+      </div>
+    </div>
+
+    <div class="glass-card overflow-hidden shadow-sm">
+      <div id="live-map"></div>
+
+      <!-- Map Controller & Simulator Footer -->
+      <div class="p-4 bg-[var(--bg-main)] border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center text-2xl shrink-0 border border-emerald-500/20">
+            🛵
+          </div>
+          <div>
+            <div class="text-xs font-bold text-[var(--text-main)] flex items-center gap-1.5 font-heading">
+              <span>Ramesh Kale</span>
+              <span class="text-[10px] text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded font-mono font-semibold">Active Dispatch</span>
+            </div>
+            <div class="text-[11px] text-[var(--text-dim)]" data-i18n="driver_status_sub">EV Tricycle #MH-12-EQ-8842 • 12 stops remaining</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="btn-sim-move" onclick="simulateRagpickerMove()" class="btn-eco-primary">
+            <span>▶</span>
+            <span data-i18n="btn_sim_approach">Simulate Driver Approach</span>
+          </button>
+          <div class="bg-[var(--bg-card)] px-3.5 py-2.5 rounded-xl border border-[var(--border-subtle)] text-xs font-mono font-bold text-[var(--emerald-400)] flex items-center">
+            <span id="ragpicker-eta">ETA: 12 mins</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- SECTION 4: WOOHOO (PINE LABS) COUPON API INTEGRATION             -->
+  <!-- ================================================================ -->
+  <section id="vouchers-section">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <h3 class="text-xl font-bold tracking-tight font-heading text-[var(--text-main)]" data-i18n="sec_woohoo_title">Woohoo (Pine Labs) Original Vouchers</h3>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-violet-500/15 text-violet-400 border border-violet-500/30">
+            OFFICIAL PINE LABS API
+          </span>
+        </div>
+        <p class="text-xs text-[var(--text-muted)]" data-i18n="sec_woohoo_desc">Redeem your earned Green Credits for genuine branded gift vouchers powered by Woohoo Prepaid Commerce API</p>
+      </div>
+
+      <!-- Points Balance & API Console Button -->
+      <div class="flex items-center gap-2">
+        <div class="text-xs font-bold text-[var(--emerald-400)] bg-emerald-500/10 px-3.5 py-2.5 rounded-xl border border-emerald-500/20 flex items-center gap-1.5">
+          <span>🌿</span>
+          <span id="woohoo-avail-pts">147 Credits Available</span>
+        </div>
+        <button onclick="openWoohooConfigModal()" class="btn-eco-secondary text-xs">
+          <svg class="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span data-i18n="btn_api_settings">API Endpoint Settings</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Voucher Brand Grid (Official Woohoo Brands) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <!-- Woohoo Voucher 1: Amazon Pay -->
+      <div class="voucher-card">
+        <div class="voucher-notch-l"></div>
+        <div class="voucher-notch-r"></div>
+        <div class="p-5 flex items-start gap-4 border-b border-dashed border-[var(--border-subtle)]">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-2xl shrink-0">
+            📦
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded border border-amber-500/30">WOOHOO #AMZ-50</span>
+              <span class="text-[10px] text-[var(--text-dim)] font-mono">Instant Issue</span>
+            </div>
+            <div class="font-bold text-[var(--text-main)] text-sm mt-1 font-heading" data-i18n="v_amz_title">Amazon Pay Gift Card</div>
+            <div class="text-xs text-[var(--text-muted)]" data-i18n="v_amz_desc">Valid on Amazon.in shopping & bills</div>
+          </div>
+        </div>
+        <div class="p-5 flex items-center justify-between bg-[var(--bg-main)]">
+          <div>
+            <div class="text-2xl font-black font-mono font-heading text-[var(--text-main)]">₹50</div>
+            <div class="text-[11px] text-[var(--emerald-400)] font-bold font-mono">Cost: 50 Credits</div>
+          </div>
+          <button onclick="executeWoohooIssuance('AMAZON', 'Amazon Pay Gift Card', 50, 50)" class="btn-eco-primary text-xs !min-h-[44px]">
+            <span>⚡</span>
+            <span data-i18n="btn_redeem_woohoo">Redeem via API</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Woohoo Voucher 2: Flipkart -->
+      <div class="voucher-card">
+        <div class="voucher-notch-l"></div>
+        <div class="voucher-notch-r"></div>
+        <div class="p-5 flex items-start gap-4 border-b border-dashed border-[var(--border-subtle)]">
+          <div class="w-12 h-12 rounded-xl bg-sky-500/15 border border-sky-500/25 flex items-center justify-center text-2xl shrink-0">
+            🛍️
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-sky-400 bg-sky-500/15 px-2 py-0.5 rounded border border-sky-500/30">WOOHOO #FLPK-100</span>
+              <span class="text-[10px] text-[var(--text-dim)] font-mono">Qwikcilver</span>
+            </div>
+            <div class="font-bold text-[var(--text-main)] text-sm mt-1 font-heading" data-i18n="v_flipkart_title">Flipkart E-Gift Voucher</div>
+            <div class="text-xs text-[var(--text-muted)]" data-i18n="v_flipkart_desc">Electronics, fashion & groceries</div>
+          </div>
+        </div>
+        <div class="p-5 flex items-center justify-between bg-[var(--bg-main)]">
+          <div>
+            <div class="text-2xl font-black font-mono font-heading text-[var(--text-main)]">₹100</div>
+            <div class="text-[11px] text-[var(--emerald-400)] font-bold font-mono">Cost: 100 Credits</div>
+          </div>
+          <button onclick="executeWoohooIssuance('FLIPKART', 'Flipkart E-Gift Voucher', 100, 100)" class="btn-eco-primary text-xs !min-h-[44px]">
+            <span>⚡</span>
+            <span data-i18n="btn_redeem_woohoo">Redeem via API</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Woohoo Voucher 3: Uber Green EV -->
+      <div class="voucher-card">
+        <div class="voucher-notch-l"></div>
+        <div class="voucher-notch-r"></div>
+        <div class="p-5 flex items-start gap-4 border-b border-dashed border-[var(--border-subtle)]">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-2xl shrink-0">
+            🚗
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-[var(--emerald-400)] bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30">WOOHOO #UBER-75</span>
+              <span class="text-[10px] text-emerald-400 font-mono font-bold">ECO-PASS</span>
+            </div>
+            <div class="font-bold text-[var(--text-main)] text-sm mt-1 font-heading" data-i18n="v_uber_title">Uber Green EV Pass</div>
+            <div class="text-xs text-[var(--text-muted)]" data-i18n="v_uber_desc">Zero-emission electric rides in Pune</div>
+          </div>
+        </div>
+        <div class="p-5 flex items-center justify-between bg-[var(--bg-main)]">
+          <div>
+            <div class="text-2xl font-black font-mono font-heading text-[var(--emerald-400)]">₹75</div>
+            <div class="text-[11px] text-[var(--emerald-400)] font-bold font-mono">Cost: 60 Credits (Discount)</div>
+          </div>
+          <button onclick="executeWoohooIssuance('UBER', 'Uber Green EV Pass', 75, 60)" class="btn-eco-primary text-xs !min-h-[44px]">
+            <span>⚡</span>
+            <span data-i18n="btn_redeem_woohoo">Redeem via API</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Woohoo Voucher 4: Swiggy Instamart -->
+      <div class="voucher-card">
+        <div class="voucher-notch-l"></div>
+        <div class="voucher-notch-r"></div>
+        <div class="p-5 flex items-start gap-4 border-b border-dashed border-[var(--border-subtle)]">
+          <div class="w-12 h-12 rounded-xl bg-orange-500/15 border border-orange-500/25 flex items-center justify-center text-2xl shrink-0">
+            🍔
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-orange-400 bg-orange-500/15 px-2 py-0.5 rounded border border-orange-500/30">WOOHOO #SWG-50</span>
+              <span class="text-[10px] text-[var(--text-dim)] font-mono">Instamart Valid</span>
+            </div>
+            <div class="font-bold text-[var(--text-main)] text-sm mt-1 font-heading" data-i18n="v_swiggy_title">Swiggy Money Voucher</div>
+            <div class="text-xs text-[var(--text-muted)]" data-i18n="v_swiggy_desc">Food delivery & organic groceries</div>
+          </div>
+        </div>
+        <div class="p-5 flex items-center justify-between bg-[var(--bg-main)]">
+          <div>
+            <div class="text-2xl font-black font-mono font-heading text-[var(--text-main)]">₹50</div>
+            <div class="text-[11px] text-[var(--emerald-400)] font-bold font-mono">Cost: 50 Credits</div>
+          </div>
+          <button onclick="executeWoohooIssuance('SWIGGY', 'Swiggy Money Voucher', 50, 50)" class="btn-eco-primary text-xs !min-h-[44px]">
+            <span>⚡</span>
+            <span data-i18n="btn_redeem_woohoo">Redeem via API</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Woohoo Voucher 5: Croma Electronics -->
+      <div class="voucher-card">
+        <div class="voucher-notch-l"></div>
+        <div class="voucher-notch-r"></div>
+        <div class="p-5 flex items-start gap-4 border-b border-dashed border-[var(--border-subtle)]">
+          <div class="w-12 h-12 rounded-xl bg-teal-500/15 border border-teal-500/25 flex items-center justify-center text-2xl shrink-0">
+            🔌
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-teal-400 bg-teal-500/15 px-2 py-0.5 rounded border border-teal-500/30">WOOHOO #CRMA-250</span>
+              <span class="text-[10px] text-[var(--text-dim)] font-mono">Tata Enterprise</span>
+            </div>
+            <div class="font-bold text-[var(--text-main)] text-sm mt-1 font-heading" data-i18n="v_croma_title">Croma E-Waste Reward Card</div>
+            <div class="text-xs text-[var(--text-muted)]" data-i18n="v_croma_desc">Valid on energy-efficient home appliances</div>
+          </div>
+        </div>
+        <div class="p-5 flex items-center justify-between bg-[var(--bg-main)]">
+          <div>
+            <div class="text-2xl font-black font-mono font-heading text-[var(--text-main)]">₹250</div>
+            <div class="text-[11px] text-[var(--text-dim)] font-mono">Cost: 200 Credits</div>
+          </div>
+          <button disabled class="btn-eco-secondary opacity-50 cursor-not-allowed text-xs !min-h-[44px]">
+            <span>🔒</span>
+            <span data-i18n="btn_locked_credits">200 pts needed</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Woohoo Voucher 6: Municipal Property Tax Rebate -->
+      <div class="voucher-card">
+        <div class="voucher-notch-l"></div>
+        <div class="voucher-notch-r"></div>
+        <div class="p-5 flex items-start gap-4 border-b border-dashed border-[var(--border-subtle)]">
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center text-2xl shrink-0">
+            🏛️
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono font-bold text-indigo-400 bg-indigo-500/15 px-2 py-0.5 rounded border border-indigo-500/30">PMC TAX-100</span>
+              <span class="text-[10px] text-indigo-400 font-mono font-bold">GOVT REBATE</span>
+            </div>
+            <div class="font-bold text-[var(--text-main)] text-sm mt-1 font-heading" data-i18n="v_pmc_title">Pune Property Tax Discount</div>
+            <div class="text-xs text-[var(--text-muted)]" data-i18n="v_pmc_desc">Deducted directly from PMC tax assessment</div>
+          </div>
+        </div>
+        <div class="p-5 flex items-center justify-between bg-[var(--bg-main)]">
+          <div>
+            <div class="text-2xl font-black font-mono font-heading text-indigo-400">₹100</div>
+            <div class="text-[11px] text-[var(--emerald-400)] font-bold font-mono">Cost: 80 Credits</div>
+          </div>
+          <button onclick="executeWoohooIssuance('PMC_TAX', 'Pune Property Tax Rebate', 100, 80)" class="btn-eco-primary text-xs !min-h-[44px]">
+            <span>⚡</span>
+            <span data-i18n="btn_redeem_woohoo">Redeem via API</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- SECTION 5: CREDIT TRANSACTION HISTORY TIMELINE                    -->
+  <!-- ================================================================ -->
+  <section id="credit-history">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="text-xl font-bold tracking-tight font-heading text-[var(--text-main)]" data-i18n="sec_history_title">Verified Pickup & Credit Ledger</h3>
+        <p class="text-xs text-[var(--text-muted)]" data-i18n="sec_history_desc">Cryptographically recorded pickup events validated by SWaCH green technicians</p>
+      </div>
+      <div class="text-xs font-mono text-[var(--text-dim)]">
+        Showing last 8 events
+      </div>
+    </div>
+
+    <div class="glass-card overflow-hidden shadow-sm">
+      <div class="divide-y divide-[var(--border-subtle)]" id="credit-history-list">
+        <!-- Dynamically rendered by JS with full translation support -->
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- SECTION 6: AI CITIZEN ASSISTANT (ECO-BOT)                         -->
+  <!-- ================================================================ -->
+  <section id="ai-assistant-section">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="text-xl font-bold tracking-tight font-heading text-[var(--text-main)]" data-i18n="sec_ai_title">EcoLoop AI Citizen Assistant</h3>
+        <p class="text-xs text-[var(--text-muted)]" data-i18n="sec_ai_desc">Instant multilingual answers on pickup schedules, driver status, segregation grades & vouchers</p>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs font-semibold text-[var(--emerald-400)] bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20 shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span data-i18n="ai_status_online">AI Green Advisor Online</span>
+      </div>
+    </div>
+
+    <div class="glass-card overflow-hidden shadow-sm">
+      <!-- Chat Window -->
+      <div id="chat-window" class="h-80 overflow-y-auto p-4 space-y-3 bg-[var(--bg-main)]">
+        <!-- Initial Bot Message -->
+        <div class="flex items-start gap-2.5 max-w-md">
+          <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center shrink-0 text-base shadow-xs">
+            🤖
+          </div>
+          <div class="chat-bubble-bot p-3.5 text-xs shadow-xs leading-relaxed" id="ai-bot-welcome-msg">
+            <!-- Dynamically populated based on active language -->
+          </div>
+        </div>
+
+        <!-- Quick Prompt Buttons -->
+        <div class="flex flex-wrap gap-1.5 pl-10" id="ai-suggested-prompts-container">
+          <!-- Dynamically populated based on active language -->
+        </div>
+      </div>
+
+      <!-- Chat Input Bar -->
+      <div class="border-t border-[var(--border-subtle)] p-3 flex items-center gap-2 bg-[var(--bg-card)]">
+        <input id="chat-input" type="text" placeholder="Ask EcoLoop AI anything about pickups, Ramesh Kale, or credits..." class="flex-1 text-xs bg-[var(--bg-main)] border border-[var(--border-subtle)] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-[var(--text-main)] min-h-[48px]">
+        <button onclick="sendChat()" class="btn-eco-primary !min-h-[48px] px-5">
+          <span data-i18n="btn_send_chat">Ask AI</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- ================================================================ -->
+<!-- WOOHOO PINE LABS API MODAL (REAL CODE ISSUANCE & SCHEMA INSPECTION)-->
+<!-- ================================================================ -->
+<div id="woohoo-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+  <div class="glass-card max-w-lg w-full overflow-hidden shadow-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-violet-900 to-indigo-900 p-6 text-white relative">
+      <button onclick="closeWoohooModal()" class="absolute top-5 right-5 text-white/70 hover:text-white text-xl">✕</button>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-mono font-bold text-violet-300 uppercase tracking-widest">Woohoo by Pine Labs API</span>
+      </div>
+      <h3 class="text-xl font-black text-white font-heading" id="modal-brand-name">Amazon Pay Gift Card</h3>
+      <p class="text-xs text-violet-200 mt-1">Prepaid commerce card issued via Qwikcilver Distribution API v3</p>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-6 space-y-5" id="modal-body-content">
+      <!-- Loading state -->
+      <div id="modal-loading-state" class="py-10 text-center space-y-3">
+        <div class="w-12 h-12 border-4 border-violet-500/30 border-t-violet-400 rounded-full animate-spin mx-auto"></div>
+        <div class="text-xs font-mono text-[var(--text-muted)]">Contacting Pine Labs Gateway (`api.woohoo.in/v3/orders`)...</div>
+      </div>
+
+      <!-- Voucher Success Card -->
+      <div id="modal-success-state" class="hidden space-y-4">
+        <!-- Gift Card Display -->
+        <div class="bg-gradient-to-br from-slate-950 to-violet-950 rounded-2xl p-5 text-white shadow-xl relative overflow-hidden border border-white/10">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="text-[10px] font-mono text-violet-300">AUTHENTIC E-GIFT VOUCHER</div>
+              <div class="text-lg font-black text-white font-heading" id="modal-card-brand">Amazon Pay</div>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-black font-mono text-emerald-400 font-heading" id="modal-card-value">₹50</div>
+              <div class="text-[9px] font-mono text-slate-400">CREDIT VALUE</div>
+            </div>
+          </div>
+
+          <div class="my-4 p-3 bg-white/10 rounded-xl font-mono text-center border border-white/10">
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider">Voucher Code (Click to Copy)</div>
+            <div class="text-lg font-black text-emerald-300 tracking-wider cursor-pointer hover:underline" id="modal-card-code" onclick="copyVoucherCode()">
+              AMZN-8921-X992-ECOL
+            </div>
+            <div class="text-xs text-slate-300 mt-1 flex items-center justify-center gap-3">
+              <span>PIN: <strong class="text-white" id="modal-card-pin">5821</strong></span>
+              <span>•</span>
+              <span class="text-slate-400">Expiry: 31-Oct-2027</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono pt-2 border-t border-white/10">
+            <span>PO Ref: <span id="modal-po-number">PO-ECOL-W14-7712</span></span>
+            <span class="text-emerald-400 font-bold">✓ Pine Labs Activated</span>
+          </div>
+        </div>
+
+        <!-- Pine Labs API Telemetry Details -->
+        <div class="bg-[var(--bg-main)] rounded-xl p-3 border border-[var(--border-subtle)] text-xs font-mono space-y-1">
+          <div class="flex justify-between text-[var(--text-dim)]">
+            <span>Status:</span>
+            <span class="text-[var(--emerald-400)] font-bold">200 OK (FULFILLED)</span>
+          </div>
+          <div class="flex justify-between text-[var(--text-dim)]">
+            <span>Pine Labs Txn ID:</span>
+            <span class="text-[var(--text-main)]" id="modal-txn-id">PL-TXN-99824102</span>
+          </div>
+          <div class="flex justify-between text-[var(--text-dim)]">
+            <span>Credits Deducted:</span>
+            <span class="text-rose-400 font-bold" id="modal-deducted-pts">-50 pts</span>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-2">
+          <button onclick="copyVoucherCode()" class="flex-1 btn-eco-secondary text-xs">
+            <span>📋</span>
+            <span id="btn-copy-label">Copy Voucher Code</span>
+          </button>
+          <a id="btn-redeem-direct-link" href="https://www.amazon.in/gp/payment/ajax/add-gift-card.html" target="_blank" class="flex-1 btn-eco-primary text-xs">
+            <span>🚀</span>
+            <span>Redeem on App</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- WOOHOO CONFIG / ENDPOINT SETTINGS MODAL                          -->
+<!-- ================================================================ -->
+<div id="woohoo-config-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+  <div class="glass-card max-w-md w-full overflow-hidden shadow-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
+    <div class="bg-[var(--bg-main)] p-5 text-[var(--text-main)] flex justify-between items-center border-b border-[var(--border-subtle)]">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-violet-400"></span>
+        <h3 class="font-bold text-sm font-heading">Pine Labs Woohoo API Configuration</h3>
+      </div>
+      <button onclick="closeWoohooConfigModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)]">✕</button>
+    </div>
+    <div class="p-6 space-y-4 text-xs">
+      <div>
+        <label class="block font-semibold text-[var(--text-main)] mb-1">Target Gateway Environment</label>
+        <select id="config-env" class="w-full bg-[var(--bg-main)] border border-[var(--border-subtle)] rounded-xl p-3 text-xs font-mono text-[var(--text-main)]">
+          <option value="sandbox">Pine Labs Sandbox (developer.woohoo.in/v3)</option>
+          <option value="production">Pine Labs Production Gateway (api.woohoo.in/v3)</option>
+          <option value="simulator" selected>EcoLoop Integrated Simulator (Instant Issuance)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold text-[var(--text-main)] mb-1">Client ID / App Key</label>
+        <input type="text" value="ecoloop_ward14_punemc_daas_app" class="w-full bg-[var(--bg-main)] border border-[var(--border-subtle)] rounded-xl p-3 font-mono text-[var(--text-muted)]" readonly>
+      </div>
+
+      <div>
+        <label class="block font-semibold text-[var(--text-main)] mb-1">HMAC-SHA512 Signature Verification</label>
+        <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-[var(--emerald-400)] font-mono text-[11px]">
+          ✓ Enabled • Header: X-Pine-Signature & OAuth 2.0 Bearer
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="saveWoohooConfig()" class="w-full btn-eco-primary">
+          Save & Apply API Settings
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- BOTTOM NAVIGATION TAB BAR (MOBILE)                               -->
+<!-- ================================================================ -->
+<nav class="fixed bottom-0 inset-x-0 z-40 bg-[var(--bg-card)] backdrop-blur-xl border-t border-[var(--border-subtle)] shadow-2xl lg:hidden">
+  <div class="flex items-center justify-around py-2 px-2">
+    <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-[var(--emerald-400)] bg-emerald-500/10">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span class="text-[10px] font-bold" data-i18n="mob_nav_home">Home</span>
+    </button>
+    <button onclick="document.getElementById('live-map').scrollIntoView({behavior:'smooth'})" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-[var(--text-muted)]">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <span class="text-[10px] font-semibold" data-i18n="mob_nav_track">Driver</span>
+    </button>
+    <button onclick="document.getElementById('credit-history').scrollIntoView({behavior:'smooth'})" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-[var(--text-muted)]">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="text-[10px] font-semibold" data-i18n="mob_nav_credits">Credits</span>
+    </button>
+    <button onclick="document.getElementById('vouchers-section').scrollIntoView({behavior:'smooth'})" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-[var(--text-muted)]">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+      <span class="text-[10px] font-semibold" data-i18n="mob_nav_vouchers">Woohoo</span>
+    </button>
+    <button onclick="document.getElementById('ai-assistant-section').scrollIntoView({behavior:'smooth'})" class="flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl text-[var(--text-muted)]">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+      <span class="text-[10px] font-semibold" data-i18n="mob_nav_ai">AI Bot</span>
+    </button>
+  </div>
+</nav>
+
+
+<!-- ================================================================ -->
+<!-- JAVASCRIPT — COMPLETE MULTILINGUAL SYSTEM & LIVE LOGIC            -->
+<!-- ================================================================ -->
+<script>
+/* ---------------------------------------------------------------
+   0. DESIGN SYSTEM THEME MANAGER (DARK LUXURY / CLEAN SOLAR LIGHT)
+   --------------------------------------------------------------- */
+function initTheme() {
+  const savedTheme = localStorage.getItem('ecoloop_theme') || 'dark';
+  setTheme(savedTheme, false);
+
+  const toggleBtn = document.getElementById('btn-theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const target = current === 'dark' ? 'light' : 'dark';
+      setTheme(target, true);
+    });
+  }
+}
+
+function setTheme(theme, notify = true) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('ecoloop_theme', theme);
+  if (notify && typeof showToast === 'function') {
+    showToast('🌓', 'Theme Updated', `Switched to ${theme === 'light' ? 'Clean Solar Light ☀️' : 'Dark Luxury 🌙'} mode`);
+  }
+}
+
+/* ---------------------------------------------------------------
+   1. COMPREHENSIVE 5-LANGUAGE TRANSLATION DICTIONARY
+   --------------------------------------------------------------- */
+const TRANSLATIONS = {
+  en: {
+    splash_subtitle: "Citizen Green Portal • Pune",
+    splash_loading: "Initializing secure telemetry...",
+    btn_enter_dashboard: "Enter Citizen Dashboard →",
+    nav_tagline: "Citizen Green Portal",
+    badge_tier: "Green Citizen ★★★",
+    salutation_morning: "Good Morning",
+    salutation_afternoon: "Good Afternoon",
+    salutation_evening: "Good Evening",
+    salutation_sub: "Your assigned Green Technician <strong class='text-[var(--emerald-400)] font-semibold'>Ramesh Kale</strong> is en route in an EV Tricycle, approximately <strong class='text-[var(--text-main)]'>12 minutes away</strong>.",
+    status_pickup_active: "Pickup Active & Tracking",
+    status_vouchers_expiring: "2 Vouchers Expiring",
+    status_credits_earned: "147 Credits Earned",
+    driver_assigned_title: "ASSIGNED GREEN DRIVER",
+    driver_vehicle_desc: "EcoLoop EV Tricycle • MH-12-EQ-8842",
+    stat_eta: "ETA",
+    stat_distance: "DISTANCE",
+    stat_stop: "NEXT STOP",
+    btn_call_driver: "Call Ramesh",
+    btn_track_live: "Track Live",
+    sec_credit_title: "Green Credit Score System",
+    sec_credit_desc: "Earned automatically for each verified collection by the driver & quality segregation",
+    link_view_history: "View History",
+    card_label: "EcoLoop Municipal Citizen Card",
+    card_citizen_id: "Citizen ID",
+    card_lifetime_credits: "Lifetime Green Credits Earned",
+    card_tier_emerald: "★★★ EMERALD TIER",
+    card_cash_equiv: "≈ ₹147 Woohoo Value",
+    card_this_month: "THIS MONTH",
+    card_ward_rank: "WARD 14 RANK",
+    card_swach_verified: "SWaCH Certified Household",
+    score_breakdown_title: "Score Breakdown",
+    factor_pickup: "Pickup Compliance",
+    factor_segregation: "Segregation Quality",
+    factor_adherence: "Schedule Adherence",
+    factor_false_flags: "False Declarations",
+    val_zero_flags: "0 Flags (Clean)",
+    tier_legend_title: "Score Tiers & Dot Colors",
+    tier_green: "Green Dot (80–100 pts)",
+    tier_green_reward: "Max Vouchers",
+    tier_yellow: "Yellow Dot (50–79 pts)",
+    tier_yellow_reward: "Standard",
+    tier_red: "Red Dot (0–49 pts)",
+    tier_red_reward: "Basic",
+    sec_tracking_title: "Live Ragpicker & Vehicle Tracking",
+    sec_tracking_desc: "Real-time GPS telemetry of Green Driver Ramesh Kale approaching your doorstep",
+    legend_green: "Green: Max Credit (80–100)",
+    legend_yellow: "Yellow: Mid Credit (50–79)",
+    legend_red: "Red: Low Credit (0–49)",
+    legend_driver: "Driver Ramesh (EV Trike)",
+    legend_home: "Your Home (Arjun)",
+    driver_status_sub: "EV Tricycle #MH-12-EQ-8842 • 12 stops remaining",
+    btn_sim_approach: "Simulate Driver Approach",
+    sec_woohoo_title: "Woohoo (Pine Labs) Original Vouchers",
+    sec_woohoo_desc: "Redeem your earned Green Credits for genuine branded gift vouchers powered by Woohoo Prepaid Commerce API",
+    btn_api_settings: "API Endpoint Settings",
+    v_amz_title: "Amazon Pay Gift Card",
+    v_amz_desc: "Valid on Amazon.in shopping & bills",
+    v_flipkart_title: "Flipkart E-Gift Voucher",
+    v_flipkart_desc: "Electronics, fashion & groceries",
+    v_uber_title: "Uber Green EV Pass",
+    v_uber_desc: "Zero-emission electric rides in Pune",
+    v_swiggy_title: "Swiggy Money Voucher",
+    v_swiggy_desc: "Food delivery & organic groceries",
+    v_croma_title: "Croma E-Waste Reward Card",
+    v_croma_desc: "Valid on energy-efficient home appliances",
+    v_pmc_title: "Pune Property Tax Discount",
+    v_pmc_desc: "Deducted directly from PMC tax assessment",
+    btn_redeem_woohoo: "Redeem via API",
+    btn_locked_credits: "200 pts needed",
+    sec_history_title: "Verified Pickup & Credit Ledger",
+    sec_history_desc: "Cryptographically recorded pickup events validated by SWaCH green technicians",
+    sec_ai_title: "EcoLoop AI Citizen Assistant",
+    sec_ai_desc: "Instant multilingual answers on pickup schedules, driver status, segregation grades & vouchers",
+    ai_status_online: "AI Green Advisor Online",
+    btn_send_chat: "Ask AI",
+    mob_nav_home: "Home",
+    mob_nav_track: "Driver",
+    mob_nav_credits: "Credits",
+    mob_nav_vouchers: "Woohoo",
+    mob_nav_ai: "AI Bot",
+    ai_welcome_text: "<strong>EcoLoop AI:</strong> Namaste Arjun! 👋 I'm your Green Assistant. Ask me about driver Ramesh Kale's ETA, your Green Credit score, or how to redeem original Woohoo vouchers!",
+    prompt_driver_eta: "Where is driver Ramesh right now?",
+    prompt_how_credits: "How do I earn more Green Credits?",
+    prompt_woohoo_info: "How do Woohoo Pine Labs vouchers work?",
+    prompt_segregation: "What is Grade A waste segregation?"
+  },
+
+  hi: {
+    splash_subtitle: "नागरिक हरित पोर्टल • पुणे",
+    splash_loading: "सुरक्षित टेलीमेट्री लोड हो रही है...",
+    btn_enter_dashboard: "नागरिक डैशबोर्ड में प्रवेश करें →",
+    nav_tagline: "नागरिक हरित पोर्टल",
+    badge_tier: "हरित नागरिक ★★★",
+    salutation_morning: "सुप्रभात",
+    salutation_afternoon: "शुभ दोपहर",
+    salutation_evening: "शुभ संध्या",
+    salutation_sub: "आपके निर्धारित ग्रीन ड्राइवर <strong class='text-[var(--emerald-400)] font-semibold'>रमेश काळे</strong> ईवी ट्राइसाइकिल में रास्ते में हैं, लगभग <strong class='text-[var(--text-main)]'>12 मिनट की दूरी</strong> पर।",
+    status_pickup_active: "संग्रह सक्रिय और लाइव ट्रैकिंग",
+    status_vouchers_expiring: "2 वाउचर समाप्त हो रहे हैं",
+    status_credits_earned: "147 क्रेडिट्स अर्जित",
+    driver_assigned_title: "निर्धारित कचरा संग्रहकर्ता ड्राइवर",
+    driver_vehicle_desc: "इकोलूप ईवी ट्राइसाइकिल • MH-12-EQ-8842",
+    stat_eta: "पहुंचने का समय",
+    stat_distance: "दूरी",
+    stat_stop: "अगला पड़ाव",
+    btn_call_driver: "रमेश को कॉल करें",
+    btn_track_live: "लाइव ट्रैक करें",
+    sec_credit_title: "हरित क्रेडिट स्कोर प्रणाली",
+    sec_credit_desc: "ड्राइवर द्वारा सत्यापित प्रत्येक संग्रह और गुणवत्ता पृथक्करण पर स्वचालित क्रेडिट",
+    link_view_history: "इतिहास देखें",
+    card_label: "इकोलूप म्यूनिसिपल नागरिक कार्ड",
+    card_citizen_id: "नागरिक पहचान संख्या",
+    card_lifetime_credits: "आजीवन अर्जित हरित क्रेडिट्स",
+    card_tier_emerald: "★★★ एमराल्ड श्रेणी",
+    card_cash_equiv: "≈ ₹147 वूहू मूल्य",
+    card_this_month: "इस महीने",
+    card_ward_rank: "वार्ड 14 रैंक",
+    card_swach_verified: "SWaCH प्रमाणित परिवार",
+    score_breakdown_title: "स्कोर का विवरण",
+    factor_pickup: "कचरा संग्रह अनुपालन",
+    factor_segregation: "कचरा पृथक्करण गुणवत्ता",
+    factor_adherence: "समय सारिणी पालन",
+    factor_false_flags: "झूठी घोषणाएं",
+    val_zero_flags: "0 फ्लैग (पूर्णतः स्वच्छ)",
+    tier_legend_title: "स्कोर श्रेणियां और डॉट रंग",
+    tier_green: "हरा डॉट (80–100 अंक)",
+    tier_green_reward: "अधिकतम वाउचर",
+    tier_yellow: "पीला डॉट (50–79 अंक)",
+    tier_yellow_reward: "मानक",
+    tier_red: "लाल डॉट (0–49 अंक)",
+    tier_red_reward: "मूलभूत",
+    sec_tracking_title: "लाइव कचरा संग्रहकर्ता और वाहन ट्रैकिंग",
+    sec_tracking_desc: "ग्रीन ड्राइवर रमेश काळे का वास्तविक समय जीपीएस मूवमेंट आपके घर की ओर",
+    legend_green: "हरा: अधिकतम क्रेडिट (80–100)",
+    legend_yellow: "पीला: मध्यम क्रेडिट (50–79)",
+    legend_red: "लाल: निम्न क्रेडिट (0–49)",
+    legend_driver: "ड्राइवर रमेश (ईवी ट्राइक)",
+    legend_home: "आपका घर (अर्जुन)",
+    driver_status_sub: "ईवी ट्राइसाइकिल #MH-12-EQ-8842 • 12 घर शेष",
+    btn_sim_approach: "ड्राइवर के आगमन का अनुकरण करें",
+    sec_woohoo_title: "वूहू (पाइन लैब्स) मूल वाउचर्स",
+    sec_woohoo_desc: "वूहू प्रीपेड कॉमर्स एपीआई द्वारा अपने अर्जित हरित क्रेडिट्स को वास्तविक ब्रांडेड वाउचर्स में बदलें",
+    btn_api_settings: "एपीआई सेटिंग्स",
+    v_amz_title: "अमेज़न पे गिफ्ट कार्ड",
+    v_amz_desc: "अमेज़न शॉपिंग और बिल भुगतान पर मान्य",
+    v_flipkart_title: "फ्लिपकार्ट ई-गिफ्ट वाउचर",
+    v_flipkart_desc: "इलेक्ट्रॉनिक्स, फैशन और किराना",
+    v_uber_title: "उबर ग्रीन इलेक्ट्रिक पास",
+    v_uber_desc: "पुणे में शून्य-उत्सर्जन इलेक्ट्रिक राइड्स",
+    v_swiggy_title: "स्विगी मनी वाउचर",
+    v_swiggy_desc: "भोजन डिलीवरी और जैविक किराना",
+    v_croma_title: "क्रोमा ई-कचरा रिवॉर्ड कार्ड",
+    v_croma_desc: "ऊर्जा-कुशल घरेलू उपकरणों पर मान्य",
+    v_pmc_title: "पुणे नगर निगम संपत्ति कर छूट",
+    v_pmc_desc: "पीएमसी टैक्स बिल से सीधे कटौती",
+    btn_redeem_woohoo: "एपीआई से रिडीम करें",
+    btn_locked_credits: "200 अंक आवश्यक",
+    sec_history_title: "सत्यापित संग्रह और क्रेडिट लेज़र",
+    sec_history_desc: "SWaCH ग्रीन तकनीशियनों द्वारा मान्य ब्लॉकचेन सुरक्षित संग्रह रिकॉर्ड",
+    sec_ai_title: "इकोलूप एआई नागरिक सहायक",
+    sec_ai_desc: "संग्रह समय, ड्राइवर स्थिति, पृथक्करण ग्रेड और वाउचर पर त्वरित उत्तर",
+    ai_status_online: "एआई सलाहकार ऑनलाइन",
+    btn_send_chat: "एआई से पूछें",
+    mob_nav_home: "होम",
+    mob_nav_track: "ड्राइवर",
+    mob_nav_credits: "क्रेडिट्स",
+    mob_nav_vouchers: "वूहू",
+    mob_nav_ai: "एआई चैट",
+    ai_welcome_text: "<strong>EcoLoop AI:</strong> नमस्ते अर्जुन! 👋 मैं आपका हरित सहायक हूँ। ड्राइवर रमेश काळे की लोकेशन, क्रेडिट स्कोर या वूहू वाउचर रिडीम करने के बारे में पूछें!",
+    prompt_driver_eta: "ड्राइवर रमेश अभी कहाँ हैं?",
+    prompt_how_credits: "अधिक क्रेडिट्स कैसे कमाएं?",
+    prompt_woohoo_info: "वूहू पाइन लैब्स वाउचर कैसे काम करते हैं?",
+    prompt_segregation: "ग्रेड ए कचरा पृथक्करण क्या है?"
+  },
+
+  mr: {
+    splash_subtitle: "नागरिक हरित पोर्टल • पुणे",
+    splash_loading: "सुरक्षित टेलीमेट्री सुरू होत आहे...",
+    btn_enter_dashboard: "नागरिक डॅशबोर्ड उघडा →",
+    nav_tagline: "नागरिक हरित पोर्टल",
+    badge_tier: "हरित नागरिक ★★★",
+    salutation_morning: "शुभ प्रभात",
+    salutation_afternoon: "शुभ दुपार",
+    salutation_evening: "शुभ संध्या",
+    salutation_sub: "तुमचे नियुक्त ग्रीन ड्रायव्हर <strong class='text-[var(--emerald-400)] font-semibold'>रमेश काळे</strong> ईव्ही ट्रायसायकलने मार्गावर आहेत, अंदाजे <strong class='text-[var(--text-main)]'>12 मिनिटांच्या अंतरावर</strong>.",
+    status_pickup_active: "कचरा संकलन सक्रिय व लाइव्ह ट्रॅकिंग",
+    status_vouchers_expiring: "2 व्हाउचर संपत आहेत",
+    status_credits_earned: "147 क्रेडिट्स जमा",
+    driver_assigned_title: "नियुक्त ग्रीन ड्रायव्हर (कचरा वेचक)",
+    driver_vehicle_desc: "इकोलूप ईव्ही ट्रायसायकल • MH-12-EQ-8842",
+    stat_eta: "पोहोचण्याची वेळ",
+    stat_distance: "अंतर",
+    stat_stop: "पुढील थांबा",
+    btn_call_driver: "रमेश यांना कॉल करा",
+    btn_track_live: "थेट ट्रॅक करा",
+    sec_credit_title: "हरित क्रेडिट स्कोअर प्रणाली",
+    sec_credit_desc: "ड्रायव्हरने केलेल्या प्रत्येक सत्यापित संकलनावर व योग्य कचरा वर्गीकरणावर स्वयंचलित क्रेडिट",
+    link_view_history: "इतिहास पहा",
+    card_label: "इकोलूप महापालिका नागरिक कार्ड",
+    card_citizen_id: "नागरिक आयडी",
+    card_lifetime_credits: "एकूण मिळवलेले हरित क्रेडिट्स",
+    card_tier_emerald: "★★★ पाचू (एमराल्ड) श्रेणी",
+    card_cash_equiv: "≈ ₹147 वूहू मूल्य",
+    card_this_month: "या महिन्यात",
+    card_ward_rank: "प्रभाग 14 रँक",
+    card_swach_verified: "SWaCH प्रमाणित कुटुंब",
+    score_breakdown_title: "स्कोअरचे विश्लेषण",
+    factor_pickup: "संकलन सहभाग",
+    factor_segregation: "कचरा वर्गीकरण गुणवत्ता",
+    factor_adherence: "वेळेचे पालन",
+    factor_false_flags: "खोट्या नोंदी",
+    val_zero_flags: "0 फ्लॅग (उत्कृष्ट)",
+    tier_legend_title: "स्कोअर स्तर आणि बिंदूंचे रंग",
+    tier_green: "हिरवा बिंदू (80–100 गुण)",
+    tier_green_reward: "कमाल व्हाउचर्स",
+    tier_yellow: "पिवळा बिंदू (50–79 गुण)",
+    tier_yellow_reward: "प्रमाणित",
+    tier_red: "लाल बिंदू (0–49 गुण)",
+    tier_red_reward: "मूलभूत",
+    sec_tracking_title: "थेट ड्रायव्हर आणि वाहन ट्रॅकिंग",
+    sec_tracking_desc: "ग्रीन ड्रायव्हर रमेश काळे यांच्या वाहनाची थेट जीपीएस हालचाल",
+    legend_green: "हिरवा: कमाल क्रेडिट (80–100)",
+    legend_yellow: "पिवळा: मध्यम क्रेडिट (50–79)",
+    legend_red: "लाल: कमी क्रेडिट (0–49)",
+    legend_driver: "ड्रायव्हर रमेश (ईव्ही ट्रायसायकल)",
+    legend_home: "तुमचे घर (अर्जुन)",
+    driver_status_sub: "ईव्ही ट्रायसायकल #MH-12-EQ-8842 • 12 घरे बाकी",
+    btn_sim_approach: "ड्रायव्हर आगमनाचे सिम्युलेशन करा",
+    sec_woohoo_title: "वूहू (पाइन लॅब्ज) मूळ व्हाउचर्स",
+    sec_woohoo_desc: "तुमचे मिळवलेले हरित क्रेडिट्स वूहू एपीआय द्वारे अधिकृत ब्रँडेड गिफ्ट कार्ड्समध्ये रूपांतरित करा",
+    btn_api_settings: "एपीआय सेटिंग्ज",
+    v_amz_title: "अ‍ॅमेझॉन पे गिफ्ट कार्ड",
+    v_amz_desc: "अ‍ॅमेझॉन शॉपिंग आणि बिलांसाठी वैध",
+    v_flipkart_title: "फ्लिपकार्ट ई-गिफ्ट व्हाउचर",
+    v_flipkart_desc: "इलेक्ट्रॉनिक्स, फॅशन आणि किराणा",
+    v_uber_title: "उबर ग्रीन इलेक्ट्रिक पास",
+    v_uber_desc: "पुण्यात प्रदूषणमुक्त इलेक्ट्रिक प्रवास",
+    v_swiggy_title: "स्वीगी मनी व्हाउचर",
+    v_swiggy_desc: "अन्न वितरण आणि सेंद्रिय भाजीपाला",
+    v_croma_title: "क्रोमा ई-कचरा रिवॉर्ड कार्ड",
+    v_croma_desc: "ऊर्जा बचत घरगुती उपकरणांवर वैध",
+    v_pmc_title: "पुणे मनपा घरपट्टी कर सूट",
+    v_pmc_desc: "थेट पुणे महापालिकेच्या बिलातून वजावट",
+    btn_redeem_woohoo: "एपीआय द्वारे रिडीम करा",
+    btn_locked_credits: "200 गुण हवेत",
+    sec_history_title: "सत्यापित संकलन आणि क्रेडिट नोंदवही",
+    sec_history_desc: "SWaCH ग्रीन तंत्रज्ञांनी नोंदवलेले सुरक्षित कचरा संकलन रेकॉर्ड",
+    sec_ai_title: "इकोलूप एआय नागरिक सहाय्यक",
+    sec_ai_desc: "कचरा वेळ, ड्रायव्हर लोकेशन, वर्गीकरण नियम आणि व्हाउचर्सवर त्वरित उत्तरे",
+    ai_status_online: "एआय सहाय्यक ऑनलाइन",
+    btn_send_chat: "एआयला विचारा",
+    mob_nav_home: "होम",
+    mob_nav_track: "ड्रायव्हर",
+    mob_nav_credits: "क्रेडिट्स",
+    mob_nav_vouchers: "वूहू",
+    mob_nav_ai: "एआय",
+    ai_welcome_text: "<strong>EcoLoop AI:</strong> नमस्कार अर्जुन! 👋 मी तुमचा हरित सहाय्यक आहे. ड्रायव्हर रमेश काळे यांचे अंतर, क्रेडिट स्कोअर किंवा वूहू व्हाउचर्सबद्दल काहीही विचारा!",
+    prompt_driver_eta: "ड्रायव्हर रमेश काळे आता कुठे आहेत?",
+    prompt_how_credits: "अधिक क्रेडिट्स कसे मिळवायचे?",
+    prompt_woohoo_info: "वूहू पाइन लॅब्ज व्हाउचर्स कसे वापरतात?",
+    prompt_segregation: "ग्रेड ए कचरा वर्गीकरण कसे करावे?"
+  },
+
+  ta: {
+    splash_subtitle: "குடிமக்கள் பசுமை போர்டல் • புனே",
+    splash_loading: "பாதுகாப்பான தொலைத்தொடர்பு தொடங்குகிறது...",
+    btn_enter_dashboard: "குடிமக்கள் டாஷ்போர்டுக்குள் செல்க →",
+    nav_tagline: "குடிமக்கள் பசுமை போர்டல்",
+    badge_tier: "பசுமை குடிமகன் ★★★",
+    salutation_morning: "காலை வணக்கம்",
+    salutation_afternoon: "மதிய வணக்கம்",
+    salutation_evening: "மாலை வணக்கம்",
+    salutation_sub: "உங்கள் நியமிக்கப்பட்ட பசுமை ஓட்டுநர் <strong class='text-[var(--emerald-400)] font-semibold'>ரமேஷ் காலே</strong> மின்சார முச்சக்கர வண்டியில் வழியில் உள்ளார், சுமார் <strong class='text-[var(--text-main)]'>12 நிமிடங்கள் தொலைவில்</strong>.",
+    status_pickup_active: "சேகரிப்பு செயலில் & நேரடி கண்காணிப்பு",
+    status_vouchers_expiring: "2 கூப்பன்கள் விரைவில் காலாவதி",
+    status_credits_earned: "147 கிரெடிட்கள் பெறப்பட்டன",
+    driver_assigned_title: "நியமிக்கப்பட்ட பசுமை ஓட்டுநர்",
+    driver_vehicle_desc: "ஈகோலூப் மின்சார வாகனம் • MH-12-EQ-8842",
+    stat_eta: "வருகை நேரம்",
+    stat_distance: "தூரம்",
+    stat_stop: "அடுத்த நிறுத்தம்",
+    btn_call_driver: "ரமேஷை அழைக்கவும்",
+    btn_track_live: "நேரடியாக கண்காணிக்கவும்",
+    sec_credit_title: "பசுமை கடன் மதிப்பெண் முறை",
+    sec_credit_desc: "ஓட்டுநரால் சரிபார்க்கப்பட்ட ஒவ்வொரு சேகரிப்புக்கும் தரமான கழிவு பிரிப்புக்கும் தானியங்கி வரவு",
+    link_view_history: "வரலாற்றைக் காண்க",
+    card_label: "ஈகோலூப் நகராட்சி குடிமக்கள் அட்டை",
+    card_citizen_id: "குடிமக்கள் எண்",
+    card_lifetime_credits: "மொத்த பசுமை கடன்கள்",
+    card_tier_emerald: "★★★ மரகத நிலை",
+    card_cash_equiv: "≈ ₹147 வூஹூ மதிப்பு",
+    card_this_month: "இந்த மாதம்",
+    card_ward_rank: "வார்டு 14 தரம்",
+    card_swach_verified: "SWaCH சான்றளிக்கப்பட்ட இல்லம்",
+    score_breakdown_title: "மதிப்பெண் விவரம்",
+    factor_pickup: "சேகரிப்பு இணக்கம்",
+    factor_segregation: "கழிவு பிரிப்பு தரம்",
+    factor_adherence: "நேரக்கட்டுப்பாடு",
+    factor_false_flags: "தவறான அறிவிப்புகள்",
+    val_zero_flags: "0 கொடிகள் (தூய்மையானது)",
+    tier_legend_title: "நிலை மற்றும் புள்ளி வண்ணங்கள்",
+    tier_green: "பச்சை புள்ளி (80–100 புள்ளிகள்)",
+    tier_green_reward: "அதிகபட்ச கூப்பன்கள்",
+    tier_yellow: "மஞ்சள் புள்ளி (50–79 புள்ளிகள்)",
+    tier_yellow_reward: "நிலையானது",
+    tier_red: "சிவப்பு புள்ளி (0–49 புள்ளிகள்)",
+    tier_red_reward: "அடிப்படை",
+    sec_tracking_title: "நேரடி கழிவு சேகரிப்பாளர் கண்காணிப்பு",
+    sec_tracking_desc: "பசுமை ஓட்டுநர் ரமேஷ் காலேயின் நேரடி ஜிபிஎஸ் இயக்கம்",
+    legend_green: "பச்சை: அதிக கடன் (80–100)",
+    legend_yellow: "மஞ்சள்: நடுத்தர கடன் (50–79)",
+    legend_red: "சிவப்பு: குறைந்த கடன் (0–49)",
+    legend_driver: "ஓட்டுநர் ரமேஷ் (மின் வாகனம்)",
+    legend_home: "உங்கள் வீடு (அர்ஜுன்)",
+    driver_status_sub: "மின்சார வாகனம் #MH-12-EQ-8842 • 12 நிறுத்தங்கள்",
+    btn_sim_approach: "ஓட்டுநர் அணுகலை உருவகப்படுத்து",
+    sec_woohoo_title: "வூஹூ (பைன் லேப்ஸ்) அசல் கூப்பன்கள்",
+    sec_woohoo_desc: "வூஹூ பிரீபெய்ட் காமர்ஸ் ஏபிஐ மூலம் அசல் கூப்பன்களாக பசுமை கடன்களை மாற்றவும்",
+    btn_api_settings: "ஏபிஐ அமைப்புகள்",
+    v_amz_title: "அமேசான் பே கிஃப்ட் கார்டு",
+    v_amz_desc: "அமேசான் ஷாப்பிங் மற்றும் பில்களுக்கு செல்லுபடியாகும்",
+    v_flipkart_title: "பிளிப்கார்ட் இ-கிஃப்ட் கூப்பன்",
+    v_flipkart_desc: "எலக்ட்ரானிக்ஸ், ஃபேஷன் மற்றும் மளிகை",
+    v_uber_title: "உபெர் கிரீன் மின்சார பாஸ்",
+    v_uber_desc: "புனேயில் பூஜ்ஜிய உமிழ்வு மின்சார பயணம்",
+    v_swiggy_title: "ஸ்விகி மணி கூப்பன்",
+    v_swiggy_desc: "உணவு டெலிவரி மற்றும் இயற்கை மளிகை",
+    v_croma_title: "குரோமா இ-கழிவு வெகுமதி அட்டை",
+    v_croma_desc: "மின்-சேமிப்பு வீட்டு உபயோக பொருட்களுக்கு செல்லுபடியாகும்",
+    v_pmc_title: "புனே நகராட்சி சொத்து வரி தள்ளுபடி",
+    v_pmc_desc: "வரி மதிப்பீட்டிலிருந்து நேரடியாக கழிக்கப்படும்",
+    btn_redeem_woohoo: "ஏபிஐ மூலம் பெறவும்",
+    btn_locked_credits: "200 புள்ளிகள் தேவை",
+    sec_history_title: "சரிபார்க்கப்பட்ட சேகரிப்பு மற்றும் கடன் பதிவு",
+    sec_history_desc: "SWaCH பசுமை தொழில்நுட்ப வல்லுநர்களால் சரிபார்க்கப்பட்ட பதிவு",
+    sec_ai_title: "ஈகோலூப் ஏஐ குடிமக்கள் உதவியாளர்",
+    sec_ai_desc: "சேகரிப்பு அட்டவணை, ஓட்டுநர் நிலை மற்றும் கூப்பன்கள் குறித்த உடனடி பதில்கள்",
+    ai_status_online: "ஏஐ ஆலோசகர் ஆன்லைனில் உள்ளார்",
+    btn_send_chat: "ஏஐயிடம் கேளுங்கள்",
+    mob_nav_home: "முகப்பு",
+    mob_nav_track: "ஓட்டுநர்",
+    mob_nav_credits: "கடன்கள்",
+    mob_nav_vouchers: "வூஹூ",
+    mob_nav_ai: "ஏஐ",
+    ai_welcome_text: "<strong>EcoLoop AI:</strong> வணக்கம் அர்ஜுன்! 👋 நான் உங்கள் பசுமை உதவியாளர். ஓட்டுநர் ரமேஷின் இருப்பிடம் அல்லது வூஹூ கூப்பன்களைப் பற்றி கேளுங்கள்!",
+    prompt_driver_eta: "ஓட்டுநர் ரமேஷ் இப்போது எங்கே இருக்கிறார்?",
+    prompt_how_credits: "அதிக பசுமை கடன்களை எவ்வாறு பெறுவது?",
+    prompt_woohoo_info: "வூஹூ பைன் லேப்ஸ் கூப்பன்கள் எவ்வாறு செயல்படுகின்றன?",
+    prompt_segregation: "கிரேடு ஏ கழிவு பிரிப்பு என்றால் என்ன?"
+  },
+
+  bn: {
+    splash_subtitle: "নাগরিক সবুজ পোর্টাল • পুনে",
+    splash_loading: "সুরক্ষিত টেলিমেট্রি শুরু হচ্ছে...",
+    btn_enter_dashboard: "নাগরিক ড্যাশবোর্ডে প্রবেশ করুন →",
+    nav_tagline: "নাগরিক সবুজ পোর্টাল",
+    badge_tier: "সবুজ নাগরিক ★★★",
+    salutation_morning: "শুভ সকাল",
+    salutation_afternoon: "শুভ দুপুর",
+    salutation_evening: "শুভ সন্ধ্যা",
+    salutation_sub: "আপনার দায়িত্বপ্রাপ্ত গ্রিন ড্রাইভার <strong class='text-[var(--emerald-400)] font-semibold'>রমেশ কালে</strong> ইভি ট্রাইসাইকেলে রওনা হয়েছেন, প্রায় <strong class='text-[var(--text-main)]'>১২ মিনিট দূরে</strong>।",
+    status_pickup_active: "সংগ্রহ সক্রিয় ও লাইভ ট্র্যাকিং",
+    status_vouchers_expiring: "২টি ভাউচারের মেয়াদ শেষ হচ্ছে",
+    status_credits_earned: "১৪৭ ক্রেডিট অর্জিত",
+    driver_assigned_title: "দায়িত্বপ্রাপ্ত গ্রিন ড্রাইভার",
+    driver_vehicle_desc: "ইকোলুপ ইভি ট্রাইসাইকেল • MH-12-EQ-8842",
+    stat_eta: "পৌঁছানোর সময়",
+    stat_distance: "দূরত্ব",
+    stat_stop: "পরবর্তী স্টপ",
+    btn_call_driver: "রমেশকে কল করুন",
+    btn_track_live: "লাইভ ট্র্যাক করুন",
+    sec_credit_title: "সবুজ ক্রেডিট স্কোর ব্যবস্থা",
+    sec_credit_desc: "ড্রাইভারের দ্বারা প্রতিটি যাচাইকৃত সংগ্রহ ও সঠিক বর্জ্য পৃথকীকরণে স্বয়ংক্রিয় ক্রেডিট",
+    link_view_history: "ইতিহাস দেখুন",
+    card_label: "ইকোলুপ পৌর নাগরিক কার্ড",
+    card_citizen_id: "নাগরিক আইডি",
+    card_lifetime_credits: "মোট অর্জিত সবুজ ক্রেডিট",
+    card_tier_emerald: "★★★ পান্না (এমরাল্ড) স্তর",
+    card_cash_equiv: "≈ ₹১৪৭ উহু মূল্য",
+    card_this_month: "এই মাসে",
+    card_ward_rank: "ওয়ার্ড ১৪ র‍্যাংক",
+    card_swach_verified: "SWaCH প্রত্যয়িত পরিবার",
+    score_breakdown_title: "স্কোর বিভাজন",
+    factor_pickup: "সংগ্রহ আনুগত্য",
+    factor_segregation: "বর্জ্য পৃথকীকরণ মান",
+    factor_adherence: "সময়ানুবর্তিতা",
+    factor_false_flags: "ভুয়া ঘোষণা",
+    val_zero_flags: "০ ফ্ল্যাগ (সম্পূর্ণ পরিষ্কার)",
+    tier_legend_title: "স্কোর স্তর ও বিন্দুর রঙ",
+    tier_green: "সবুজ বিন্দু (৮০–১০০ পয়েন্ট)",
+    tier_green_reward: "সর্বোচ্চ ভাউচার",
+    tier_yellow: "হলুদ বিন্দু (৫০–৭৯ পয়েন্ট)",
+    tier_yellow_reward: "সাধারণ",
+    tier_red: "লাল বিন্দু (০–৪৯ পয়েন্ট)",
+    tier_red_reward: "মৌলিক",
+    sec_tracking_title: "লাইভ ড্রাইভার ও যান ট্র্যাকিং",
+    sec_tracking_desc: "গ্রিন ড্রাইভার রমেশ কালের রিয়েল-টাইম জিপিএস চলাচল",
+    legend_green: "সবুজ: সর্বোচ্চ ক্রেডিট (৮০–১০০)",
+    legend_yellow: "হলুদ: মাঝারি ক্রেডিট (৫০–৭৯)",
+    legend_red: "লাল: নিম্ন ক্রেডিট (০–৪৯)",
+    legend_driver: "ড্রাইভার রমেশ (ইভি ট্রাইসাইকেল)",
+    legend_home: "আপনার বাড়ি (অর্জুন)",
+    driver_status_sub: "ইভি ট্রাইসাইকেল #MH-12-EQ-8842 • ১২টি বাড়ি বাকি",
+    btn_sim_approach: "ড্রাইভারের আগমন সিমুলেট করুন",
+    sec_woohoo_title: "উহু (পাইন ল্যাবস) আসল ভাউচার",
+    sec_woohoo_desc: "উহু প্রিপেইড কমার্স এপিআই এর মাধ্যমে আপনার সবুজ ক্রেডিটকে আসল ব্র্যান্ডেড ভাউচারে রূপান্তর করুন",
+    btn_api_settings: "এপিআই সেটিংস",
+    v_amz_title: "অ্যামাজন পে গিফট কার্ড",
+    v_amz_desc: "অ্যামাজন কেনাকাটা ও বিল পরিশোধে প্রযোজ্য",
+    v_flipkart_title: "ফ্লিপকার্ট ই-গিফট ভাউচার",
+    v_flipkart_desc: "ইলেকট্রনিক্স, ফ্যাশন ও মুদি",
+    v_uber_title: "উবার গ্রিন ইভি পাস",
+    v_uber_desc: "পুনেতে শূন্য-নির্গমন বৈদ্যুতিক রাইড",
+    v_swiggy_title: "সুইগি মানি ভাউচার",
+    v_swiggy_desc: "খাবার ডেলিভারি ও জৈব মুদিপণ্য",
+    v_croma_title: "ক্রোমা ই-বর্জ্য রিওয়ার্ড কার্ড",
+    v_croma_desc: "বিদ্যুৎ সাশ্রয়ী হোম অ্যাপ্লায়েন্সে প্রযোজ্য",
+    v_pmc_title: "পুনে পৌর কর ছাড়",
+    v_pmc_desc: "সরাসরি পিএমসি ট্যাক্স মূল্যায়ন থেকে ছাড়",
+    btn_redeem_woohoo: "এপিআই দিয়ে রিডিম করুন",
+    btn_locked_credits: "২০০ পয়েন্ট প্রয়োজন",
+    sec_history_title: "যাচাইকৃত সংগ্রহ ও ক্রেডিট লেজার",
+    sec_history_desc: "SWaCH গ্রিন টেকনিশিয়ানদের দ্বারা নথিভুক্ত ক্রিপ্টোগ্রাফিক রেকর্ড",
+    sec_ai_title: "ইকোলুপ এআই নাগরিক সহকারী",
+    sec_ai_desc: "বর্জ্য সংগ্রহ, ড্রাইভারের অবস্থা এবং ভাউচার সম্পর্কে তাৎক্ষণিক উত্তর",
+    ai_status_online: "এআই উপদেষ্টা অনলাইন",
+    btn_send_chat: "এআইকে জিজ্ঞাসা করুন",
+    mob_nav_home: "হোম",
+    mob_nav_track: "ড্রাইভার",
+    mob_nav_credits: "ক্রেডিট",
+    mob_nav_vouchers: "উহু",
+    mob_nav_ai: "এআই",
+    ai_welcome_text: "<strong>EcoLoop AI:</strong> নমস্কার অর্জুন! 👋 আমি আপনার সবুজ সহকারী। ড্রাইভার রমেশ কালের অবস্থান বা উহু ভাউচার সম্পর্কে জিজ্ঞাসা করুন!",
+    prompt_driver_eta: "ড্রাইভার রমেশ এখন কোথায় আছেন?",
+    prompt_how_credits: "কীভাবে আরও বেশি সবুজ ক্রেডিট অর্জন করবেন?",
+    prompt_woohoo_info: "উহু পাইন ল্যাবস ভাউচার কীভাবে কাজ করে?",
+    prompt_segregation: "গ্রেড এ বর্জ্য পৃথকীকরণ কী?"
+  }
+};
+
+let currentLang = 'en';
+let citizenCredits = 147;
+
+let activeUser = {
+  name: 'Arjun Kumar',
+  firstName: 'Arjun',
+  credits: 147,
+  score: 78,
+  tier: 'Green Citizen ★★★',
+  ward: 'Ward 14 (Shivajinagar, Pune)'
+};
+
+function initUserSession() {
+  try {
+    const raw = sessionStorage.getItem('ecoloop_session');
+    if (raw) {
+      const sess = JSON.parse(raw);
+      if (sess && sess.name) {
+        activeUser.name = sess.name;
+        activeUser.firstName = sess.name.split(' ')[0] || sess.name;
+        if (sess.creditsBalance !== undefined) {
+          activeUser.credits = Number(sess.creditsBalance);
+          citizenCredits = activeUser.credits;
+        }
+        if (sess.creditScore !== undefined) {
+          activeUser.score = Number(sess.creditScore);
+        }
+        if (sess.ward) activeUser.ward = sess.ward;
+      }
+    }
+  } catch(e) {
+    console.warn('Session parse error:', e);
+  }
+
+  // Update navbar & cards
+  const navName = document.getElementById('nav-user-name');
+  if (navName) navName.textContent = activeUser.name;
+  const navInitials = document.getElementById('nav-user-initials');
+  if (navInitials) navInitials.textContent = activeUser.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+
+  const neonUri = localStorage.getItem('ecoloop_neon_db_url');
+  const navNeonBadge = document.getElementById('nav-neon-badge');
+  const navNeonText = document.getElementById('nav-neon-text');
+  if (navNeonBadge && navNeonText) {
+    if (neonUri) {
+      navNeonText.textContent = "Neon: Connected";
+      navNeonBadge.classList.remove('hidden');
+    } else {
+      navNeonText.textContent = "Neon DBMS Ready";
+    }
+  }
+
+  const scoreNum = document.getElementById('credit-score-num');
+  if (scoreNum) scoreNum.textContent = activeUser.score;
+  const balEl = document.getElementById('citizen-points-balance');
+  if (balEl) balEl.innerHTML = `${citizenCredits} <span class="text-lg font-semibold opacity-80">pts</span>`;
+  const woohooAvail = document.getElementById('woohoo-avail-pts');
+  if (woohooAvail) woohooAvail.textContent = `${citizenCredits} Credits Available`;
+}
+
+/* ---------------------------------------------------------------
+   2. GLOBAL LANGUAGE SWITCHER
+   --------------------------------------------------------------- */
+function setLang(lang) {
+  currentLang = lang;
+  const T = TRANSLATIONS[lang] || TRANSLATIONS['en'];
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (T[key]) {
+      el.innerHTML = T[key];
+    }
+  });
+
+  const hour = new Date().getHours();
+  const salType = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+  const salTextEl = document.getElementById('salutation-text');
+  if (salTextEl) {
+    salTextEl.textContent = `${T['salutation_' + salType]}, ${activeUser.firstName}! 👋`;
+  }
+  const salSubEl = document.getElementById('salutation-sub');
+  if (salSubEl) {
+    salSubEl.innerHTML = T.salutation_sub;
+  }
+
+  const aiWelcomeEl = document.getElementById('ai-bot-welcome-msg');
+  if (aiWelcomeEl) {
+    aiWelcomeEl.innerHTML = T.ai_welcome_text;
+  }
+  renderAIPrompts(T);
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('bg-[var(--bg-card)]', 'text-[var(--text-main)]', 'shadow-xs');
+    btn.classList.add('text-[var(--text-muted)]');
+  });
+  const activeBtn = document.getElementById(`lang-${lang}`);
+  if (activeBtn) {
+    activeBtn.classList.add('bg-[var(--bg-card)]', 'text-[var(--text-main)]', 'shadow-xs');
+    activeBtn.classList.remove('text-[var(--text-muted)]');
+  }
+
+  renderCreditHistory();
+}
+
+function renderAIPrompts(T) {
+  const container = document.getElementById('ai-suggested-prompts-container');
+  if (!container) return;
+  const prompts = [
+    { key: 'driver', text: T.prompt_driver_eta },
+    { key: 'credits', text: T.prompt_how_credits },
+    { key: 'woohoo', text: T.prompt_woohoo_info },
+    { key: 'segregation', text: T.prompt_segregation }
+  ];
+  container.innerHTML = prompts.map(p => `
+    <button onclick="sendSuggestedPrompt(this)" data-prompt="${p.text}" class="px-3.5 py-2 rounded-full bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--emerald-400)] text-[11px] font-semibold hover:border-emerald-500/40 transition-colors shadow-2xs">
+      ${p.text}
+    </button>
+  `).join('');
+}
+
+/* ---------------------------------------------------------------
+   3. SPLASH SCREEN PROGRESSION
+   --------------------------------------------------------------- */
+const splashSteps = [
+  { pct: 25, text: "Verifying Citizen Token #PMC-W14-AK-0342..." },
+  { pct: 50, text: "Locating Driver Ramesh Kale (EV Tricycle #MH-12-EQ-8842)..." },
+  { pct: 75, text: "Connecting Woohoo Pine Labs Prepaid Commerce Gateway..." },
+  { pct: 100, text: "EcoLoop Citizen Portal Ready ✓" }
+];
+let splashIdx = 0;
+
+function runSplash() {
+  const hour = new Date().getHours();
+  const el = document.getElementById('splash-greeting');
+  if (el) {
+    el.textContent = hour < 12 ? '🌅 Good Morning! Have your dry waste segregated.' : hour < 17 ? '☀️ Good Afternoon! Review today\'s collection.' : '🌙 Good Evening! Track your citizen credits.';
+  }
+
+  const interval = setInterval(() => {
+    if (splashIdx < splashSteps.length) {
+      const step = splashSteps[splashIdx++];
+      const bar = document.getElementById('splash-bar');
+      const st = document.getElementById('splash-status');
+      if (bar) bar.style.width = step.pct + '%';
+      if (st) st.textContent = step.text;
+    } else {
+      clearInterval(interval);
+      setTimeout(enterDashboard, 700);
+    }
+  }, 350);
+}
+
+function enterDashboard() {
+  const splash = document.getElementById('user-splash');
+  if (splash) {
+    splash.classList.add('fade-out');
+    setTimeout(() => splash.style.display = 'none', 600);
+  }
+}
+
+/* ---------------------------------------------------------------
+   4. CREDIT TRANSACTION HISTORY
+   --------------------------------------------------------------- */
+const historyEvents = [
+  { date: 'Today 09:15', driver: 'Ramesh Kale #SW-342', type: 'pickup', pts: '+6', grade: 'A', icon: '♻️', descEn: 'Verified Doorstep Collection', descHi: 'सत्यापित घर-घर कचरा संग्रह', descMr: 'घरोघरी कचरा संकलन सत्यापित' },
+  { date: 'Today 09:15', driver: 'SWaCH Pune Sensor', type: 'bonus', pts: '+3', grade: 'A', icon: '⭐', descEn: 'Grade A 100% Segregation Bonus', descHi: 'ग्रेड ए १००% पृथक्करण बोनस', descMr: 'दर्जा अ १००% कचरा वर्गीकरण बोनस' },
+  { date: 'Yesterday 09:20', driver: 'Ramesh Kale #SW-342', type: 'pickup', pts: '+6', grade: 'B', icon: '♻️', descEn: 'Verified Doorstep Collection', descHi: 'सत्यापित घर-घर कचरा संग्रह', descMr: 'घरोघरी कचरा संकलन सत्यापित' },
+  { date: '22 Oct 09:30', driver: 'Arun Pawar #SW-119', type: 'pickup', pts: '+6', grade: 'A', icon: '♻️', descEn: 'Verified Doorstep Collection', descHi: 'सत्यापित घर-घर कचरा संग्रह', descMr: 'घरोघरी कचरा संकलन सत्यापित' },
+  { date: '21 Oct 16:45', driver: 'Woohoo Pine Labs API', type: 'redeem', pts: '-50', grade: null, icon: '🛍️', descEn: 'Redeemed ₹50 Amazon Pay Voucher', descHi: '₹50 अमेज़न पे वाउचर रिडीम किया', descMr: '₹50 अ‍ॅमेझॉन पे व्हाउचर रिडीम केले' },
+  { date: '20 Oct 09:25', driver: 'Ramesh Kale #SW-342', type: 'pickup', pts: '+6', grade: 'A', icon: '♻️', descEn: 'Verified Doorstep Collection', descHi: 'सत्यापित घर-घर कचरा संग्रह', descMr: 'घरोघरी कचरा संकलन सत्यापित' }
+];
+
+function renderCreditHistory() {
+  const container = document.getElementById('credit-history-list');
+  if (!container) return;
+  container.innerHTML = historyEvents.map(e => {
+    const isCredit = e.pts.startsWith('+');
+    const color = isCredit ? 'text-[var(--emerald-400)]' : 'text-rose-400';
+    const desc = currentLang === 'hi' ? e.descHi : currentLang === 'mr' ? e.descMr : e.descEn;
+    const gradeHtml = e.grade ? `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${e.grade === 'A' ? 'bg-emerald-500/20 text-[var(--emerald-400)]' : 'bg-amber-500/20 text-amber-400'}">Grade ${e.grade}</span>` : '';
+    return `
+      <div class="p-4 flex items-center justify-between gap-4 hover:bg-[var(--bg-card-hover)] transition-colors">
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl ${isCredit ? 'bg-emerald-500/15 text-[var(--emerald-400)]' : 'bg-violet-500/15 text-violet-400'} flex items-center justify-center text-lg shrink-0 border border-[var(--border-subtle)]">
+            ${e.icon}
+          </div>
+          <div>
+            <div class="text-xs font-bold text-[var(--text-main)] flex items-center gap-2 font-heading">
+              <span>${desc}</span>
+              ${gradeHtml}
+            </div>
+            <div class="text-[11px] text-[var(--text-dim)] font-mono mt-0.5">
+              ${e.date} • Driver / Agent: <span class="text-[var(--text-muted)] font-semibold">${e.driver}</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-sm font-black font-mono font-heading ${color} shrink-0">
+          ${e.pts} pts
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ---------------------------------------------------------------
+   5. LEAFLET MAP: LIVE DRIVER TRACKING
+   --------------------------------------------------------------- */
+let liveMap, ragpickerMarker, polylineRoute;
+const USER_COORDS = [18.5204, 73.8567]; // Shivajinagar Pune
+const routeCoordinates = [
+  [18.5170, 73.8510], // Depot start
+  [18.5178, 73.8525], // FC Road junction
+  [18.5186, 73.8540], // Ghole Road crossing
+  [18.5194, 73.8552], // Model Colony lane
+  [18.5200, 73.8560], // Approaching Arjun's street
+  [18.5204, 73.8567]  // Arjun's Doorstep
+];
+let routeIndex = 0;
+let isSimulating = false;
+let simTimer = null;
+
+function initLeafletMaps() {
+  liveMap = L.map('live-map', { scrollWheelZoom: false }).setView([18.5190, 73.8540], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(liveMap);
+
+  // User Home Marker
+  const homeIcon = L.divIcon({
+    html: '<div style="font-size:26px;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.4))">🏠</div>',
+    className: '',
+    iconSize: [28, 28],
+    iconAnchor: [14, 24]
+  });
+  L.marker(USER_COORDS, { icon: homeIcon }).addTo(liveMap).bindPopup(`
+    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px">
+      <b style="color:#059669">📍 Your Home (Arjun Kumar)</b><br>
+      Ward 14, Shivajinagar<br>
+      <span style="color:#64748b;font-size:11px">Pickup Window: 09:15 - 09:45 AM</span>
+    </div>
+  `);
+
+  // Driver Ramesh Kale Marker
+  const driverIcon = L.divIcon({
+    html: `<div class="ragpicker-dot" style="width:28px;height:28px;border-radius:50%;background:#059669;border:3px solid white;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;box-shadow:0 0 16px rgba(5,150,105,0.8)">🛵</div>`,
+    className: '',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+
+  ragpickerMarker = L.marker(routeCoordinates[0], { icon: driverIcon }).addTo(liveMap).bindPopup(`
+    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:12px">
+      <b style="color:#059669">🛵 Green Driver: Ramesh Kale</b><br>
+      SWaCH ID: <b>#SW-342</b><br>
+      Vehicle: <b>EV Tricycle MH-12-EQ-8842</b><br>
+      <span style="color:#10b981;font-weight:bold">Status: Approaching Your Location</span>
+    </div>
+  `);
+
+  // Polyline path
+  polylineRoute = L.polyline(routeCoordinates, {
+    color: '#059669',
+    weight: 4,
+    opacity: 0.8,
+    dashArray: '8 6'
+  }).addTo(liveMap);
+}
+
+/* ---------------------------------------------------------------
+   6. REALTIME DRIVER MOVEMENT SIMULATION & CREDIT REWARD
+   --------------------------------------------------------------- */
+function simulateRagpickerMove() {
+  const btn = document.getElementById('btn-sim-move');
+  const etaEl = document.getElementById('ragpicker-eta');
+  const driverEtaStat = document.getElementById('driver-eta-stat');
+  const driverDistStat = document.getElementById('driver-dist-stat');
+
+  if (isSimulating) {
+    clearInterval(simTimer);
+    isSimulating = false;
+    btn.innerHTML = `<span>▶</span><span>Simulate Driver Approach</span>`;
+    return;
+  }
+
+  isSimulating = true;
+  btn.innerHTML = `<span class="animate-spin">🔄</span><span>Simulating Driver En Route...</span>`;
+
+  simTimer = setInterval(() => {
+    if (routeIndex < routeCoordinates.length - 1) {
+      routeIndex++;
+      const nextPos = routeCoordinates[routeIndex];
+      ragpickerMarker.setLatLng(nextPos);
+      liveMap.panTo(nextPos, { animate: true, duration: 0.8 });
+
+      const remSteps = (routeCoordinates.length - 1) - routeIndex;
+      const remMins = Math.max(1, remSteps * 2.5);
+      const remDist = (remSteps * 0.18).toFixed(2);
+
+      if (etaEl) etaEl.textContent = `ETA: ${Math.round(remMins)} mins`;
+      if (driverEtaStat) driverEtaStat.textContent = `${Math.round(remMins)} mins`;
+      if (driverDistStat) driverDistStat.textContent = `${remDist} km`;
+
+      if (routeIndex === routeCoordinates.length - 1) {
+        clearInterval(simTimer);
+        isSimulating = false;
+        btn.innerHTML = `<span>✓</span><span>Driver Arrived!</span>`;
+        if (etaEl) etaEl.textContent = '✓ Driver Arrived!';
+        if (driverEtaStat) driverEtaStat.textContent = 'Arrived';
+        if (driverDistStat) driverDistStat.textContent = '0.0 km';
+        triggerSuccessfulPickupCredit();
+      }
+    }
+  }, 1200);
+}
+
+function triggerSuccessfulPickupCredit() {
+  citizenCredits += 6;
+  document.getElementById('citizen-points-balance').innerHTML = `${citizenCredits} <span class="text-lg font-semibold opacity-80">pts</span>`;
+  document.getElementById('woohoo-avail-pts').textContent = `${citizenCredits} Credits Available`;
+
+  const ring = document.getElementById('credit-ring');
+  const scoreNum = document.getElementById('credit-score-num');
+  if (scoreNum) scoreNum.textContent = '81';
+  if (ring) ring.style.strokeDashoffset = '47.75';
+
+  historyEvents.unshift({
+    date: 'Just Now',
+    driver: 'Ramesh Kale #SW-342',
+    type: 'pickup',
+    pts: '+6',
+    grade: 'A',
+    icon: '🎉',
+    descEn: 'Verified Pickup by Ramesh Kale (Doorstep)',
+    descHi: 'रमेश काळे द्वारा सत्यापित संग्रह (घर पर)',
+    descMr: 'रमेश काळे द्वारे सत्यापित संकलन (घरी)'
+  });
+  renderCreditHistory();
+
+  showToast('✅', 'Pickup Verified by Ramesh Kale!', '+6 Green Credits credited to your account.');
+}
+
+/* ---------------------------------------------------------------
+   7. WOOHOO (PINE LABS) API INTEGRATION LOGIC
+   --------------------------------------------------------------- */
+function executeWoohooIssuance(brandCode, brandName, faceValue, creditCost) {
+  if (citizenCredits < creditCost) {
+    showToast('⚠️', 'Insufficient Credits', `You need ${creditCost} credits for this voucher. Current: ${citizenCredits}`);
+    return;
+  }
+
+  const modal = document.getElementById('woohoo-modal');
+  const brandTitle = document.getElementById('modal-brand-name');
+  const loading = document.getElementById('modal-loading-state');
+  const success = document.getElementById('modal-success-state');
+
+  brandTitle.textContent = brandName;
+  loading.classList.remove('hidden');
+  success.classList.add('hidden');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+
+  setTimeout(() => {
+    citizenCredits -= creditCost;
+    document.getElementById('citizen-points-balance').innerHTML = `${citizenCredits} <span class="text-lg font-semibold opacity-80">pts</span>`;
+    document.getElementById('woohoo-avail-pts').textContent = `${citizenCredits} Credits Available`;
+
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const pin = Math.floor(1000 + Math.random() * 9000);
+    const poNum = `PO-ECOL-W14-${Math.floor(10000 + Math.random() * 90000)}`;
+    const txnId = `PL-TXN-${Math.floor(10000000 + Math.random() * 90000000)}`;
+
+    const code = brandCode === 'AMAZON' ? `AMZN-${randomSuffix}-X772-ECOL` :
+                 brandCode === 'FLIPKART' ? `FLPK-${randomSuffix}-QWIK-9921` :
+                 brandCode === 'UBER' ? `UBER-EV-${randomSuffix}-PUNE` :
+                 brandCode === 'SWIGGY' ? `SWIG-${randomSuffix}-MEAL` :
+                 `PMC-TAX-REBATE-${randomSuffix}`;
+
+    document.getElementById('modal-card-brand').textContent = brandName;
+    document.getElementById('modal-card-value').textContent = `₹${faceValue}`;
+    document.getElementById('modal-card-code').textContent = code;
+    document.getElementById('modal-card-pin').textContent = pin;
+    document.getElementById('modal-po-number').textContent = poNum;
+    document.getElementById('modal-txn-id').textContent = txnId;
+    document.getElementById('modal-deducted-pts').textContent = `-${creditCost} pts`;
+
+    const directLink = document.getElementById('btn-redeem-direct-link');
+    if (brandCode === 'AMAZON') directLink.href = 'https://www.amazon.in/gp/payment/ajax/add-gift-card.html';
+    else if (brandCode === 'FLIPKART') directLink.href = 'https://www.flipkart.com';
+    else if (brandCode === 'UBER') directLink.href = 'https://m.uber.com';
+    else if (brandCode === 'SWIGGY') directLink.href = 'https://www.swiggy.com';
+    else directLink.href = 'https://pmc.gov.in';
+
+    loading.classList.add('hidden');
+    success.classList.remove('hidden');
+
+    historyEvents.unshift({
+      date: 'Just Now',
+      driver: 'Woohoo Pine Labs API',
+      type: 'redeem',
+      pts: `-${creditCost}`,
+      grade: null,
+      icon: '🎟️',
+      descEn: `Redeemed ₹${faceValue} ${brandName}`,
+      descHi: `₹${faceValue} ${brandName} रिडीम किया`,
+      descMr: `₹${faceValue} ${brandName} रिडीम केले`
+    });
+    renderCreditHistory();
+
+    showToast('🎉', 'Woohoo Voucher Issued!', `${brandName} code generated successfully.`);
+  }, 900);
+}
+
+function copyVoucherCode() {
+  const code = document.getElementById('modal-card-code').textContent.trim();
+  navigator.clipboard.writeText(code).then(() => {
+    const lbl = document.getElementById('btn-copy-label');
+    lbl.textContent = '✓ Copied to Clipboard!';
+    setTimeout(() => lbl.textContent = 'Copy Voucher Code', 2500);
+  });
+}
+
+function closeWoohooModal() {
+  const modal = document.getElementById('woohoo-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function openWoohooConfigModal() {
+  const modal = document.getElementById('woohoo-config-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeWoohooConfigModal() {
+  const modal = document.getElementById('woohoo-config-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function saveWoohooConfig() {
+  const env = document.getElementById('config-env').value;
+  closeWoohooConfigModal();
+  showToast('⚙️', 'Pine Labs Configuration Saved', `Active Gateway: ${env.toUpperCase()}`);
+}
+
+/* ---------------------------------------------------------------
+   8. AI CITIZEN ASSISTANT (ECO-BOT)
+   --------------------------------------------------------------- */
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  appendMessage(false, text);
+  input.value = '';
+  respondAI(text);
+}
+
+function sendSuggestedPrompt(btn) {
+  const prompt = btn.getAttribute('data-prompt');
+  appendMessage(false, prompt);
+  btn.remove();
+  respondAI(prompt);
+}
+
+function appendMessage(isBot, text) {
+  const win = document.getElementById('chat-window');
+  const msg = document.createElement('div');
+  msg.className = `flex items-start gap-2.5 ${isBot ? 'max-w-md' : 'max-w-xs ml-auto flex-row-reverse'}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = `w-7 h-7 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${isBot ? 'bg-emerald-500/20 text-[var(--emerald-400)]' : 'bg-emerald-600 text-white font-heading'}`;
+  avatar.textContent = isBot ? '🤖' : 'AK';
+
+  const bubble = document.createElement('div');
+  bubble.className = isBot ? 'chat-bubble-bot p-3.5 text-xs shadow-xs leading-relaxed' : 'chat-bubble-user p-3 text-xs leading-relaxed shadow-xs';
+  bubble.innerHTML = text;
+
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  win.appendChild(msg);
+  win.scrollTop = win.scrollHeight;
+}
+
+function respondAI(query) {
+  const win = document.getElementById('chat-window');
+  const typing = document.createElement('div');
+  typing.id = 'ai-typing';
+  typing.className = 'flex items-start gap-2.5 max-w-sm';
+  typing.innerHTML = `
+    <div class="w-7 h-7 rounded-xl bg-emerald-500/15 flex items-center justify-center text-xs">🤖</div>
+    <div class="chat-bubble-bot p-3 flex items-center gap-1.5 shadow-xs">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  `;
+  win.appendChild(typing);
+  win.scrollTop = win.scrollHeight;
+
+  setTimeout(() => {
+    typing.remove();
+    const q = query.toLowerCase();
+    let reply = "";
+
+    if (q.includes('ramesh') || q.includes('driver') || q.includes('कहाँ') || q.includes('कुठे') || q.includes('எங்கே')) {
+      reply = currentLang === 'hi'
+        ? "ग्रीन ड्राइवर <strong>रमेश काळे</strong> (#SW-342) आपकी लोकेशन से लगभग 0.8 किमी दूर हैं। उनका ईवी ट्राइसाइकिल 12 मिनट में आपके दरवाजे पर पहुँचेगा।"
+        : currentLang === 'mr'
+        ? "ग्रीन ड्रायव्हर <strong>रमेश काळे</strong> (#SW-342) आपल्या घरापासून अंदाजे 0.8 किमी अंतरावर आहेत. त्यांची ईव्ही ट्रायसायकल 12 मिनिटांत आपल्या दाराशी येईल."
+        : "Green Driver <strong>Ramesh Kale</strong> (#SW-342) is currently on Ghole Road, approximately 0.8 km away. His estimated time of arrival at your doorstep is <strong>12 minutes</strong>.";
+    } else if (q.includes('credit') || q.includes('क्रेडिट') || q.includes('गुण') || q.includes('கடன்')) {
+      reply = currentLang === 'hi'
+        ? "आपका वर्तमान ग्रीन क्रेडिट स्कोर <strong>78/100 (एमराल्ड स्तर)</strong> है। प्रत्येक सत्यापित संग्रह पर +6 अंक और ग्रेड ए पृथक्करण पर +3 बोनस अंक मिलते हैं।"
+        : currentLang === 'mr'
+        ? "आपला सध्याचा क्रेडिट स्कोअर <strong>78/100 (पाचू स्तर)</strong> आहे. प्रत्येक संकलनावर +6 गुण आणि १००% ओला-सुका कचरा वेगळा केल्यास +3 बोनस गुण मिळतात."
+        : "Your current score is <strong>78/100 (Emerald Tier)</strong> with <strong>147 lifetime credits</strong>. You earn +6 credits per verified pickup and +3 bonus credits for Grade A segregated waste.";
+    } else if (q.includes('woohoo') || q.includes('voucher') || q.includes('वाउचर') || q.includes('கூப்பன்')) {
+      reply = currentLang === 'hi'
+        ? "वूहू (Pine Labs) एपीआई से आप अमेज़न पे, फ्लिपकार्ट, उबर और स्विगी के असली गिफ्ट कार्ड्स तुरंत रिडीम कर सकते हैं।"
+        : currentLang === 'mr'
+        ? "वूहू (Pine Labs) एपीआय द्वारे आपण अ‍ॅमेझॉन, फ्लिपकार्ट, उबर आणि स्विगीचे अधिकृत व्हाउचर्स थेट मिळवू शकता."
+        : "EcoLoop is directly integrated with <strong>Woohoo (by Pine Labs / Qwikcilver)</strong>. You can redeem Amazon Pay, Flipkart, Uber, and Swiggy vouchers with instant card codes and PINs.";
+    } else {
+      reply = currentLang === 'hi'
+        ? "ग्रेड ए पृथक्करण के लिए सूखा, गीला और ई-कचरा अलग रखें। ड्राइवर रमेश काळे संग्रह के समय बारकोड स्कैन करके वजन प्रमाणित करते हैं।"
+        : currentLang === 'mr'
+        ? "दर्जा अ वर्गीकरणासाठी सुका कचरा, ओला कचरा आणि ई-कचरा स्वतंत्र ठेवा. ड्रायव्हर रमेश काळे संकलनाच्या वेळी वजनाची नोंद करतात."
+        : "For Grade A segregation, keep Dry Recyclables, Wet Organic, and Hazardous/E-Waste in distinct color bags. Driver Ramesh Kale verifies and weighs your bin upon arrival.";
+    }
+    appendMessage(true, reply);
+  }, 850);
+}
+
+/* ---------------------------------------------------------------
+   9. TOAST NOTIFICATION UTILITY
+   --------------------------------------------------------------- */
+function showToast(icon, title, message) {
+  const existing = document.getElementById('eco-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'eco-toast';
+  toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-50 glass-card text-[var(--text-main)] px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3.5 border border-emerald-500/40 animate-in fade-in slide-in-from-top-4 duration-300';
+  toast.innerHTML = `
+    <span class="text-2xl">${icon}</span>
+    <div>
+      <div class="font-bold text-xs text-[var(--text-main)] font-heading">${title}</div>
+      <div class="text-[11px] text-[var(--text-muted)]">${message}</div>
+    </div>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+}
+
+/* ---------------------------------------------------------------
+   10. INITIALIZATION
+   --------------------------------------------------------------- */
+window.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initUserSession();
+  runSplash();
+  setLang('en');
+  setTimeout(() => {
+    try { initLeafletMaps(); } catch(e) { console.error('Map init error:', e); }
+  }, 400);
+});
+</script>
+
+</body>
+</html>

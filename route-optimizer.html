@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spatial Route Optimizer | EcoLoop — Team EcoMirai</title>
+  <meta name="description" content="EcoLoop Spatial Route Optimizer: Google OR-Tools CVRP Logistics Command for Ward 14, Pune.">
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            },
+            slateCustom: {
+              700: '#334155',
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#0b0f19',
+            },
+            civic: {
+              teal: '#0d9488',
+              amber: '#f59e0b',
+              indigo: '#6366f1',
+              rose: '#f43f5e',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          keyframes: {
+            ticker: {
+              '0%': { transform: 'translateX(0%)' },
+              '100%': { transform: 'translateX(-50%)' }
+            }
+          },
+          animation: {
+            'marquee': 'ticker 28s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .dark-scroll::-webkit-scrollbar-track { background: #0f172a; }
+    .dark-scroll::-webkit-scrollbar-thumb { background: #334155; }
+    .glass-dark {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white">
+
+  <!-- ============================================================== -->
+  <!-- 1. TOP GLOBAL NAVIGATION & SYSTEM HEADER                      -->
+  <!-- ============================================================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <div class="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-3">
+        
+        <!-- Left: Brand Logo & Return to Dashboard -->
+        <div class="flex items-center gap-3.5 shrink-0">
+          <a href="index.html" class="flex items-center gap-3 group">
+            <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-900 text-white shadow-md shadow-emerald-900/20 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-white ring-1 ring-emerald-500"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-xl tracking-tight text-slate-900 flex items-center">
+                  Eco<span class="text-emerald-600">Loop</span>
+                </span>
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  v1.0.4
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 font-medium tracking-tight">
+                Team EcoMirai <span class="text-slate-300">|</span> Mitsui &amp; Co. Track
+              </p>
+            </div>
+          </a>
+        </div>
+
+        <!-- Center: Direct Page Links -->
+        <nav class="hidden md:flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200 text-xs font-semibold">
+          <a href="index.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+            <span>Dashboard</span>
+          </a>
+
+          <!-- Active Page: Route Optimizer -->
+          <a href="route-optimizer.html" class="px-3.5 py-1.5 rounded-lg bg-white text-emerald-900 font-bold shadow-xs flex items-center gap-1.5 border border-slate-200/60">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            <span>1. Route Optimizer</span>
+            <span class="text-[9px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-1 rounded border border-emerald-200">Active</span>
+          </a>
+
+          <a href="marketplace.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>2. B2B Marketplace</span>
+          </a>
+
+          <a href="worker-ledger.html" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>3. Green Tech Ledger</span>
+          </a>
+        </nav>
+
+        <!-- Right: Status -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span class="font-mono text-[11px] text-slate-600 font-medium">CVRP Solver Online</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Wholesale Mandi Ticker across Top -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-1.5 border-b border-slate-800 overflow-hidden select-none">
+    <div class="flex items-center">
+      <div class="px-3 bg-emerald-600 text-white font-mono font-bold uppercase text-[10px] tracking-wider shrink-0 flex items-center gap-1 z-10 shadow-sm">
+        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+        Ward 14 Telemetry Feed
+      </div>
+      <div class="relative w-full overflow-hidden">
+        <div class="whitespace-nowrap inline-block animate-marquee font-mono text-[11px]">
+          <span class="mx-4 text-emerald-400 font-semibold">Tricycle EV-04 Active: 265/450 kg load</span>
+          <span class="text-slate-600">|</span>
+          <span class="mx-4 text-emerald-400 font-semibold">FC Road Commercial: 91% Fill [High Priority]</span>
+          <span class="text-slate-600">|</span>
+          <span class="mx-4 text-amber-300 font-semibold">Ghole Road Hub: 82% Fill</span>
+          <span class="text-slate-600">|</span>
+          <span class="mx-4 text-slate-300 font-semibold">BMCC Campus Bins: 35% Fill [Cleared]</span>
+          <span class="text-slate-600">|</span>
+          <span class="mx-4 text-emerald-400 font-semibold">Distance Reduced: 28.4% (5.2 km Saved Today)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MAIN ROUTE OPTIMIZER VIEWPORT                                  -->
+  <!-- ============================================================== -->
+  <main class="flex-1 max-w-[1680px] w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Top Overview Header & Quick Stat Pills -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-emerald-900 text-emerald-100 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            OR-TOOLS CVRP ENGINE
+          </span>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+            Ward 14 Spatial Logistics Command
+          </h1>
+          <span class="hidden sm:inline-block px-2 py-0.5 text-xs font-medium text-slate-500 bg-slate-100 rounded-full border border-slate-200">
+            Capacitated Vehicle Routing (450 kg Tricycle EV-04)
+          </span>
+        </div>
+        <p class="text-sm text-slate-600 mt-1">
+          Solving Pune Municipal Corporation solid waste first-mile collection using Google OR-Tools constraint satisfaction heuristics.
+        </p>
+      </div>
+
+      <!-- Real-Time Metrics HUD -->
+      <div class="grid grid-cols-3 gap-3 shrink-0">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Distance Reduced</div>
+          <div class="text-lg sm:text-xl font-bold font-mono text-emerald-600 flex items-center justify-center gap-1">
+            <span id="metric-distance-pct">28.4%</span>
+            <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+            </svg>
+          </div>
+          <div class="text-[10px] font-mono text-slate-400">13.0 km vs 18.2 km</div>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Battery Saved</div>
+          <div class="text-lg sm:text-xl font-bold font-mono text-teal-600 flex items-center justify-center gap-1">
+            <span id="metric-battery-pct">31.2%</span>
+            <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div class="text-[10px] font-mono text-slate-400">14.8 kWh CO₂ Avoided</div>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Transport Cost</div>
+          <div class="text-lg sm:text-xl font-bold font-mono text-slate-900 flex items-center justify-center gap-1">
+            <span>₹600</span><span class="text-xs text-slate-400 font-normal">/MT</span>
+          </div>
+          <div class="text-[10px] font-mono text-emerald-600 font-semibold">₹250/MT Under Base</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Interactive Command Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Left: Interactive Vector Map Canvas & Control Deck (8 Cols) -->
+      <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col">
+        
+        <!-- Map Header / Toolbar -->
+        <div class="px-4 py-3 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
+          <div class="flex items-center gap-2.5">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300"></span>
+            <span class="text-xs font-mono font-bold tracking-wide text-slate-200">
+              PUNE_WARD_14_GEOMESH [18.5204° N, 73.8567° E]
+            </span>
+            <span class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+              Active Nodes: <strong class="text-emerald-400">8</strong>
+            </span>
+          </div>
+
+          <!-- Action Buttons Deck -->
+          <div class="flex items-center gap-2">
+            <button id="btn-reroute" onclick="triggerOrToolsReroute()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 active:scale-95">
+              <svg id="icon-reroute-spin" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Run OR-Tools Dynamic Re-Route</span>
+            </button>
+
+            <button id="btn-surge" onclick="triggerSurgePickupAlert()" class="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 active:scale-95">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>Simulate Surge Pickup Alert</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Map Container -->
+        <div class="relative bg-slate-950 w-full h-[540px] overflow-hidden select-none">
+          <canvas id="ward-map-canvas" class="w-full h-full cursor-crosshair"></canvas>
+
+          <!-- Map HUD Legend Overlay -->
+          <div class="absolute top-4 left-4 glass-dark text-white rounded-xl p-3.5 text-xs space-y-2 pointer-events-none shadow-lg border border-slate-700/60 max-w-xs">
+            <div class="font-bold text-slate-200 flex items-center justify-between">
+              <span>Waypoint Telemetry</span>
+              <span class="text-[10px] font-mono text-emerald-400">GPS ACC: ±0.8m</span>
+            </div>
+            <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] font-mono">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="text-slate-300">&lt;50% (Normal)</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span class="text-slate-300">50-80% (Elevated)</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                <span class="text-slate-300">&gt;80% (Critical)</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-sm bg-indigo-500"></span>
+                <span class="text-slate-300">DWCC Depot</span>
+              </div>
+            </div>
+            <div class="pt-1.5 border-t border-slate-700/60 text-[10px] text-slate-400">
+              Vehicle: <strong class="text-emerald-400">E-Tipper #MH-12-EC-402</strong> (Active: 265 / 450 kg)
+            </div>
+          </div>
+
+          <!-- Dynamic Computation Banner Overlay -->
+          <div id="solver-banner" class="hidden absolute bottom-4 left-4 right-4 glass-dark text-white rounded-xl p-3 border border-emerald-500/50 shadow-2xl flex items-center justify-between gap-3 animate-fade-in">
+            <div class="flex items-center gap-3">
+              <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-emerald-400 font-mono">OR-Tools CVRP Solver Converged (4.2ms)</div>
+                <div class="text-[11px] text-slate-300 font-mono">Bypassed cleared nodes • Re-sequenced Deccan Hub for optimal load distribution</div>
+              </div>
+            </div>
+            <span class="px-2 py-1 rounded bg-emerald-950 text-emerald-300 text-[10px] font-mono border border-emerald-800">
+              OBJ_VAL: 12.38 km
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Quick Map Footer Stats -->
+        <div class="p-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-600 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-slate-800">Route Polyline Mode:</span>
+            <span class="font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">Dubins Path / Turn Penalties Enabled</span>
+          </div>
+          <div class="font-mono text-[11px] text-slate-500">
+            Click any waypoint on map to inspect volumetric fill
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Live Dispatch Queue Table (4 Cols) -->
+      <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col h-[605px]">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <div>
+            <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              Live Dispatch Queue
+            </h2>
+            <p class="text-xs text-slate-500">Heuristic priority order by fill %</p>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-emerald-100 text-emerald-800">
+            8 Stops Scheduled
+          </span>
+        </div>
+
+        <!-- Scrollable Table -->
+        <div class="flex-1 overflow-y-auto divide-y divide-slate-100 p-2 text-xs">
+          <div id="dispatch-table-body" class="space-y-1.5">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Bottom Summary Box -->
+        <div class="p-3.5 bg-slate-50 border-t border-slate-200 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-500">Cumulative Load on Shift:</span>
+            <span class="font-mono font-bold text-slate-800">385 / 450 kg (85.5%)</span>
+          </div>
+          <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-500 to-amber-500 h-full w-[85.5%] rounded-full"></div>
+          </div>
+          <div class="flex justify-between items-center text-[11px] text-slate-500 font-mono">
+            <span>Depot Return ETA:</span>
+            <span class="text-emerald-700 font-semibold">15:12 IST (On Schedule)</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Canvas Map Animation & Simulation Script -->
+  <script>
+    const MAP_STATE = {
+      canvas: null,
+      ctx: null,
+      vehicleProgress: 0.15,
+      vehicleSpeed: 0.0018,
+      depot: { id: 'DEPOT', name: 'Ward 14 DWCC Depot', x: 280, y: 310, isDepot: true },
+      waypoints: [
+        { id: 'W-01', name: 'Gokuldham Enclave', type: 'Residential', fill: 42, weight: 65, x: 140, y: 160, cat: 'Dry / PET' },
+        { id: 'W-02', name: 'Fergusson College Rd Comml', type: 'Commercial', fill: 88, weight: 140, x: 260, y: 120, cat: 'PET / Alum' },
+        { id: 'W-03', name: 'Deccan Gymkhana Hub', type: 'Commercial', fill: 74, weight: 110, x: 420, y: 170, cat: 'Mixed Dry' },
+        { id: 'W-04', name: 'BMCC Campus Bins', type: 'Commercial', fill: 35, weight: 45, x: 490, y: 280, cat: 'Cardboard OCC' },
+        { id: 'W-05', name: 'Prabhat Road Enclave', type: 'Residential', fill: 68, weight: 92, x: 440, y: 400, cat: 'Dry Recyclables' },
+        { id: 'W-06', name: 'Ghole Road Community Bin', type: 'Residential', fill: 82, weight: 125, x: 290, y: 440, cat: 'Multi-layer Plastics' },
+        { id: 'W-07', name: 'Model Colony Apartments', type: 'Residential', fill: 55, weight: 70, x: 130, y: 380, cat: 'PET Bottles' },
+        { id: 'W-08', name: 'FC Road Food Strip', type: 'Commercial', fill: 91, weight: 155, x: 190, y: 260, cat: 'Rigid HDPE' }
+      ],
+      computedRoute: ['DEPOT', 'W-08', 'W-02', 'W-03', 'W-04', 'W-05', 'W-06', 'W-07', 'W-01', 'DEPOT'],
+      selectedWaypoint: null,
+    };
+
+    function getNodeById(id) {
+      if (id === 'DEPOT') return MAP_STATE.depot;
+      return MAP_STATE.waypoints.find(w => w.id === id);
+    }
+
+    function initMap() {
+      const canvas = document.getElementById('ward-map-canvas');
+      if (!canvas) return;
+      MAP_STATE.canvas = canvas;
+      MAP_STATE.ctx = canvas.getContext('2d');
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const allNodes = [MAP_STATE.depot, ...MAP_STATE.waypoints];
+        for (const n of allNodes) {
+          const dx = mouseX - n.x;
+          const dy = mouseY - n.y;
+          if (Math.hypot(dx, dy) < 20) {
+            MAP_STATE.selectedWaypoint = n;
+            break;
+          }
+        }
+      });
+
+      renderLoop();
+      populateDispatchTable();
+    }
+
+    function resizeCanvas() {
+      const canvas = MAP_STATE.canvas;
+      if (!canvas) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      MAP_STATE.ctx.resetTransform();
+      MAP_STATE.ctx.scale(dpr, dpr);
+    }
+
+    function renderLoop() {
+      const canvas = MAP_STATE.canvas;
+      const ctx = MAP_STATE.ctx;
+      if (!canvas || !ctx) return;
+
+      const width = canvas.width / (window.devicePixelRatio || 1);
+      const height = canvas.height / (window.devicePixelRatio || 1);
+
+      ctx.fillStyle = '#090d16';
+      ctx.fillRect(0, 0, width, height);
+
+      // Mutha River
+      ctx.strokeStyle = 'rgba(14, 116, 144, 0.2)';
+      ctx.lineWidth = 26;
+      ctx.beginPath();
+      ctx.moveTo(30, 20);
+      ctx.bezierCurveTo(width * 0.3, 180, width * 0.45, 340, width * 0.7, height);
+      ctx.stroke();
+
+      // Arterials
+      ctx.strokeStyle = 'rgba(51, 65, 85, 0.45)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(110, 40); ctx.lineTo(260, height - 30);
+      ctx.moveTo(220, 20); ctx.lineTo(440, height - 20);
+      ctx.stroke();
+
+      // Glow Polyline
+      const route = MAP_STATE.computedRoute;
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+      ctx.lineWidth = 8;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      for (let i = 0; i < route.length; i++) {
+        const node = getNodeById(route[i]);
+        if (!node) continue;
+        if (i === 0) ctx.moveTo(node.x, node.y);
+        else ctx.lineTo(node.x, node.y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw Depot
+      ctx.fillStyle = '#6366f1';
+      ctx.strokeStyle = '#818cf8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(MAP_STATE.depot.x, MAP_STATE.depot.y, 10, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#e0e7ff';
+      ctx.font = 'bold 10px "Inter"';
+      ctx.fillText('DWCC DEPOT', MAP_STATE.depot.x + 14, MAP_STATE.depot.y + 4);
+
+      // Draw Waypoints
+      MAP_STATE.waypoints.forEach(wp => {
+        let col = '#10b981';
+        if (wp.fill >= 50 && wp.fill <= 80) col = '#f59e0b';
+        else if (wp.fill > 80) col = '#f43f5e';
+
+        if (MAP_STATE.selectedWaypoint && MAP_STATE.selectedWaypoint.id === wp.id) {
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(wp.x, wp.y, 16, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.arc(wp.x, wp.y, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '9px "Inter"';
+        ctx.fillText(wp.name, wp.x + 11, wp.y - 2);
+        ctx.fillStyle = col;
+        ctx.font = 'bold 9px "JetBrains Mono"';
+        ctx.fillText(`${wp.fill}% (${wp.weight}kg)`, wp.x + 11, wp.y + 9);
+      });
+
+      // Animated Vehicle
+      MAP_STATE.vehicleProgress += MAP_STATE.vehicleSpeed;
+      if (MAP_STATE.vehicleProgress >= 1) MAP_STATE.vehicleProgress = 0;
+
+      const numSegments = route.length - 1;
+      const totalProgress = MAP_STATE.vehicleProgress * numSegments;
+      const segmentIndex = Math.floor(totalProgress);
+      const segmentFraction = totalProgress - segmentIndex;
+
+      const fromNode = getNodeById(route[segmentIndex]);
+      const toNode = getNodeById(route[segmentIndex + 1]);
+      if (fromNode && toNode) {
+        const currX = fromNode.x + (toNode.x - fromNode.x) * segmentFraction;
+        const currY = fromNode.y + (toNode.y - fromNode.y) * segmentFraction;
+        const angle = Math.atan2(toNode.y - fromNode.y, toNode.x - fromNode.x);
+
+        ctx.save();
+        ctx.translate(currX, currY);
+        ctx.rotate(angle);
+
+        // Headlight beam
+        const grad = ctx.createRadialGradient(14, 0, 2, 45, 0, 32);
+        grad.addColorStop(0, 'rgba(254, 240, 138, 0.4)');
+        grad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(12, -4); ctx.lineTo(45, -16); ctx.lineTo(45, 16); ctx.lineTo(12, 4);
+        ctx.fill();
+
+        // Tricycle Body
+        ctx.fillStyle = '#10b981';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(-12, -7, 24, 14, 4);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(4, -5, 6, 10);
+        ctx.restore();
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    function triggerOrToolsReroute() {
+      const icon = document.getElementById('icon-reroute-spin');
+      const banner = document.getElementById('solver-banner');
+      if (icon) icon.classList.add('animate-spin');
+
+      setTimeout(() => {
+        const critical = MAP_STATE.waypoints.slice().sort((a, b) => b.fill - a.fill).map(w => w.id);
+        MAP_STATE.computedRoute = ['DEPOT', ...critical, 'DEPOT'];
+        MAP_STATE.vehicleProgress = 0.05;
+
+        document.getElementById('metric-distance-pct').innerText = '32.1%';
+        document.getElementById('metric-battery-pct').innerText = '34.8%';
+        if (banner) {
+          banner.classList.remove('hidden');
+          setTimeout(() => banner.classList.add('hidden'), 5000);
+        }
+        if (icon) icon.classList.remove('animate-spin');
+        populateDispatchTable();
+      }, 600);
+    }
+
+    function triggerSurgePickupAlert() {
+      const candidate = MAP_STATE.waypoints[4];
+      candidate.fill = 96;
+      candidate.weight = 175;
+      triggerOrToolsReroute();
+    }
+
+    function populateDispatchTable() {
+      const container = document.getElementById('dispatch-table-body');
+      if (!container) return;
+      const sorted = [...MAP_STATE.waypoints].sort((a, b) => b.fill - a.fill);
+      container.innerHTML = '';
+
+      sorted.forEach((wp, index) => {
+        let badgeColor = 'bg-emerald-100 text-emerald-800 border-emerald-300';
+        if (wp.fill >= 50 && wp.fill <= 80) badgeColor = 'bg-amber-100 text-amber-800 border-amber-300';
+        else if (wp.fill > 80) badgeColor = 'bg-rose-100 text-rose-800 border-rose-300 animate-pulse';
+
+        const row = document.createElement('div');
+        row.className = 'p-2 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 cursor-pointer flex items-center justify-between gap-2';
+        row.onclick = () => { MAP_STATE.selectedWaypoint = wp; };
+        row.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-5 h-5 rounded bg-slate-100 text-slate-700 font-mono font-bold flex items-center justify-center text-[10px] shrink-0">#${index + 1}</span>
+            <div class="truncate">
+              <div class="font-bold text-slate-800 truncate">${wp.name}</div>
+              <div class="text-[10px] text-slate-400 font-mono">${wp.cat}</div>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="flex items-center gap-1.5 justify-end">
+              <span class="font-mono font-bold text-slate-900">${wp.fill}%</span>
+              <span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-semibold border ${badgeColor}">${wp.weight}kg</span>
+            </div>
+            <div class="text-[10px] font-mono text-emerald-700">ETA +${(index + 1) * 8}m</div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initMap);
+  </script>
+</body>
+</html>
