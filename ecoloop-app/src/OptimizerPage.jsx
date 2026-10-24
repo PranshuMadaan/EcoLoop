@@ -29,47 +29,6 @@ function MapClickHandler({ onMapClick }) {
   return null;
 }
 
-/**
- * Computes great-circle distance in meters between two lat/lon pairs using the Haversine formula.
- */
-function calculateHaversineDistanceMeters(lat1, lon1, lat2, lon2) {
-  const R = 6371000; // Earth mean radius in meters
-  const toRad = (deg) => (deg * Math.PI) / 180;
-
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Math.round(R * c);
-}
-
-/**
- * Automatically generates an array of edges (distances in meters) between all pairs of nodes.
- */
-function generateEdges(nodesList, defaultSpeedMps = 10.0) {
-  const edges = [];
-  for (let i = 0; i < nodesList.length; i++) {
-    for (let j = 0; j < nodesList.length; j++) {
-      if (nodesList[i].id === nodesList[j].id) continue;
-      const u = nodesList[i];
-      const v = nodesList[j];
-      const distanceM = calculateHaversineDistanceMeters(u.lat, u.lon, v.lat, v.lon);
-      edges.push({
-        from: u.id,
-        to: v.id,
-        distance_m: distanceM,
-        speed_mps: defaultSpeedMps
-      });
-    }
-  }
-  return edges;
-}
-
 // Initial depot and 4 Patiala collection points
 const initialNodes = [
   {
@@ -170,6 +129,7 @@ export default function OptimizerPage() {
   const [vehicles, setVehicles] = useState(initialVehicles)
   const [routeResults, setRouteResults] = useState([])
   const [unservedIds, setUnservedIds] = useState([])
+  const [distanceSource, setDistanceSource] = useState(null)
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [statusAlert, setStatusAlert] = useState(null) // { kind: 'error' | 'success' | 'warning', message }
 
@@ -244,9 +204,8 @@ export default function OptimizerPage() {
     setStatusAlert(null);
     setIsOptimizing(true);
 
-    // Dynamic edges via Haversine (matrix moves server-side with road data later)
-    const dynamicEdges = generateEdges(nodes);
-
+    // The backend builds the distance matrix (road distances when a Mapbox
+    // token is configured) — the client only sends nodes and the fleet
     const unassignedStops = nodes
       .filter((node) => node.id !== 0)
       .map((node) => node.id);
@@ -272,7 +231,6 @@ export default function OptimizerPage() {
         dry_non_recyclable: Number(n.dry_non_recyclable ?? 0),
         service_time: Number(n.service_time ?? (n.id === 0 ? 0.0 : 60.0))
       })),
-      edges: dynamicEdges,
       unassigned_stops: unassignedStops
     };
 
@@ -303,6 +261,7 @@ export default function OptimizerPage() {
       }));
       setRouteResults(colored);
       setUnservedIds(Array.isArray(data.unserved_stops) ? data.unserved_stops : []);
+      setDistanceSource(data.distance_source || null);
 
       const totalKm = ((data.total_fleet_distance_m || 0) / 1000).toFixed(1);
       const unservedCount = (data.unserved_stops || []).length;
@@ -573,9 +532,27 @@ export default function OptimizerPage() {
         {/* Solved Routes Legend */}
         {routeResults.length > 0 && (
           <div>
-            <h3 style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: 600, color: '#2d3748' }}>
-              Solved Routes
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#2d3748' }}>
+                Solved Routes
+              </h3>
+              {distanceSource && (
+                <span
+                  title={distanceSource === 'haversine' ? 'No Mapbox token configured — add MAPBOX_ACCESS_TOKEN to ecoloop-backend/.env for road distances' : 'Distances from the Mapbox road network'}
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 600,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    backgroundColor: distanceSource === 'haversine' ? '#fffff0' : '#ebf8ff',
+                    color: distanceSource === 'haversine' ? '#b7791f' : '#2b6cb0',
+                    border: `1px solid ${distanceSource === 'haversine' ? '#ecc94b' : '#90cdf4'}`
+                  }}
+                >
+                  {distanceSource === 'haversine' ? 'STRAIGHT-LINE' : distanceSource === 'mapbox' ? 'ROAD DISTANCES' : 'ROAD (PARTIAL)'}
+                </span>
+              )}
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {routeResults.map((route) => (
                 <div
