@@ -24,9 +24,7 @@ By replacing uncoordinated dumping with verified digital transactions, EcoLoop e
 
 ## 🏗️ System Architecture & Core Modules
 
-EcoLoop consists of three core technical pillars:
-
-```
+```text
                   +-----------------------------------+
                   |      Gamified Household UI        |
                   |  (Source Segregation & QR Scans)  |
@@ -51,77 +49,56 @@ EcoLoop consists of three core technical pillars:
 +-----------------------------------------------------------------------+
 ```
 
-### 1. Spatial Route Optimizer *(Pre-Built Engine)*
-- **Tech Stack**: Python 3.12, PostGIS, Google OR-Tools, Leaflet.js
-- **Function**: Dynamic vehicle routing based on real-time bin/ward fill levels to optimize municipal truck collection paths.
-
-### 2. B2B Digital Scrap Marketplace *(Core Build #1)*
-- **Tech Stack**: Node.js, Express.js, PostgreSQL, React Native
-- **Function**: Transparent price discovery and auction engine connecting informal pickers/DWCC micro-hubs directly with authorized recyclers, eliminating middleman price opacity.
-
-### 3. Informal Worker Digital Ledger / IWF *(Core Build #2)*
-- **Tech Stack**: React Native PWA, WhatsApp Bot API, Razorpay UPI API
-- **Function**: Low-friction mobile interface for weight verification, rate lookups, and instant UPI payout tracking tailored for low-literacy adoption.
-
 ---
 
-## 💻 Tech Stack
+## 📂 Project Structure
 
-- **Backend Framework**: Node.js (ES Modules), Express.js
-- **Database**: PostgreSQL with PostGIS extension for spatial queries
-- **Authentication**: JWT, `bcryptjs`, `cookie-parser` (HTTP-Only Secure Cookies)
-- **Cryptography**: Node.js `crypto` (SHA-256 for CPCB EPR audit hashes)
-- **Frontend / Mobile**: React Native PWA, WhatsApp Business Cloud API
-- **Payment Gateway**: Razorpay Instant UPI Payout API Integration
-
----
-
-## 🛠️ Installation & Setup
-
-### Prerequisites
-- Node.js (v18.0.0 or higher)
-- PostgreSQL (v14+ with PostGIS extension)
-- npm or yarn
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-org/ecoloop-backend.git
-cd ecoloop-backend
-```
-
-### 2. Install Dependencies
-```bash
-npm install
-```
-
-### 3. Environment Configuration
-Create a `.env` file in the root directory based on `.env.example`:
-
-```env
-PORT=5000
-NODE_ENV=development
-DATABASE_URL=postgresql://postgres:password@localhost:5432/ecoloop_db
-JWT_SECRET=your_super_secret_jwt_key_here
-JWT_EXPIRES_IN=7d
-FRONTEND_URL=http://localhost:3000
-RAZORPAY_KEY_ID=your_razorpay_key
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-```
-
-### 4. Database Setup & Seed
-```bash
-# Run PostgreSQL schema and seed mock data
-psql -U postgres -d ecoloop_db -f db/schema.sql
-psql -U postgres -d ecoloop_db -f db/seed.sql
-```
-
-### 5. Start the Server
-```bash
-# Development mode
-npm run dev
-
-# Production mode
-npm start
+```text
+EcoLoop/
+├── api/
+│   └── index.js                  # Vercel serverless function entrypoint
+├── frontend/                     # Modern Web Client (Vite + Vanilla CSS)
+│   ├── src/
+│   │   ├── main.js               # Client controller (auctions, ledger, listings)
+│   │   └── style.css             # Glassmorphic responsive design system
+│   ├── index.html                # Unified web application interface
+│   ├── package.json
+│   └── vite.config.js
+├── src/
+│   ├── config/
+│   │   └── db.js                 # PostgreSQL connection pool & health ping
+│   ├── controllers/
+│   │   ├── authController.js     # User registration, login, logout, HTTP-only JWT cookies
+│   │   ├── userController.js     # User profiles & role filtering
+│   │   ├── listingController.js  # Scrap listings, filters & joins
+│   │   ├── bidController.js      # Concurrency-safe bidding engine (FOR UPDATE)
+│   │   ├── auctionController.js  # Bid acceptance, instant UPI payout, EPR token minting
+│   │   └── eprController.js      # CPCB compliance verification & certificate checks
+│   ├── routes/
+│   │   ├── authRoutes.js         # /api/v1/auth
+│   │   ├── userRoutes.js         # /api/v1/users
+│   │   ├── listingRoutes.js      # /api/v1/listings (including /bids and /accept-bid)
+│   │   └── eprRoutes.js          # /api/v1/epr (including public /verify/:hash)
+│   ├── middleware/
+│   │   ├── auth.js               # JWT verification & authorizeRoles() guards
+│   │   └── errorHandler.js       # Centralized error handler with Postgres error mapping
+│   └── app.js                    # Express app configuration & middleware
+├── db/
+│   ├── schema.sql                # Complete schema (users, scrap_listings, bids, epr_tokens)
+│   ├── seed.sql                  # Seed data with bcrypt hashed passwords & sample tokens
+│   ├── bug_log.md                # 6-step debugging and resolution audit trail
+│   ├── initDb.js                 # npm run db:init migration script
+│   └── seedDb.js                 # npm run db:seed script
+├── test/
+│   ├── validation.test.js        # Unit & validation tests
+│   ├── e2e_and_edge_cases.test.js# HTTP routing & edge case tests
+│   ├── phase2_auth_auction_epr.test.js # Auth, auction finalization, UPI & EPR tests
+│   └── bugs/                     # Bug reproduction test suites
+├── vercel.json                   # Unified deployment configuration
+├── docker-compose.yml            # 1-click PostGIS 16 Docker container
+├── .env.example                  # Environment configuration template
+├── package.json                  # Root build and test scripts
+└── server.js                     # HTTP server entrypoint
 ```
 
 ---
@@ -139,30 +116,78 @@ The core relational database entities are structured as follows:
 
 ---
 
-## 🚀 Key API Endpoints
+## 📡 API Endpoints
 
-### 🔐 Authentication (`/api/v1/auth`)
-- `POST /register` — Register a new user (`Picker`, `DWCC`, `Recycler`, `ULB`).
-- `POST /login` — Authenticate user & attach HTTP-Only JWT cookie.
-- `GET /me` — Verify cookie & restore user session on app open.
-- `POST /logout` — Clear session cookies.
+### 1. Authentication (`/api/v1/auth`)
+- `POST /api/v1/auth/register` — Register (`role`, `mobile_number`, `password`, `upi_vpa`) & set cookie.
+- `POST /api/v1/auth/login` — Authenticate with mobile & password; issues HTTP-Only cookie.
+- `POST /api/v1/auth/logout` — Clears authentication cookie.
+- `GET /api/v1/auth/me` — Fetch current session profile (`req.user`).
 
-### 📦 Scrap Listings & Bidding (`/api/v1/listings`)
-- `POST /` — Create a new scrap listing (`Picker` / `DWCC`).
-- `GET /` — Fetch active marketplace listings filtered by `material_grade`.
-- `POST /:id/bids` — Place a concurrency-safe bid (`Recycler` only, PostgreSQL row-locking).
-- `POST /:id/accept-bid` — Accept winning bid & close auction (`Seller` only).
+### 2. Users (`/api/v1/users`)
+- `POST /api/v1/users` — Register user profile.
+- `GET /api/v1/users` — List users filtered by `?role=Picker|DWCC|Recycler|ULB`.
+- `GET /api/v1/users/:id` — Fetch user by UUID.
 
-### 🏛️ Compliance & Payouts (`/api/v1/compliance`)
-- `POST /payouts/instant-upi` — Trigger mock Razorpay instant UPI payment to seller.
-- `POST /epr/generate-token` — Generate SHA-256 cryptographic EPR compliance certificate hash.
-- `GET /epr/verify/:hash` — Public verification endpoint for corporate EPR compliance.
+### 3. Scrap Listings & Auctions (`/api/v1/listings`)
+- `POST /api/v1/listings` — Create listing (`seller_id`, `material_grade`, `weight_kg`, `min_price`).
+- `GET /api/v1/listings` — List active listings (`?material_grade=PET` and `?status=OPEN|BIDDING|SOLD|ALL`).
+- `GET /api/v1/listings/:id` — Fetch single listing with seller info and current bid stats.
+- `POST /api/v1/listings/:listing_id/bids` — Place auction bid (atomically locks row `FOR UPDATE`).
+- `GET /api/v1/listings/:listing_id/bids` — View bid ladder for a listing.
+- `POST /api/v1/listings/:listing_id/accept-bid` — **Finalize auction**:
+  - Sets winning bid to `ACCEPTED` and others to `REJECTED`.
+  - Sets listing to `SOLD`.
+  - Triggers **instant simulated UPI payout** to seller VPA.
+  - Automatically mints **CPCB SHA-256 EPR Compliance Certificate Token**.
+
+### 4. CPCB EPR Compliance Tokens (`/api/v1/epr`)
+- `GET /api/v1/epr/verify/:hash` — **Public CPCB Audit endpoint**: Cryptographically verifies certificate authenticity via SHA-256 hash.
+- `GET /api/v1/epr/tokens/:id` — Fetch full EPR token record.
+- `GET /api/v1/epr/recycler/:recycler_id` — List all EPR credits earned by a recycler in Metric Tonnes (MT).
+
+---
+
+## 🚀 Getting Started
+
+### 1. Configure Environment
+Update `.env` with your PostgreSQL credentials:
+```env
+PORT=5000
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/ecoloop_db
+JWT_SECRET=ecoloop_super_secret_jwt_key_2026_dev_auth
+COOKIE_SECRET=ecoloop_secure_cookie_signer_secret
+EPR_HASH_SECRET=cpcb_epr_audit_hash_salt_key_2026
+```
+
+### 2. Launch Database
+```bash
+# Using Docker
+docker compose up -d
+
+# Or apply migrations manually
+npm run db:init
+npm run db:seed
+```
+
+### 3. Run Automated Tests
+```bash
+npm test
+```
+
+### 4. Start Local Development
+```bash
+# Start backend
+npm run dev
+
+# Start frontend
+npm run dev:frontend
+```
 
 ---
 
 ## 📜 Regulatory Grounding & Compliance Frameworks
 
-EcoLoop's workflows are strictly aligned with Indian national policies:
 1. **Solid Waste Management (SWM) Rules 2016 / 2026**: Mandates 3-stream source segregation and municipal integration of informal waste pickers.
 2. **Plastic Waste Management Rules & CPCB Portal**: Enables 100% digital traceability for post-consumer plastic recycling certificates.
 3. **SATAT Bio-CNG Initiative**: Facilitates wet organic waste feedstock delivery to regional anaerobic digesters with guaranteed PSU off-take at ₹46/kg.

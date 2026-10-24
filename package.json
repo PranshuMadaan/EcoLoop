@@ -1,6 +1,42 @@
 {
+  "name": "ecoloop-backend",
+  "version": "1.0.0",
+  "description": "EcoLoop: B2B Digital Scrap Marketplace Backend (Phase 1)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "test": "node --test test/*.test.js test/bugs/*.test.js tests/bugs/*.test.js",
+    "db:init": "node db/initDb.js",
+    "db:seed": "node db/seedDb.js"
+  },
+  "keywords": [
+    "ecoloop",
+    "circular-economy",
+    "scrap-marketplace",
+    "waste-management",
+    "express",
+    "postgresql",
+    "postgis"
+  ],
+  "author": "EcoLoop Engineering",
+  "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.61.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.13.3",
     "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }
