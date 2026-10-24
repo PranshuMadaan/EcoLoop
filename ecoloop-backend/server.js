@@ -296,6 +296,42 @@ app.get('/api/scenario', (req, res) => {
   }
 });
 
+// POST /api/route-geometry — road-following geometry for one solved route.
+// Body: { coordinates: [[lat, lon], ...] } (<= 25 stops, Mapbox limit).
+// Returns { geometry: [[lat, lon], ...], source: 'mapbox' | 'straight' } —
+// straight-line input coordinates when no token is configured or the API fails.
+app.post('/api/route-geometry', async (req, res) => {
+  const coordinates = Array.isArray(req.body.coordinates) ? req.body.coordinates : [];
+  if (coordinates.length < 2 || coordinates.length > 25) {
+    return res.status(400).json({
+      error: 'coordinates must contain between 2 and 25 [lat, lon] pairs'
+    });
+  }
+
+  const token = process.env.MAPBOX_ACCESS_TOKEN;
+  if (token) {
+    try {
+      const coordStr = coordinates.map((c) => `${Number(c[1])},${Number(c[0])}`).join(';');
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordStr}` +
+        `?overview=full&geometries=geojson&access_token=${token}`;
+      const mbRes = await fetch(url, { signal: AbortSignal.timeout(MAPBOX_TIMEOUT_MS) });
+      if (!mbRes.ok) throw new Error(`Mapbox responded ${mbRes.status}`);
+      const data = await mbRes.json();
+      const route = data.routes && data.routes[0];
+      if (route && route.geometry && Array.isArray(route.geometry.coordinates)) {
+        // Mapbox returns [lon, lat] — flip to the [lat, lon] Leaflet expects
+        const geometry = route.geometry.coordinates.map((c) => [c[1], c[0]]);
+        return res.json({ geometry, source: 'mapbox' });
+      }
+      throw new Error('Mapbox returned no geometry');
+    } catch (err) {
+      console.warn('[server] Mapbox directions unavailable, using straight lines:', err.message);
+    }
+  }
+
+  return res.json({ geometry: coordinates, source: 'straight' });
+});
+
 app.listen(PORT, () => {
   console.log(`EcoLoop API Bridge running on port ${PORT} ` +
     `(Mapbox matrix ${process.env.MAPBOX_ACCESS_TOKEN ? 'enabled' : 'NOT configured — haversine fallback'})`);

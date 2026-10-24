@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MapContainer, TileLayer, Polyline, Marker, Popup, CircleMarker, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { Play, AlertCircle, Truck, MapPin, Plus, X, CheckCircle2 } from 'lucide-react'
+import { Play, AlertCircle, Truck, MapPin, Plus, X, CheckCircle2, ExternalLink, RotateCcw } from 'lucide-react'
 import L from 'leaflet'
 
 // Fix for Vite + Leaflet missing marker icons
@@ -26,6 +26,33 @@ const TYPE_INFO = {
 };
 
 const isFacility = (type) => type >= 2;
+
+// Google Maps Directions URLs accept at most 9 intermediate waypoints
+const GOOGLE_MAPS_MAX_WAYPOINTS = 9;
+
+/**
+ * Builds a turn-by-turn Google Maps URL for a solved route's waypoints
+ * ([[lat, lon], ...], depot at both ends). Returns null when the route is too
+ * long for a single URL — callers should disable the export instead of
+ * silently truncating the driver's route.
+ */
+function buildGoogleMapsUrl(waypoints) {
+  const middle = waypoints.slice(1, -1);
+  if (middle.length > GOOGLE_MAPS_MAX_WAYPOINTS) {
+    return null;
+  }
+  const fmt = (c) => `${Number(c[0]).toFixed(6)},${Number(c[1]).toFixed(6)}`;
+  const params = new URLSearchParams({
+    api: '1',
+    origin: fmt(waypoints[0]),
+    destination: fmt(waypoints[waypoints.length - 1]),
+    travelmode: 'driving'
+  });
+  if (middle.length > 0) {
+    params.set('waypoints', middle.map(fmt).join('|'));
+  }
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
 
 /**
  * Child component inside MapContainer that captures user clicks to add new collection stops.
@@ -308,11 +335,36 @@ export default function OptimizerPage() {
 
       const colored = data.routes.map((route, index) => ({
         ...route,
-        color: TRUCK_COLORS[index % TRUCK_COLORS.length]
+        color: TRUCK_COLORS[index % TRUCK_COLORS.length],
+        geometrySource: null
       }));
       setRouteResults(colored);
       setUnservedIds(Array.isArray(data.unserved_stops) ? data.unserved_stops : []);
       setDistanceSource(data.distance_source || null);
+
+      // Upgrade straight-line polylines to road-following geometry (best
+      // effort — straight lines stay if the backend can't provide it)
+      colored.forEach((route) => {
+        if (!Array.isArray(route.waypoints) || route.waypoints.length < 2 || route.waypoints.length > 25) {
+          return;
+        }
+        fetch('http://localhost:3000/api/route-geometry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ coordinates: route.waypoints })
+        })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((geo) => {
+            if (geo && Array.isArray(geo.geometry) && geo.geometry.length > 1) {
+              setRouteResults((prev) => prev.map((r) =>
+                r.vehicle_id === route.vehicle_id
+                  ? { ...r, waypoints: geo.geometry, geometrySource: geo.source }
+                  : r
+              ));
+            }
+          })
+          .catch(() => { /* straight-line polyline stays */ });
+      });
 
       const totalKm = ((data.total_fleet_distance_m || 0) / 1000).toFixed(1);
       const unservedCount = (data.unserved_stops || []).length;
@@ -431,6 +483,26 @@ export default function OptimizerPage() {
             <MapPin size={14} />
             Patiala Scenario
           </button>
+          {routeResults.length > 0 && (
+            <button
+              id="clear-routes-btn"
+              onClick={() => { setRouteResults([]); setUnservedIds([]); setDistanceSource(null); setStatusAlert(null); }}
+              title="Clear solved routes from the map"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '11px 10px',
+                backgroundColor: '#ffffff',
+                color: '#718096',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              <RotateCcw size={14} />
+            </button>
+          )}
         </div>
 
         {/* Status Alert */}
@@ -629,7 +701,9 @@ export default function OptimizerPage() {
               )}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {routeResults.map((route) => (
+              {routeResults.map((route) => {
+                const mapsUrl = buildGoogleMapsUrl(route.waypoints || []);
+                return (
                 <div
                   key={route.vehicle_id}
                   style={{
@@ -639,29 +713,74 @@ export default function OptimizerPage() {
                     borderLeft: `4px solid ${route.color}`,
                     borderRadius: '6px',
                     fontSize: '12px',
-                    color: '#4a5568',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
+                    color: '#4a5568'
                   }}
                 >
-                  <span style={{ fontWeight: 600, color: '#2d3748', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        width: '10px',
-                        height: '10px',
-                        borderRadius: '50%',
-                        backgroundColor: route.color
-                      }}
-                    />
-                    Truck {route.vehicle_id}
-                  </span>
-                  <span style={{ fontSize: '11px', color: '#718096' }}>
-                    {route.stops.length} stops • {((route.distance_m || 0) / 1000).toFixed(1)} km • {Math.round((route.duration_s || 0) / 60)} min
-                  </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 600, color: '#2d3748', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '10px',
+                          height: '10px',
+                          borderRadius: '50%',
+                          backgroundColor: route.color
+                        }}
+                      />
+                      Truck {route.vehicle_id}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#718096' }}>
+                      {route.stops.length} stops • {((route.distance_m || 0) / 1000).toFixed(1)} km • {Math.round((route.duration_s || 0) / 60)} min
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                    {route.geometrySource && (
+                      <span style={{ fontSize: '10px', fontWeight: 600, color: route.geometrySource === 'mapbox' ? '#2b6cb0' : '#a0aec0' }}>
+                        {route.geometrySource === 'mapbox' ? 'ROAD GEOMETRY' : 'STRAIGHT LINES'}
+                      </span>
+                    )}
+                    {mapsUrl ? (
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          marginLeft: 'auto',
+                          padding: '4px 10px',
+                          backgroundColor: route.color,
+                          color: 'white',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <ExternalLink size={11} />
+                        Open in Google Maps
+                      </a>
+                    ) : (
+                      <span
+                        title={`Google Maps URLs support at most ${GOOGLE_MAPS_MAX_WAYPOINTS} waypoints — this route has ${(route.waypoints || []).length - 2}`}
+                        style={{
+                          marginLeft: 'auto',
+                          padding: '4px 10px',
+                          backgroundColor: '#e2e8f0',
+                          color: '#718096',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600
+                        }}
+                      >
+                        Maps export unavailable
+                      </span>
+                    )}
+                  </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

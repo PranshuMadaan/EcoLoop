@@ -72,6 +72,23 @@ Errors are reported as `{"error": "..."}` on stderr with a non-zero exit code.
    (composting → organic, MRF → dry recyclable, landfill → dry non-recyclable,
    transfer station → hazardous e-waste), and shift-duration rollover to the next vehicle.
 2. **Improvement** — intra-route 2-opt, then inter-route relocate/swap moves with
-   per-vehicle feasibility checks, until no improving move remains.
+   per-vehicle feasibility checks, until no improving move remains. All moves are
+   gated by disposal-aware feasibility (peak concurrent load per stream, with
+   compartments reset at facility visits), so a dump can never be reordered behind
+   the load that required it.
 3. Leg costs use the direct edge when present, Dijkstra shortest path over the edge
    set otherwise.
+
+## Deferred: time windows
+
+Not yet implemented. Planned sketch when needed:
+
+- Node schema gains `tw_open_s` / `tw_close_s` (seconds from midnight), e.g. a DWCC
+  micro-depot open 08:00–18:00.
+- `InitialSolutionBuilder` tracks arrival time per stop already
+  (`active.current_time_seconds`); accepting a stop checks
+  `arrival <= tw_close_s`, and `arrival < tw_open_s` waits until opening.
+- `is_route_feasible` re-validates the whole sequence (with waits) so 2-opt and
+  relocate/swap moves cannot create out-of-window arrivals.
+- UI: two time inputs per node; Catch2 cases for wait-until-open and
+  rejected-too-late arrivals.
