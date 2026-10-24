@@ -5,7 +5,7 @@
 -- ============================================================================
 
 -- Clear existing data (in reverse dependency order) for clean idempotent seeding
-TRUNCATE TABLE epr_tokens, bids, scrap_listings, users CASCADE;
+TRUNCATE TABLE deposits, payouts, epr_tokens, bids, scrap_listings, users CASCADE;
 
 -- ----------------------------------------------------------------------------
 -- 1. Seed Users: Indian Municipalities (ULBs/DWCCs), Pickers & CPCB Recyclers
@@ -119,6 +119,18 @@ VALUES
         'commercial@ganeshaecosphere.hdfc',
         'VERIFIED',
         NOW() - INTERVAL '30 days'
+    ),
+    -- ULB Admin: Municipal SWM Command Cell (audit & reversal authority)
+    (
+        '22222222-2222-2222-2222-222222222210',
+        'ULB',
+        '+919876543240',
+        '$2b$10$1tpGzrCoVXLw8z.dgUteYuDVNpbaqj3C0s2ZJHKXQFqYhuGqtqA7.',
+        'Municipal SWM Command Cell (ULB Payout Audit Authority)',
+        NULL,
+        'ulb.swm.command@mcd',
+        'VERIFIED',
+        NOW() - INTERVAL '45 days'
     );
 
 -- ----------------------------------------------------------------------------
@@ -232,7 +244,48 @@ VALUES
     );
 
 -- ----------------------------------------------------------------------------
--- 4. Seed EPR Tokens (CPCB Verified Ledger Hash for Settled Lot #4)
+-- 4. Seed Escrow Deposit (Attero funded escrow before Lot #4 settlement)
+-- ----------------------------------------------------------------------------
+INSERT INTO deposits (listing_id, bidder_id, reference_no, amount_inr, channel, status, gateway_transaction_id, confirmed_at, created_at)
+VALUES
+    (
+        '44444444-4444-4444-4444-444444444404',
+        '33333333-3333-3333-3333-333333333301',
+        'ECOP4444444444444444444444444040AA01',
+        150000.00,
+        'UPI',
+        'SUCCESS',
+        'DEP-SEED-LOT4-0001',
+        NOW() - INTERVAL '16 hours',
+        NOW() - INTERVAL '17 hours'
+    );
+
+-- ----------------------------------------------------------------------------
+-- 5. Seed Payouts Ledger Row (Real-time Escrow Liquidation for Settled Lot #4)
+--    Split: gross ₹1,50,000 = ₹1,47,750 seller net + ₹1,500 platform + ₹750 welfare
+-- ----------------------------------------------------------------------------
+INSERT INTO payouts (listing_id, seller_id, payee_vpa, gross_amount, seller_net_amount, platform_fee, welfare_levy, gateway_transaction_id, bank_rrn, status, created_at)
+VALUES
+    (
+        '44444444-4444-4444-4444-444444444404',
+        '22222222-2222-2222-2222-222222222201',
+        'mcd.dwarka.mrf@sbi',
+        150000.00,
+        147750.00,
+        1500.00,
+        750.00,
+        'UPI-TXN-SEED-LOT4-0001',
+        'RRN150000123456',
+        'SUCCESS',
+        NOW() - INTERVAL '14 hours'
+    );
+
+-- ----------------------------------------------------------------------------
+-- 6. Seed EPR Tokens (CPCB Ledger Hash for Settled Lot #4)
+--    NOTE: this seed hash is a static placeholder (sha256 of empty string). The
+--    verify endpoint recomputes the certificate hash from listing data, so this
+--    seeded token will report hash_mismatch: true — useful as a tamper-detection demo.
+--    Tokens minted through accept-bid carry real recomputable hashes.
 -- ----------------------------------------------------------------------------
 INSERT INTO epr_tokens (token_id, listing_id, recycler_id, material_grade, verified_weight_mt, cpcb_certificate_hash, created_at)
 VALUES

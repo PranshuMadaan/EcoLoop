@@ -12,6 +12,7 @@ import {
   acceptBid,
   createPaymentIntent,
 } from '../controllers/auctionController.js';
+import { authenticate, authorizeRoles } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -30,10 +31,10 @@ router.post('/:listing_id/bids', placeBid);
 // GET /api/v1/listings/:listing_id/bids -> View all bids on a listing
 router.get('/:listing_id/bids', getListingBids);
 
-// POST /api/v1/listings/:listing_id/payment-intent -> Generate dynamic UPI intent & B2B VAN for recycler
-router.post('/:listing_id/payment-intent', createPaymentIntent);
+// POST /api/v1/listings/:listing_id/payment-intent -> Open PENDING escrow deposit with UPI intent / QR / VAN (Recycler only)
+router.post('/:listing_id/payment-intent', authenticate, authorizeRoles('Recycler'), createPaymentIntent);
 
-// POST /api/v1/listings/:listing_id/accept-bid -> Finalize auction, process UPI payout & mint EPR token
-router.post('/:listing_id/accept-bid', acceptBid);
+// POST /api/v1/listings/:listing_id/accept-bid -> Finalize funded auction, process UPI payout & mint EPR token (seller or ULB)
+router.post('/:listing_id/accept-bid', authenticate, acceptBid);
 
 export default router;

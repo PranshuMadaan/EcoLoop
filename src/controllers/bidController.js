@@ -125,7 +125,11 @@ export const placeBid = async (req, res, next) => {
       },
     });
   } catch (err) {
-      await client.query('ROLLBACK');
+      try {
+        await client.query('ROLLBACK');
+      } catch (rollbackErr) {
+        // Client connection is dead; surface the original error, not the rollback failure
+      }
       throw err;
     } finally {
       client.release();

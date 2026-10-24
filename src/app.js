@@ -9,6 +9,8 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import listingRoutes from './routes/listingRoutes.js';
 import eprRoutes from './routes/eprRoutes.js';
+import payoutRoutes from './routes/payoutRoutes.js';
+import depositRoutes from './routes/depositRoutes.js';
 import { pingDatabase } from './config/db.js';
 import { errorHandler, AppError } from './middleware/errorHandler.js';
 
@@ -103,6 +105,8 @@ app.get('/', (req, res, next) => {
         users: '/api/v1/users',
         listings: '/api/v1/listings',
         epr: '/api/v1/epr',
+        payouts: '/api/v1/payouts',
+        deposits: '/api/v1/deposits',
       },
     },
   });
@@ -115,6 +119,8 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/listings', listingRoutes);
 app.use('/api/v1/epr', eprRoutes);
+app.use('/api/v1/payouts', payoutRoutes);
+app.use('/api/v1/deposits', depositRoutes);
 
 // SPA client-side fallback: serve index.html for non-API GET requests
 app.get('*', (req, res, next) => {

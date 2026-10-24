@@ -4,8 +4,16 @@ import http from 'node:http';
 import jwt from 'jsonwebtoken';
 import app from '../src/app.js';
 import { authenticate, authorizeRoles } from '../src/middleware/auth.js';
-import { generateCpcbHash, executeUpiPayout } from '../src/controllers/auctionController.js';
+import {
+  generateCpcbHash,
+  executeUpiPayout,
+  acceptBid,
+  createPaymentIntent,
+} from '../src/controllers/auctionController.js';
 import { AppError } from '../src/middleware/errorHandler.js';
+
+// generateCpcbHash reads the secret lazily; provide one for the test process
+process.env.EPR_HASH_SECRET = process.env.EPR_HASH_SECRET || 'ecoloop_test_epr_hash_secret';
 
 describe('Phase 1.5 & Phase 2: Auth, Auction Concurrency, UPI & EPR Test Suite', () => {
   let server;
@@ -127,24 +135,61 @@ describe('Phase 1.5 & Phase 2: Auth, Auction Concurrency, UPI & EPR Test Suite',
   });
 
   describe('2. Auction Finalization & Simulated UPI Payout Tests', () => {
-    it('POST /api/v1/listings/:id/accept-bid should reject malformed listing UUID', async () => {
-      const res = await apiRequest('/api/v1/listings/not-a-valid-uuid/accept-bid', {
-        method: 'POST',
-        body: { bid_id: '55555555-5555-5555-5555-555555555501' },
-      });
-      assert.equal(res.status, 400);
-      assert.equal(res.body.success, false);
-      assert.match(res.body.error, /valid UUID/);
-    });
-
-    it('POST /api/v1/listings/:id/accept-bid should reject malformed bid UUID', async () => {
+    it('POST /api/v1/listings/:id/accept-bid should reject unauthenticated requests with 401', async () => {
       const res = await apiRequest('/api/v1/listings/44444444-4444-4444-4444-444444444401/accept-bid', {
         method: 'POST',
-        body: { bid_id: 'invalid-bid-uuid' },
+        body: {},
       });
-      assert.equal(res.status, 400);
+      assert.equal(res.status, 401);
       assert.equal(res.body.success, false);
-      assert.match(res.body.error, /valid UUID/);
+      assert.match(res.body.error, /Authentication required/);
+    });
+
+    it('POST /api/v1/listings/:id/payment-intent should reject unauthenticated requests with 401', async () => {
+      const res = await apiRequest('/api/v1/listings/44444444-4444-4444-4444-444444444401/payment-intent', {
+        method: 'POST',
+        body: { bid_amount: 1000 },
+      });
+      assert.equal(res.status, 401);
+      assert.equal(res.body.success, false);
+      assert.match(res.body.error, /Authentication required/);
+    });
+
+    it('acceptBid controller should reject malformed listing UUID with 400 before touching the database', async () => {
+      const req = { params: { listing_id: 'not-a-valid-uuid' }, body: {}, headers: {} };
+      let capturedError = null;
+      await acceptBid(req, {}, (err) => {
+        capturedError = err;
+      });
+      assert.ok(capturedError instanceof AppError);
+      assert.equal(capturedError.statusCode, 400);
+      assert.match(capturedError.message, /valid UUID/);
+    });
+
+    it('acceptBid controller should reject malformed bid UUID with 400 before touching the database', async () => {
+      const req = {
+        params: { listing_id: '44444444-4444-4444-4444-444444444401' },
+        body: { bid_id: 'invalid-bid-uuid' },
+        headers: {},
+      };
+      let capturedError = null;
+      await acceptBid(req, {}, (err) => {
+        capturedError = err;
+      });
+      assert.ok(capturedError instanceof AppError);
+      assert.equal(capturedError.statusCode, 400);
+      assert.match(capturedError.message, /valid UUID/);
+    });
+
+    it('createPaymentIntent controller should reject malformed listing UUID with 400', async () => {
+      const req = { params: { listing_id: 'bad-listing' }, body: { bid_amount: 1000 }, user: { user_id: 'x' } };
+      let capturedError = null;
+      await createPaymentIntent(req, {}, (err) => {
+        capturedError = err;
+      });
+      assert.ok(capturedError instanceof AppError);
+      assert.equal(capturedError.statusCode, 400);
+      assert.match(capturedError.message, /valid UUID/);
     });
 
     it('executeUpiPayout should generate compliant transaction reference and status', () => {
@@ -161,6 +206,24 @@ describe('Phase 1.5 & Phase 2: Auth, Auction Concurrency, UPI & EPR Test Suite',
       assert.ok(payout.transaction_id.startsWith('UPI-TXN-'));
       assert.ok(payout.bank_rrn.startsWith('RRN'));
       assert.ok(new Date(payout.timestamp).getTime() > 0);
+    });
+
+    it('executeUpiPayout split components must sum exactly to the gross amount (no paise drift)', () => {
+      const grossAmounts = [40000, 150000, 12345.67, 999.99, 0.5, 7.13];
+      for (const gross of grossAmounts) {
+        const payout = executeUpiPayout({ sellerVpa: 'a@upi', amountInr: gross, sellerId: 's' });
+        // Compare in integer paise to avoid float representation noise
+        const sumPaise =
+          Math.round(payout.seller_net_amount_inr * 100) +
+          Math.round(payout.platform_fee_inr * 100) +
+          Math.round(payout.welfare_levy_inr * 100);
+        assert.equal(
+          sumPaise,
+          Math.round(gross * 100),
+          `Split must reconcile to gross for ₹${gross} (got ₹${sumPaise / 100})`
+        );
+        assert.equal(payout.gross_amount_inr, gross);
+      }
     });
   });
 

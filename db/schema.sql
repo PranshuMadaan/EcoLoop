@@ -36,9 +36,20 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS organization_name VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS cpcb_reg_number VARCHAR(100);
-ALTER TABLE users ADD COLUMN IF NOT EXISTS upi_vpa_status VARCHAR(20) DEFAULT 'VERIFIED';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS upi_vpa_status VARCHAR(20) DEFAULT 'UNVERIFIED';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS upi_bank_account_holder VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS upi_verified_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
+-- VPA lifecycle constraint (per docs/upi_onboarding_and_payout_architecture.md §6)
+ALTER TABLE users ALTER COLUMN upi_vpa_status SET DEFAULT 'UNVERIFIED';
+DO $$
+BEGIN
+    ALTER TABLE users ADD CONSTRAINT chk_users_upi_vpa_status
+        CHECK (upi_vpa_status IN ('UNVERIFIED', 'VERIFIED', 'FAILED'));
+EXCEPTION
+    WHEN duplicate_object THEN NULL; -- constraint already applied
+END
+$$;
 
 -- Indexes for fast user lookups by role and mobile number
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
@@ -126,4 +137,35 @@ CREATE TABLE IF NOT EXISTS payouts (
 CREATE INDEX IF NOT EXISTS idx_payouts_seller ON payouts(seller_id);
 CREATE INDEX IF NOT EXISTS idx_payouts_listing ON payouts(listing_id);
 CREATE INDEX IF NOT EXISTS idx_payouts_gateway_txn ON payouts(gateway_transaction_id);
+CREATE INDEX IF NOT EXISTS idx_payouts_status_created ON payouts(status, created_at);
+
+-- One settlement per listing: a sold listing can never accrue a second payout row
+CREATE UNIQUE INDEX IF NOT EXISTS idx_payouts_listing_unique ON payouts(listing_id);
+
+-- Idempotent settlement: replaying accept-bid with the same key returns the original outcome
+ALTER TABLE payouts ADD COLUMN IF NOT EXISTS idempotency_key VARCHAR(100);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_payouts_idempotency_key ON payouts(idempotency_key);
+
+-- ----------------------------------------------------------------------------
+-- 6. Escrow Deposits Table (Inbound Recycler Funding — "money in" side of the ledger)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS deposits (
+    deposit_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    listing_id UUID NOT NULL REFERENCES scrap_listings(listing_id) ON DELETE CASCADE,
+    bidder_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    reference_no VARCHAR(100) UNIQUE NOT NULL,
+    amount_inr NUMERIC(12, 2) NOT NULL CHECK (amount_inr > 0),
+    channel VARCHAR(20) NOT NULL DEFAULT 'UPI'
+        CHECK (channel IN ('UPI', 'QR', 'RTGS_NEFT', 'REVERSAL')),
+    status VARCHAR(30) NOT NULL DEFAULT 'PENDING'
+        CHECK (status IN ('PENDING', 'SUCCESS', 'FAILED', 'REVERSED')),
+    gateway_transaction_id VARCHAR(100) UNIQUE,
+    expires_at TIMESTAMP WITH TIME ZONE,
+    confirmed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_deposits_listing ON deposits(listing_id);
+CREATE INDEX IF NOT EXISTS idx_deposits_bidder ON deposits(bidder_id);
+CREATE INDEX IF NOT EXISTS idx_deposits_status ON deposits(status);
 

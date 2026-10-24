@@ -1,5 +1,7 @@
 // EcoLoop Frontend Client Controller
 const API_BASE = '/api/v1';
+const AUTH_STORAGE_KEY = 'ecoloop_auth';
+const DEMO_PASSWORD = 'Password@123'; // documented seed password for all demo accounts
 
 // State Store
 const state = {
@@ -7,7 +9,48 @@ const state = {
   listings: [],
   selectedListing: null,
   lastVerifiedVpa: null,
+  currentDeposit: null,
 };
+
+// Auth Store (demo session persisted in localStorage)
+const auth = { token: null, user: null };
+
+function loadAuth() {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      auth.token = parsed.token || null;
+      auth.user = parsed.user || null;
+    }
+  } catch (err) {
+    auth.token = null;
+    auth.user = null;
+  }
+}
+
+function setAuthSession(token, user) {
+  auth.token = token;
+  auth.user = user;
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ token, user }));
+  renderAuthState();
+}
+
+function clearAuthSession() {
+  auth.token = null;
+  auth.user = null;
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  renderAuthState();
+}
+
+// Fetch wrapper that attaches the demo session JWT when signed in
+function apiFetch(endpoint, options = {}) {
+  const headers = { ...(options.headers || {}) };
+  if (auth.token) {
+    headers.Authorization = `Bearer ${auth.token}`;
+  }
+  return fetch(endpoint, { ...options, headers });
+}
 
 // DOM Elements
 const elements = {
@@ -70,6 +113,24 @@ const elements = {
   modalReceiptClose: document.getElementById('modal-receipt-close'),
   modalReceiptDone: document.getElementById('modal-receipt-done'),
   settlementReceiptContent: document.getElementById('settlement-receipt-content'),
+
+  // Demo Auth Widget
+  authSigninWidget: document.getElementById('auth-signin-widget'),
+  demoUserSelect: document.getElementById('demo-user-select'),
+  btnDemoLogin: document.getElementById('btn-demo-login'),
+  authUserChip: document.getElementById('auth-user-chip'),
+  authUserLabel: document.getElementById('auth-user-label'),
+  btnDemoLogout: document.getElementById('btn-demo-logout'),
+
+  // Escrow Deposit Confirmation
+  escrowDepositRef: document.getElementById('escrow-deposit-ref'),
+  btnConfirmDeposit: document.getElementById('btn-confirm-deposit'),
+  escrowFundedState: document.getElementById('escrow-funded-state'),
+
+  // Payouts Ledger Tab
+  payoutStatusFilter: document.getElementById('payout-status-filter'),
+  btnRefreshPayouts: document.getElementById('btn-refresh-payouts'),
+  payoutsContent: document.getElementById('payouts-content'),
 
   // Toast Container
   toastContainer: document.getElementById('toast-container'),
@@ -361,12 +422,16 @@ async function handleBidSubmit(e) {
 }
 
 async function handleAcceptBid(listingId) {
+  if (!auth.token) {
+    showToast('Sign in as the listing seller (or ULB) to finalize this auction.', 'error');
+    return;
+  }
   if (!confirm('Are you sure you want to finalize this auction? This will trigger an instant UPI payout to the seller and mint an immutable CPCB EPR credit token.')) {
     return;
   }
 
   try {
-    const res = await fetch(`${API_BASE}/listings/${listingId}/accept-bid`, {
+    const res = await apiFetch(`${API_BASE}/listings/${listingId}/accept-bid`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),
@@ -377,8 +442,12 @@ async function handleAcceptBid(listingId) {
       throw new Error(body.error || 'Failed to finalize auction');
     }
 
-    showToast('Auction Finalized! UPI Payout dispatched & CPCB EPR Token minted.');
-    
+    if (body.data.idempotent_replay) {
+      showToast('Auction was already settled — showing the original payout receipt.');
+    } else {
+      showToast('Auction Finalized! UPI Payout dispatched & CPCB EPR Token minted.');
+    }
+
     // Auto-display minted EPR certificate in EPR tab
     if (body.data.epr_token) {
       elements.eprHashInput.value = body.data.epr_token.cpcb_certificate_hash;
@@ -405,7 +474,7 @@ function renderSettlementReceipt(data) {
       </div>
       <div style="margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: baseline;">
         <span style="color: #fff; font-size: 0.9rem;">Gross Auction Settlement:</span>
-        <strong style="color: #10b981; font-size: 1.35rem;">₹${Number(payout.gross_amount).toLocaleString('en-IN')}</strong>
+        <strong style="color: #10b981; font-size: 1.35rem;">₹${Number(payout.gross_amount_inr).toLocaleString('en-IN')}</strong>
       </div>
     </div>
 
@@ -421,10 +490,10 @@ function renderSettlementReceipt(data) {
         <tr>
           <td>
             <strong style="color: #fff;">Seller Net Proceeds</strong>
-            <div class="text-muted" style="font-size: 0.72rem;">Beneficiary: ${payout.beneficiary_name} (${payout.destination_upi_vpa})</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Beneficiary VPA: ${payout.payee_vpa}</div>
           </td>
           <td style="text-align: right; color: #10b981; font-weight: 600;">98.5%</td>
-          <td style="text-align: right; font-weight: 700; color: #10b981;">₹${Number(payout.seller_net_payout).toLocaleString('en-IN')}</td>
+          <td style="text-align: right; font-weight: 700; color: #10b981;">₹${Number(payout.seller_net_amount_inr).toLocaleString('en-IN')}</td>
         </tr>
         <tr>
           <td>
@@ -432,7 +501,7 @@ function renderSettlementReceipt(data) {
             <div class="text-muted" style="font-size: 0.72rem;">Escrow processing, KYC & smart contracts</div>
           </td>
           <td style="text-align: right; color: #38bdf8;">1.0%</td>
-          <td style="text-align: right; font-weight: 600; color: #38bdf8;">₹${Number(payout.platform_commission).toLocaleString('en-IN')}</td>
+          <td style="text-align: right; font-weight: 600; color: #38bdf8;">₹${Number(payout.platform_fee_inr).toLocaleString('en-IN')}</td>
         </tr>
         <tr>
           <td>
@@ -440,7 +509,7 @@ function renderSettlementReceipt(data) {
             <div class="text-muted" style="font-size: 0.72rem;">Health micro-insurance & safety equipment pool</div>
           </td>
           <td style="text-align: right; color: #fbbf24;">0.5%</td>
-          <td style="text-align: right; font-weight: 600; color: #fbbf24;">₹${Number(payout.picker_welfare_fund).toLocaleString('en-IN')}</td>
+          <td style="text-align: right; font-weight: 600; color: #fbbf24;">₹${Number(payout.welfare_levy_inr).toLocaleString('en-IN')}</td>
         </tr>
       </tbody>
     </table>
@@ -452,7 +521,7 @@ function renderSettlementReceipt(data) {
       </div>
       <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
         <span class="text-muted">GATEWAY TXN ID:</span>
-        <span style="color: #fff;">${payout.gateway_transaction_id}</span>
+        <span style="color: #fff;">${payout.transaction_id}</span>
       </div>
       <div style="display: flex; justify-content: space-between;">
         <span class="text-muted">CPCB EPR LEDGER HASH:</span>
@@ -510,7 +579,7 @@ async function handleVerifyVpa() {
         </div>
       </div>
       <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 0.4rem;">
-        Verified at: ${new Date(body.data.verified_at).toLocaleTimeString('en-IN')} &bull; Status: <span style="color: #10b981; font-weight: 600;">ACTIVE_NPCI</span>
+        Verified at: ${new Date(body.data.verified_at || body.data.timestamp).toLocaleTimeString('en-IN')} &bull; Status: <span style="color: #10b981; font-weight: 600;">ACTIVE_NPCI</span>
       </div>
     `;
     elements.vpaVerificationFeedback.classList.remove('hidden');
@@ -565,7 +634,12 @@ async function handleRegisterSellerSubmit(e) {
     }
 
     const newUser = body.data.user;
-    showToast(`Seller onboarded successfully! UPI VPA ${upi_vpa} linked.`);
+    if (body.data.token) {
+      setAuthSession(body.data.token, newUser);
+      showToast(`Onboarded & signed in as ${newUser.organization_name || newUser.role}.`);
+    } else {
+      showToast(`Seller onboarded successfully! UPI VPA ${upi_vpa} linked.`);
+    }
 
     // Add new seller to create-seller select in modal
     const createSellerSelect = document.getElementById('create-seller');
@@ -591,6 +665,11 @@ async function handleRegisterSellerSubmit(e) {
 // Recycler Inbound Escrow Gateway & Payment Rails Preview
 // ============================================================================
 async function handlePreviewEscrowRails() {
+  if (!auth.token || !auth.user || auth.user.role !== 'Recycler') {
+    showToast('Sign in as a Recycler account to open an escrow deposit.', 'error');
+    return;
+  }
+
   const listingId = elements.bidListingSelect.value;
   if (!listingId) {
     showToast('Please select a target scrap listing first.', 'error');
@@ -604,12 +683,16 @@ async function handlePreviewEscrowRails() {
     ? `${selectedLot.material_grade} (${(selectedLot.weight_kg / 1000).toFixed(1)} MT / ${selectedLot.weight_kg.toLocaleString()} kg)`
     : 'Selected Scrap Lot';
   elements.escrowModalAmount.textContent = `₹${bidAmount.toLocaleString('en-IN')}`;
+  elements.escrowDepositRef.textContent = 'Opening deposit...';
+  elements.escrowFundedState.classList.add('hidden');
+  elements.btnConfirmDeposit.disabled = true;
+  elements.btnConfirmDeposit.style.display = '';
 
   try {
-    const res = await fetch(`${API_BASE}/listings/${listingId}/payment-intent`, {
+    const res = await apiFetch(`${API_BASE}/listings/${listingId}/payment-intent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: bidAmount }),
+      body: JSON.stringify({ bid_amount: bidAmount }),
     });
 
     const body = await res.json();
@@ -618,13 +701,47 @@ async function handlePreviewEscrowRails() {
     }
 
     const intent = body.data;
+    state.currentDeposit = intent;
     elements.escrowUpiIntentLink.href = intent.upi_intent_uri;
-    elements.escrowModalQrImg.src = intent.qr_code_url;
-    elements.escrowVanNumber.textContent = intent.virtual_account.account_number;
+    elements.escrowModalQrImg.src = intent.qr_data_url;
+    elements.escrowVanNumber.textContent = intent.van_b2b_details.virtual_account_number;
+    elements.escrowDepositRef.textContent = intent.reference_no;
+    elements.btnConfirmDeposit.disabled = false;
 
     elements.modalPaymentRails.classList.remove('hidden');
   } catch (err) {
     showToast(err.message, 'error');
+  }
+}
+
+async function handleConfirmDeposit() {
+  if (!state.currentDeposit || !state.currentDeposit.reference_no) {
+    showToast('No active deposit to confirm. Open the payment rails first.', 'error');
+    return;
+  }
+
+  elements.btnConfirmDeposit.disabled = true;
+  elements.btnConfirmDeposit.textContent = 'Confirming with bank...';
+
+  try {
+    const res = await apiFetch(`${API_BASE}/deposits/${state.currentDeposit.reference_no}/confirm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Deposit confirmation failed');
+    }
+
+    elements.escrowFundedState.classList.remove('hidden');
+    elements.btnConfirmDeposit.style.display = 'none';
+    showToast(`Escrow funded: ₹${Number(body.data.deposit.amount_inr).toLocaleString('en-IN')} confirmed (${body.data.deposit.gateway_transaction_id}).`);
+  } catch (err) {
+    elements.btnConfirmDeposit.disabled = false;
+    showToast(err.message, 'error');
+  } finally {
+    elements.btnConfirmDeposit.textContent = 'Simulate Bank Confirmation';
   }
 }
 
@@ -658,6 +775,23 @@ async function handleVerifyHash() {
     }
 
     const cert = body.data;
+
+    if (cert.verified === false) {
+      elements.eprVerificationResult.innerHTML = `
+        <div style="text-align: center; color: var(--rose-400);">
+          <h4>❌ ${cert.status === 'TAMPER_DETECTED' ? 'Certificate Tampering Detected' : 'Unverified or Fraudulent Certificate'}</h4>
+          <p class="text-muted" style="margin-top: 0.5rem;">${cert.reason || body.error || 'Certificate hash was not found on the national registry.'}</p>
+          ${
+            cert.expected_hash
+              ? `<p class="font-mono text-muted" style="font-size: 0.72rem; word-break: break-all;">Expected: ${cert.expected_hash}</p>
+                 <p class="font-mono text-muted" style="font-size: 0.72rem; word-break: break-all;">Stored: ${cert.certificate_hash}</p>`
+              : ''
+          }
+        </div>
+      `;
+      return;
+    }
+
     elements.eprVerificationResult.innerHTML = `
       <div class="certificate-header">
         <div>
@@ -730,6 +864,191 @@ async function handleCreateListing(e) {
 }
 
 // ============================================================================
+// Demo Sign-In (seeded accounts) & Session Chip
+// ============================================================================
+function renderAuthState() {
+  if (auth.token && auth.user) {
+    elements.authSigninWidget.style.display = 'none';
+    elements.authUserChip.style.display = 'flex';
+    elements.authUserChip.classList.remove('hidden');
+    elements.authUserLabel.textContent = `${auth.user.organization_name || 'Demo User'} · ${auth.user.role}`;
+  } else {
+    elements.authSigninWidget.style.display = 'flex';
+    elements.authUserChip.style.display = 'none';
+    elements.authUserChip.classList.add('hidden');
+  }
+}
+
+async function handleDemoLogin() {
+  const mobile = elements.demoUserSelect.value;
+  if (!mobile) {
+    showToast('Pick a demo account to sign in.', 'error');
+    return;
+  }
+
+  elements.btnDemoLogin.disabled = true;
+  elements.btnDemoLogin.textContent = 'Signing in...';
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile_number: mobile, password: DEMO_PASSWORD }),
+    });
+
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Demo sign-in failed');
+    }
+
+    setAuthSession(body.data.token, body.data.user);
+    showToast(`Signed in as ${body.data.user.organization_name || body.data.user.role} (${body.data.user.role}).`);
+    if (state.activeTab === 'payouts') {
+      loadPayouts();
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    elements.btnDemoLogin.disabled = false;
+    elements.btnDemoLogin.textContent = 'Sign In';
+  }
+}
+
+// ============================================================================
+// Payouts Ledger Tab (seller history / ULB audit)
+// ============================================================================
+async function loadPayouts() {
+  if (!auth.token || !auth.user) {
+    elements.payoutsContent.innerHTML = '<div class="empty-state">Sign in to view your payout ledger history.</div>';
+    return;
+  }
+
+  const isUlb = auth.user.role === 'ULB';
+  const status = elements.payoutStatusFilter.value;
+  const params = new URLSearchParams();
+  if (status) params.append('status', status);
+
+  const endpoint = isUlb ? `${API_BASE}/payouts/all?${params.toString()}` : `${API_BASE}/payouts?${params.toString()}`;
+
+  elements.payoutsContent.innerHTML = `
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <span>Loading payouts ledger...</span>
+    </div>
+  `;
+
+  try {
+    const res = await apiFetch(endpoint);
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Failed to load payouts');
+    }
+
+    const payouts = body.data.payouts || [];
+    if (payouts.length === 0) {
+      elements.payoutsContent.innerHTML = `
+        ${isUlb ? '' : renderSellerSummary(body.data)}
+        <div class="empty-state">No payout ledger entries yet. Settle an auction to populate the ledger.</div>
+      `;
+      return;
+    }
+
+    const rows = payouts
+      .map(
+        (p) => `
+        <tr>
+          <td style="white-space: nowrap;">${new Date(p.created_at).toLocaleDateString('en-IN')}</td>
+          <td class="font-mono" style="font-size: 0.72rem; color: #38bdf8;">${p.mstc_lot_no || p.listing_id.slice(0, 8)}</td>
+          <td>${p.material_grade}</td>
+          <td style="text-align: right;">₹${p.gross_amount_inr.toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #10b981; font-weight: 600;">₹${p.seller_net_amount_inr.toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #38bdf8;">₹${p.platform_fee_inr.toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #fbbf24;">₹${p.welfare_levy_inr.toLocaleString('en-IN')}</td>
+          <td class="font-mono" style="font-size: 0.72rem;">${p.bank_rrn}</td>
+          <td><span class="status-tag ${p.status === 'SUCCESS' ? 'SOLD' : 'OPEN'}">${p.status}</span></td>
+          <td>
+            ${
+              isUlb && p.status === 'SUCCESS'
+                ? `<button class="btn btn-secondary btn-sm btn-reverse-payout" data-id="${p.payout_id}" style="font-size: 0.72rem; padding: 0.25rem 0.55rem;">Reverse</button>`
+                : ''
+            }
+          </td>
+        </tr>
+      `
+      )
+      .join('');
+
+    elements.payoutsContent.innerHTML = `
+      ${isUlb ? '<div class="text-muted" style="font-size: 0.78rem; margin-bottom: 0.75rem;">ULB Audit Mode — full ledger visibility with reversal authority.</div>' : renderSellerSummary(body.data)}
+      <div style="overflow-x: auto;">
+        <table class="receipt-table">
+          <thead>
+            <tr>
+              <th>Date</th><th>Lot</th><th>Material</th>
+              <th style="text-align: right;">Gross</th>
+              <th style="text-align: right;">Seller Net</th>
+              <th style="text-align: right;">Platform</th>
+              <th style="text-align: right;">Welfare</th>
+              <th>Bank RRN</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+
+    document.querySelectorAll('.btn-reverse-payout').forEach((btn) => {
+      btn.addEventListener('click', (e) => handleReversePayout(e.currentTarget.getAttribute('data-id')));
+    });
+  } catch (err) {
+    elements.payoutsContent.innerHTML = `<div class="empty-state text-muted">Error loading payouts: ${err.message}</div>`;
+  }
+}
+
+function renderSellerSummary(data) {
+  if (typeof data.total_gross_inr !== 'number') return '';
+  return `
+    <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+      <div>
+        <span class="text-muted" style="display: block; font-size: 0.72rem;">TOTAL SETTLED (GROSS)</span>
+        <strong style="color: #fff; font-size: 1.2rem;">₹${data.total_gross_inr.toLocaleString('en-IN')}</strong>
+      </div>
+      <div>
+        <span class="text-muted" style="display: block; font-size: 0.72rem;">TOTAL RECEIVED (NET)</span>
+        <strong class="text-emerald" style="font-size: 1.2rem;">₹${data.total_net_inr.toLocaleString('en-IN')}</strong>
+      </div>
+      <div>
+        <span class="text-muted" style="display: block; font-size: 0.72rem;">LEDGER ENTRIES</span>
+        <strong style="color: #fff; font-size: 1.2rem;">${data.total}</strong>
+      </div>
+    </div>
+  `;
+}
+
+async function handleReversePayout(payoutId) {
+  if (!confirm('Reverse this payout? The ledger row will be marked REVERSED and a compensating escrow entry recorded.')) {
+    return;
+  }
+
+  try {
+    const res = await apiFetch(`${API_BASE}/payouts/${payoutId}/reverse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Failed to reverse payout');
+    }
+
+    showToast('Payout reversed with compensating escrow entry recorded.');
+    loadPayouts();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+// ============================================================================
 // Tab Navigation
 // ============================================================================
 function switchTab(tabName) {
@@ -740,6 +1059,9 @@ function switchTab(tabName) {
   elements.tabPanes.forEach((pane) => {
     pane.classList.toggle('active', pane.id === `tab-${tabName}`);
   });
+  if (tabName === 'payouts') {
+    loadPayouts();
+  }
 }
 
 // ============================================================================
@@ -780,6 +1102,15 @@ function init() {
   elements.btnPreviewEscrow?.addEventListener('click', handlePreviewEscrowRails);
   elements.modalPaymentClose?.addEventListener('click', () => elements.modalPaymentRails.classList.add('hidden'));
   elements.modalPaymentDone?.addEventListener('click', () => elements.modalPaymentRails.classList.add('hidden'));
+  elements.btnConfirmDeposit?.addEventListener('click', handleConfirmDeposit);
+
+  // Demo Sign-In events
+  elements.btnDemoLogin?.addEventListener('click', handleDemoLogin);
+  elements.btnDemoLogout?.addEventListener('click', clearAuthSession);
+
+  // Payouts Ledger events
+  elements.payoutStatusFilter?.addEventListener('change', loadPayouts);
+  elements.btnRefreshPayouts?.addEventListener('click', loadPayouts);
 
   // Settlement Payout Receipt Modal events
   elements.modalReceiptClose?.addEventListener('click', () => elements.modalSettlementReceipt.classList.add('hidden'));
@@ -791,7 +1122,9 @@ function init() {
     }
   });
 
-  // Initial loads
+  // Restore persisted demo session and initial loads
+  loadAuth();
+  renderAuthState();
   checkHealth();
   fetchListings();
 }

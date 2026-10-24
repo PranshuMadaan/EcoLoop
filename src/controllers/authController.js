@@ -61,8 +61,9 @@ const KNOWN_PSP_BANKS = {
 };
 
 /**
- * Penny-Drop VPA Verification (NPCI Reverse Account Lookup)
+ * Penny-Drop VPA Verification (NPCI Reverse Account Lookup — simulated)
  * POST /api/v1/auth/verify-vpa
+ * Persists the verified VPA when mobile_number identifies an existing user.
  */
 export const verifyVpa = async (req, res, next) => {
   try {
@@ -78,7 +79,7 @@ export const verifyVpa = async (req, res, next) => {
 
     const [handle, psp] = trimmed.split('@');
     const bankName = KNOWN_PSP_BANKS[psp] || `${psp.toUpperCase()} Partner Bank`;
-    
+
     // Derive account holder name from handle or mock registry
     let accountHolderName = 'PRIMARY ACCOUNT HOLDER (VERIFIED)';
     const candidateName = req.body.organization_name || req.body.name;
@@ -98,6 +99,23 @@ export const verifyVpa = async (req, res, next) => {
       accountHolderName = `${handle.replace(/[^a-zA-Z0-9]/g, ' ').toUpperCase().trim()} (VERIFIED)`;
     }
 
+    const verifiedAt = new Date().toISOString();
+
+    // Persist the verification onto the user when the request identifies one
+    // (e.g. re-verifying a stored VPA). Registration-time VPAs are marked
+    // VERIFIED by register itself since onboarding includes penny-drop.
+    let persisted = false;
+    const mobile = req.body.mobile_number ? String(req.body.mobile_number).trim() : null;
+    if (mobile) {
+      const updateRes = await query(
+        `UPDATE users
+         SET upi_vpa = $1, upi_vpa_status = 'VERIFIED', upi_bank_account_holder = $2, upi_verified_at = NOW()
+         WHERE mobile_number = $3;`,
+        [trimmed, accountHolderName, mobile]
+      );
+      persisted = updateRes.rowCount > 0;
+    }
+
     return res.status(200).json({
       success: true,
       data: {
@@ -108,7 +126,9 @@ export const verifyVpa = async (req, res, next) => {
         ifsc_prefix: (psp.length >= 4 ? psp.slice(0, 4) : 'NPCI').toUpperCase(),
         penny_drop_status: 'SUCCESS',
         reference_id: `PND-${Date.now().toString(36).toUpperCase()}`,
-        timestamp: new Date().toISOString(),
+        persisted,
+        verified_at: verifiedAt,
+        timestamp: verifiedAt,
       },
     });
   } catch (err) {
