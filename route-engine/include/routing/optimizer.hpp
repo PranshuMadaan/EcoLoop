@@ -4,6 +4,8 @@
 #include <routing/cost_evaluator.hpp>
 #include <routing/graph.hpp>
 #include <routing/route.hpp>
+#include <routing/solution.hpp>
+#include <routing/vehicle.hpp>
 
 #include <cstddef>
 #include <vector>
@@ -24,6 +26,13 @@ public:
     // Optimizes an existing Route preserving fixed start and end stops
     [[nodiscard]] Route optimize_route(const Route& input_route, const DirectedGraph& graph) const;
 
+    // Same 2-Opt search, but every candidate must also stay feasible for the
+    // given vehicle (capacity incl. disposal ordering, and shift duration).
+    // Prevents reordering a disposal visit behind the load that needed it.
+    [[nodiscard]] Route optimize_route(const Route& input_route,
+                                       const DirectedGraph& graph,
+                                       const WasteVehicle& vehicle) const;
+
     // Convenience ingestion interface: constructs Route from stops and optimizes
     [[nodiscard]] Route add_and_optimize(const std::vector<NodeId>& raw_stops,
                                          const DirectedGraph& graph,
@@ -35,6 +44,10 @@ private:
     CostEvaluator evaluator_;
     double epsilon_{kDefaultEpsilon};
     std::size_t max_iterations_{kDefaultMaxIterations};
+
+    [[nodiscard]] Route optimize_route_impl(const Route& input_route,
+                                            const DirectedGraph& graph,
+                                            const WasteVehicle* vehicle) const;
 };
 
 } // namespace routing

@@ -124,9 +124,14 @@ TEST_CASE("WasteRouteIO: End-to-end municipal JSON ingestion and solution export
     REQUIRE(first_route["stops"].is_array());
     REQUIRE(first_route["stops"].size() >= 3);
 
-    // Route starts at depot (0) and ends at dump (3)
+    // Route starts and ends at depot (0), visiting the dump (3) before returning
     CHECK(first_route["stops"].front() == 0);
-    CHECK(first_route["stops"].back() == 3);
+    CHECK(first_route["stops"].back() == 0);
+
+    // Unserved stops are reported in the export schema
+    REQUIRE(output_json.contains("unserved_stops"));
+    REQUIRE(output_json["unserved_stops"].is_array());
+    CHECK(output_json["unserved_stops"].empty());
 
     // Aggregate metrics match route metrics for single-vehicle solution
     REQUIRE_THAT(output_json["total_fleet_distance_m"].get<double>(),

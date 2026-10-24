@@ -60,9 +60,10 @@ struct WasteNode {
                 return stream == WasteStream::DryRecyclable;
             case NodeType::Landfill:
                 return stream == WasteStream::DryNonRecyclable;
+            case NodeType::TransferStation:
+                return stream == WasteStream::HazardousEwaste;
             case NodeType::Depot:
             case NodeType::CollectionPoint:
-            case NodeType::TransferStation:
             default:
                 return false;
         }

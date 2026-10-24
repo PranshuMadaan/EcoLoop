@@ -6,6 +6,18 @@
 namespace routing {
 
 Route RouteOptimizer::optimize_route(const Route& input_route, const DirectedGraph& graph) const {
+    return optimize_route_impl(input_route, graph, nullptr);
+}
+
+Route RouteOptimizer::optimize_route(const Route& input_route,
+                                     const DirectedGraph& graph,
+                                     const WasteVehicle& vehicle) const {
+    return optimize_route_impl(input_route, graph, &vehicle);
+}
+
+Route RouteOptimizer::optimize_route_impl(const Route& input_route,
+                                          const DirectedGraph& graph,
+                                          const WasteVehicle* vehicle) const {
     Route current_route = input_route;
 
     // Routes with <= 3 stops cannot perform intermediate 2-Opt swaps
@@ -35,6 +47,10 @@ Route RouteOptimizer::optimize_route(const Route& input_route, const DirectedGra
                 const double delta_cost = candidate_cost - current_cost;
 
                 if (delta_cost < -epsilon_) {
+                    if (vehicle != nullptr &&
+                        !is_route_feasible(candidate, *vehicle, graph, evaluator_)) {
+                        continue; // cheaper, but the vehicle cannot legally drive it
+                    }
                     current_route = std::move(candidate);
                     current_cost = candidate_cost;
                     improved = true;

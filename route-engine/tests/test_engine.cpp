@@ -205,15 +205,22 @@ TEST_CASE("WasteRoutingEngine: End-to-end multi-vehicle optimization pipeline", 
         CHECK(serviced);
     }
 
-    // Verification 3: Every route must start at depot 0 and end at a disposal sink
+    // Verification 3: Every route must start and end at depot 0, having emptied
+    // at a disposal facility (sink stop present) before returning
     const routing::CostEvaluator evaluator;
     for (const auto& route : solution.routes) {
         REQUIRE(route.size() >= 2);
         CHECK(route.start_node() == 0);
+        CHECK(route.end_node() == 0);
 
-        const auto end_node_id = route.end_node();
-        const auto end_node_type = graph.node(end_node_id).type;
-        CHECK(is_disposal_sink(end_node_type));
+        bool visits_sink = false;
+        for (const auto stop_id : route.stops) {
+            if (is_disposal_sink(graph.node(stop_id).type)) {
+                visits_sink = true;
+                break;
+            }
+        }
+        CHECK(visits_sink);
 
         // Check metrics
         CHECK(route.total_distance_meters > 0.0);

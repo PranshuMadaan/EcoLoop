@@ -85,7 +85,7 @@ TEST_CASE("Facility stream acceptance logic (is_sink_for)", "[domain][node]") {
         .type = NodeType::Landfill
     };
 
-    // Depots, collection points, and transfer stations do not act as final processing sinks
+    // Depots and collection points do not act as processing sinks
     CHECK_FALSE(depot.is_sink_for(WasteStream::Organic));
     CHECK_FALSE(depot.is_sink_for(WasteStream::DryRecyclable));
     CHECK_FALSE(depot.is_sink_for(WasteStream::DryNonRecyclable));
@@ -99,7 +99,8 @@ TEST_CASE("Facility stream acceptance logic (is_sink_for)", "[domain][node]") {
     CHECK_FALSE(transfer_station.is_sink_for(WasteStream::Organic));
     CHECK_FALSE(transfer_station.is_sink_for(WasteStream::DryRecyclable));
     CHECK_FALSE(transfer_station.is_sink_for(WasteStream::DryNonRecyclable));
-    CHECK_FALSE(transfer_station.is_sink_for(WasteStream::HazardousEwaste));
+    // Transfer stations accept hazardous e-waste for interim storage
+    CHECK(transfer_station.is_sink_for(WasteStream::HazardousEwaste));
 
     // Composting facility strictly accepts organic waste
     CHECK(composting.is_sink_for(WasteStream::Organic));

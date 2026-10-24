@@ -52,11 +52,16 @@ ctest --test-dir build
 
 ```jsonc
 {
-  "routes": [{ "vehicle_id": 1, "distance_m": 9700.0, "duration_s": 1210.0, "stops": [0, 1, 2] }],
+  "routes": [{ "vehicle_id": 1, "distance_m": 9700.0, "duration_s": 1210.0, "stops": [0, 1, 2, 0] }],
+  "unserved_stops": [7],
   "total_fleet_distance_m": 9700.0,
   "total_fleet_duration_s": 1210.0
 }
 ```
+
+Every route starts and ends at the depot, visiting a disposal facility before
+returning. `unserved_stops` lists collection points no vehicle could service
+(demand beyond every truck's capacity, or overflow with no reachable facility).
 
 Errors are reported as `{"error": "..."}` on stderr with a non-zero exit code.
 

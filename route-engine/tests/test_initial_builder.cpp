@@ -169,9 +169,11 @@ TEST_CASE("InitialSolutionBuilder: Greedy nearest-neighbor routing order", "[ini
     REQUIRE(solution.routes.size() == 1);
     const auto& route = solution.routes[0];
 
-    // Route must start at depot (0) and end at a disposal facility
+    // Route must start and end at the depot, emptying at the disposal facility
+    // (terminal sink 3) before returning
     REQUIRE(route.start_node() == 0);
-    REQUIRE(route.end_node() == 3); // nearest final sink
+    REQUIRE(route.end_node() == 0);
+    REQUIRE(route_contains(route, 3));
 
     // Both stops collected
     CHECK(route_contains(route, 1));
@@ -256,10 +258,10 @@ TEST_CASE("InitialSolutionBuilder: Intermediate replenishment (dump trip on over
     const auto& route = solution.routes[0];
     const auto& stops = route.stops;
 
-    // Expected route: 0 -> 1 -> 2 -> 4(dump) -> 3 -> 4(final)
-    // Start depot and final composting confirmed
+    // Expected route: 0 -> 1 -> 2 -> 4(dump) -> 3 -> 4(final) -> 0(depot return)
+    // Start/end depot and final composting confirmed
     REQUIRE(route.start_node() == 0);
-    REQUIRE(route.end_node() == 4);
+    REQUIRE(route.end_node() == 0);
 
     // All bins must be collected
     CHECK(route_contains(route, 1));
@@ -361,11 +363,189 @@ TEST_CASE("InitialSolutionBuilder: Shift limit causes handoff to second vehicle"
     // Vehicle 2 handles stop 2 (overflow from vehicle 1)
     CHECK(route_contains(route2, 2));
 
-    // Both routes must start at depot
+    // Both routes must start and end at depot
     CHECK(route1.start_node() == 0);
     CHECK(route2.start_node() == 0);
+    CHECK(route1.end_node() == 0);
+    CHECK(route2.end_node() == 0);
+}
 
-    // Both routes must end at a sink facility
-    CHECK(route1.end_node() == 3);
-    CHECK(route2.end_node() == 3);
+TEST_CASE("InitialSolutionBuilder: Overflow with no facility terminates and reports unserved", "[initial_builder][overflow]") {
+    routing::GraphBuilder builder;
+
+    builder.add_node(routing::WasteNode{.id = 0, .type = routing::NodeType::Depot});
+    // Stop 1: 25 kg organic
+    builder.add_node(routing::WasteNode{
+        .id = 1,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.organic_kg = 25.0},
+        .service_time_seconds = 60.0
+    });
+    // Stop 2: 30 kg organic — 25 + 30 > 50 capacity, no composting facility exists
+    builder.add_node(routing::WasteNode{
+        .id = 2,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.organic_kg = 30.0},
+        .service_time_seconds = 60.0
+    });
+
+    auto add_bi = [&](routing::NodeId u, routing::NodeId v, double d) {
+        builder.add_edge(u, v, d, 10.0);
+        builder.add_edge(v, u, d, 10.0);
+    };
+    add_bi(0, 1, 100.0);
+    add_bi(0, 2, 200.0);
+    add_bi(1, 2, 100.0);
+
+    const auto graph = builder.build();
+    const routing::CostEvaluator evaluator;
+    const routing::FacilityIndex facility_index(graph);
+    const routing::InitialSolutionBuilder builder_svc(graph, evaluator, facility_index);
+
+    const routing::WasteVehicle veh{
+        .id = 1,
+        .capacity_limits = routing::WastePayload{.organic_kg = 50.0, .dry_recyclable_kg = 1000.0,
+                                                 .dry_non_recyclable_kg = 1000.0, .hazardous_ewaste_kg = 1000.0},
+        .max_shift_duration_seconds = 28800.0
+    };
+
+    // Regression: this used to infinite-loop when no disposal facility existed
+    const auto solution = builder_svc.build(0, {1, 2}, {veh});
+
+    REQUIRE(solution.routes.size() == 1);
+    CHECK(solution.routes[0].start_node() == 0);
+    CHECK(solution.routes[0].end_node() == 0);
+    CHECK(route_contains(solution.routes[0], 1));
+
+    REQUIRE(solution.unserved_stops.size() == 1);
+    CHECK(solution.unserved_stops[0] == 2);
+}
+
+TEST_CASE("InitialSolutionBuilder: Overflow with no facility hands off to second vehicle", "[initial_builder][overflow]") {
+    routing::GraphBuilder builder;
+
+    builder.add_node(routing::WasteNode{.id = 0, .type = routing::NodeType::Depot});
+    builder.add_node(routing::WasteNode{
+        .id = 1,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.organic_kg = 25.0},
+        .service_time_seconds = 60.0
+    });
+    builder.add_node(routing::WasteNode{
+        .id = 2,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.organic_kg = 30.0},
+        .service_time_seconds = 60.0
+    });
+
+    auto add_bi = [&](routing::NodeId u, routing::NodeId v, double d) {
+        builder.add_edge(u, v, d, 10.0);
+        builder.add_edge(v, u, d, 10.0);
+    };
+    add_bi(0, 1, 100.0);
+    add_bi(0, 2, 200.0);
+    add_bi(1, 2, 100.0);
+
+    const auto graph = builder.build();
+    const routing::CostEvaluator evaluator;
+    const routing::FacilityIndex facility_index(graph);
+    const routing::InitialSolutionBuilder builder_svc(graph, evaluator, facility_index);
+
+    const routing::WasteVehicle veh1{
+        .id = 1,
+        .capacity_limits = routing::WastePayload{.organic_kg = 50.0, .dry_recyclable_kg = 1000.0,
+                                                 .dry_non_recyclable_kg = 1000.0, .hazardous_ewaste_kg = 1000.0},
+        .max_shift_duration_seconds = 28800.0
+    };
+    const routing::WasteVehicle veh2{
+        .id = 2,
+        .capacity_limits = routing::WastePayload{.organic_kg = 50.0, .dry_recyclable_kg = 1000.0,
+                                                 .dry_non_recyclable_kg = 1000.0, .hazardous_ewaste_kg = 1000.0},
+        .max_shift_duration_seconds = 28800.0
+    };
+
+    const auto solution = builder_svc.build(0, {1, 2}, {veh1, veh2});
+
+    // Vehicle 1 fills up on stop 1; stop 2 overflows and is handed to vehicle 2
+    REQUIRE(solution.routes.size() == 2);
+    CHECK(route_contains(solution.routes[0], 1));
+    CHECK_FALSE(route_contains(solution.routes[0], 2));
+    CHECK(route_contains(solution.routes[1], 2));
+    CHECK(solution.routes[0].start_node() == 0);
+    CHECK(solution.routes[0].end_node() == 0);
+    CHECK(solution.routes[1].start_node() == 0);
+    CHECK(solution.routes[1].end_node() == 0);
+    CHECK(solution.unserved_stops.empty());
+}
+
+TEST_CASE("InitialSolutionBuilder: Stop demand exceeding every vehicle capacity is unserved", "[initial_builder][overflow]") {
+    routing::GraphBuilder builder;
+
+    builder.add_node(routing::WasteNode{.id = 0, .type = routing::NodeType::Depot});
+    // Stop 1: 60 kg organic — larger than any truck's 50 kg compartment
+    builder.add_node(routing::WasteNode{
+        .id = 1,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.organic_kg = 60.0},
+        .service_time_seconds = 60.0
+    });
+    // Stop 2: small stop that must still be served
+    builder.add_node(routing::WasteNode{
+        .id = 2,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.organic_kg = 10.0},
+        .service_time_seconds = 60.0
+    });
+
+    auto add_bi = [&](routing::NodeId u, routing::NodeId v, double d) {
+        builder.add_edge(u, v, d, 10.0);
+        builder.add_edge(v, u, d, 10.0);
+    };
+    add_bi(0, 1, 100.0);
+    add_bi(0, 2, 300.0);
+    add_bi(1, 2, 250.0);
+
+    const auto graph = builder.build();
+    const routing::CostEvaluator evaluator;
+    const routing::FacilityIndex facility_index(graph);
+    const routing::InitialSolutionBuilder builder_svc(graph, evaluator, facility_index);
+
+    const routing::WasteVehicle veh{
+        .id = 1,
+        .capacity_limits = routing::WastePayload{.organic_kg = 50.0, .dry_recyclable_kg = 1000.0,
+                                                 .dry_non_recyclable_kg = 1000.0, .hazardous_ewaste_kg = 1000.0},
+        .max_shift_duration_seconds = 28800.0
+    };
+
+    const auto solution = builder_svc.build(0, {1, 2}, {veh});
+
+    // The oversized stop is reported unserved; the small one is still collected
+    REQUIRE(solution.routes.size() == 1);
+    CHECK_FALSE(route_contains(solution.routes[0], 1));
+    CHECK(route_contains(solution.routes[0], 2));
+
+    REQUIRE(solution.unserved_stops.size() == 1);
+    CHECK(solution.unserved_stops[0] == 1);
+}
+
+TEST_CASE("FacilityIndex: TransferStation is a sink for hazardous e-waste", "[facility_index]") {
+    routing::GraphBuilder builder;
+    builder.add_node(routing::WasteNode{.id = 0, .type = routing::NodeType::Depot});
+    builder.add_node(routing::WasteNode{.id = 1, .type = routing::NodeType::CollectionPoint});
+    builder.add_node(routing::WasteNode{.id = 2, .type = routing::NodeType::TransferStation});
+    builder.add_edge(1, 2, 100.0, 10.0);
+
+    const auto graph = builder.build();
+    const routing::CostEvaluator evaluator;
+    const routing::FacilityIndex facility_index(graph);
+
+    CHECK(facility_index.has_sink_for(routing::WasteStream::HazardousEwaste));
+    CHECK(facility_index.sinks_for(routing::WasteStream::HazardousEwaste)[0] == 2);
+    CHECK(facility_index.find_nearest_sink(graph, evaluator, 1,
+                                           routing::WasteStream::HazardousEwaste) == 2);
+
+    // A transfer station is not a sink for the other streams
+    CHECK_FALSE(facility_index.has_sink_for(routing::WasteStream::Organic));
+    CHECK_FALSE(facility_index.has_sink_for(routing::WasteStream::DryRecyclable));
+    CHECK_FALSE(facility_index.has_sink_for(routing::WasteStream::DryNonRecyclable));
 }

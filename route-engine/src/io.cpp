@@ -103,6 +103,7 @@ std::string WasteRouteIO::export_solution(const FleetSolution& solution) {
     }
 
     root["routes"] = std::move(routes_json);
+    root["unserved_stops"] = solution.unserved_stops;
     root["total_fleet_distance_m"] = solution.total_distance_meters();
     root["total_fleet_duration_s"] = solution.total_duration_seconds();
 

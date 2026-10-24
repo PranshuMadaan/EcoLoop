@@ -33,9 +33,11 @@ FleetSolution FleetOptimizer::optimize(FleetSolution initial_solution,
                                        const std::vector<WasteVehicle>& fleet) const {
     FleetSolution solution = std::move(initial_solution);
 
-    // Initial 2-Opt pass on individual routes
-    for (auto& r : solution.routes) {
-        r = single_route_optimizer_.optimize_route(r, graph_);
+    // Initial 2-Opt pass on individual routes (feasibility-aware per vehicle)
+    for (std::size_t idx = 0; idx < solution.routes.size(); ++idx) {
+        const auto& r = solution.routes[idx];
+        const auto vehicle = find_vehicle_for_route(idx, r, fleet);
+        solution.routes[idx] = single_route_optimizer_.optimize_route(r, graph_, vehicle);
     }
 
     const std::size_t num_routes = solution.routes.size();
@@ -88,8 +90,8 @@ FleetSolution FleetOptimizer::optimize(FleetSolution initial_solution,
                             if (delta_cost < -epsilon_) {
                                 if (is_route_feasible(cand_R1, veh_1, graph_, evaluator_) &&
                                     is_route_feasible(cand_R2, veh_2, graph_, evaluator_)) {
-                                    cand_R1 = single_route_optimizer_.optimize_route(cand_R1, graph_);
-                                    cand_R2 = single_route_optimizer_.optimize_route(cand_R2, graph_);
+                                    cand_R1 = single_route_optimizer_.optimize_route(cand_R1, graph_, veh_1);
+                                    cand_R2 = single_route_optimizer_.optimize_route(cand_R2, graph_, veh_2);
                                     solution.routes[r1_idx] = std::move(cand_R1);
                                     solution.routes[r2_idx] = std::move(cand_R2);
                                     move_applied = true;
@@ -120,8 +122,8 @@ FleetSolution FleetOptimizer::optimize(FleetSolution initial_solution,
                             if (delta_cost < -epsilon_) {
                                 if (is_route_feasible(cand_R1, veh_1, graph_, evaluator_) &&
                                     is_route_feasible(cand_R2, veh_2, graph_, evaluator_)) {
-                                    cand_R1 = single_route_optimizer_.optimize_route(cand_R1, graph_);
-                                    cand_R2 = single_route_optimizer_.optimize_route(cand_R2, graph_);
+                                    cand_R1 = single_route_optimizer_.optimize_route(cand_R1, graph_, veh_1);
+                                    cand_R2 = single_route_optimizer_.optimize_route(cand_R2, graph_, veh_2);
                                     solution.routes[r1_idx] = std::move(cand_R1);
                                     solution.routes[r2_idx] = std::move(cand_R2);
                                     move_applied = true;

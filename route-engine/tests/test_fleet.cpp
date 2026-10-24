@@ -333,3 +333,77 @@ TEST_CASE("FleetOptimizer: Rejects moves violating capacity constraint", "[fleet
         CHECK(node_id != 1);
     }
 }
+
+TEST_CASE("RouteOptimizer: 2-Opt cannot reorder disposal behind the load that needs it", "[optimizer][feasibility]") {
+    routing::GraphBuilder builder;
+
+    builder.add_node(routing::WasteNode{.id = 0, .type = routing::NodeType::Depot});
+    // Stop 1: 120 kg e-waste
+    builder.add_node(routing::WasteNode{
+        .id = 1,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.hazardous_ewaste_kg = 120.0},
+        .service_time_seconds = 60.0
+    });
+    // Stop 2: 100 kg e-waste — 120 + 100 > 200 cap, so a dump must sit between them
+    builder.add_node(routing::WasteNode{
+        .id = 2,
+        .type = routing::NodeType::CollectionPoint,
+        .demand = routing::WastePayload{.hazardous_ewaste_kg = 100.0},
+        .service_time_seconds = 60.0
+    });
+    // Node 3: TransferStation (hazardous e-waste sink)
+    builder.add_node(routing::WasteNode{
+        .id = 3,
+        .type = routing::NodeType::TransferStation,
+        .service_time_seconds = 30.0
+    });
+
+    auto add_bi = [&](routing::NodeId u, routing::NodeId v, double d) {
+        builder.add_edge(u, v, d, 10.0);
+        builder.add_edge(v, u, d, 10.0);
+    };
+    add_bi(0, 1, 1000.0);
+    add_bi(0, 2, 2000.0);
+    add_bi(0, 3, 1500.0);
+    add_bi(1, 2, 1000.0);
+    add_bi(1, 3, 800.0);
+    add_bi(2, 3, 900.0);
+
+    const auto graph = builder.build();
+    const routing::CostEvaluator evaluator;
+    const routing::RouteOptimizer route_optimizer(evaluator);
+
+    const routing::WasteVehicle veh{
+        .id = 1,
+        .capacity_limits = routing::WastePayload{1000.0, 1000.0, 1000.0, 200.0},
+        .max_shift_duration_seconds = 28800.0
+    };
+
+    // Feasible initial route: collect 1, dump at 3, collect 2, terminal dump, home
+    const routing::Route initial(1, {0, 1, 3, 2, 3, 0});
+    const auto optimized = route_optimizer.optimize_route(initial, graph, veh);
+
+    // The cheaper reorder [0,1,2,3,3,0] (4400 m) would carry 220 kg on a 200 kg
+    // truck and must be rejected; the result must stay legal and cheap or equal
+    CHECK(routing::is_route_feasible(optimized, veh, graph, evaluator));
+    CHECK(optimized.stops.front() == 0);
+    CHECK(optimized.stops.back() == 0);
+    CHECK(optimized.total_distance_meters <= evaluator.compute_cost(initial, graph) + 1e-6);
+
+    bool has_both_stops = false;
+    std::size_t count_1 = 0;
+    std::size_t count_2 = 0;
+    for (const auto s : optimized.stops) {
+        count_1 += (s == 1) ? 1 : 0;
+        count_2 += (s == 2) ? 1 : 0;
+    }
+    has_both_stops = (count_1 == 1 && count_2 == 1);
+    CHECK(has_both_stops);
+
+    // Peak-load model: dumping resets the e-waste compartment
+    const routing::Route legal_order(1, {0, 1, 3, 2, 3, 0});
+    const routing::Route illegal_order(1, {0, 1, 2, 3, 3, 0});
+    CHECK(routing::route_peak_load(legal_order, graph).hazardous_ewaste_kg == 120.0);
+    CHECK(routing::route_peak_load(illegal_order, graph).hazardous_ewaste_kg == 220.0);
+}
