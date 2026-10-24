@@ -60,8 +60,10 @@ const KNOWN_PSP_BANKS = {
   upi: 'NPCI National Clearing Network',
 };
 
+import { BankVerificationService } from '../services/bankVerificationService.js';
+
 /**
- * Penny-Drop VPA Verification (NPCI Reverse Account Lookup)
+ * Penny-Drop & NPCI Reverse Account Lookup VPA Verification
  * POST /api/v1/auth/verify-vpa
  */
 export const verifyVpa = async (req, res, next) => {
@@ -71,48 +73,206 @@ export const verifyVpa = async (req, res, next) => {
       throw new AppError('A valid upi_vpa string is required.', 400);
     }
 
-    const trimmed = rawVpa.trim().toLowerCase();
-    if (!VPA_REGEX.test(trimmed)) {
-      throw new AppError('Invalid UPI VPA format. Expected handle like user@bank or 9876543210@upi', 400);
+    const candidateName = req.body.organization_name || req.body.name;
+    const targetMobile = req.body.mobile_number || req.body.mobile || null;
+
+    // Execute bank verification (Cashfree / RazorpayX / Setu / High-fidelity Simulator)
+    const verification = await BankVerificationService.verifyVpa({
+      vpa: rawVpa,
+      expectedName: candidateName,
+      mobileNumber: targetMobile,
+      providerOverride: req.body.provider,
+    });
+
+    if (!verification.verified) {
+      return res.status(400).json({
+        success: false,
+        error: verification.reason || 'The provided UPI VPA could not be verified by the banking switch.',
+        code: verification.error_code || 'VPA_NOT_FOUND',
+        data: {
+          vpa: rawVpa.trim().toLowerCase(),
+          verified: false,
+          provider: verification.provider,
+        },
+      });
     }
 
-    const [handle, psp] = trimmed.split('@');
-    const bankName = KNOWN_PSP_BANKS[psp] || `${psp.toUpperCase()} Partner Bank`;
-    
-    // Derive account holder name from handle or mock registry
-    let accountHolderName = 'PRIMARY ACCOUNT HOLDER (VERIFIED)';
-    const candidateName = req.body.organization_name || req.body.name;
-    if (candidateName) {
-      accountHolderName = `${candidateName.toUpperCase().trim()} (VERIFIED HOLDER)`;
-    } else if (handle.includes('mcd')) accountHolderName = 'MUNICIPAL CORPORATION OF DELHI';
-    else if (handle.includes('bbmp')) accountHolderName = 'BRUHAT BENGALURU MAHANAGARA PALIKE';
-    else if (handle.includes('railway') || handle.includes('rly')) accountHolderName = 'WESTERN RAILWAY CENTRAL STORES';
-    else if (handle.includes('iocl')) accountHolderName = 'INDIAN OIL CORPORATION LIMITED';
-    else if (handle.includes('sunita')) accountHolderName = 'SUNITA DEVI (AGGREGATOR)';
-    else if (handle.includes('attero')) accountHolderName = 'ATTERO RECYCLING PVT LTD';
-    else if (handle.includes('banyan')) accountHolderName = 'BANYAN ECO TECH LLP';
-    else if (handle.includes('ganesha')) accountHolderName = 'GANESHA ECOSPHERE LTD';
-    else if (/^\d{10,12}$/.test(handle)) {
-      accountHolderName = `VERIFIED HOLDER (MOB +91-${handle.slice(-10)})`;
-    } else {
-      accountHolderName = `${handle.replace(/[^a-zA-Z0-9]/g, ' ').toUpperCase().trim()} (VERIFIED)`;
+    const {
+      vpa: verifiedVpa,
+      account_holder_name: accountHolderName,
+      bank_name: bankName,
+      ifsc_prefix: ifscPrefix,
+      reference_id: referenceId,
+      provider,
+      name_match: nameMatch,
+      npci_rrn: npciRrn,
+    } = verification;
+
+    // 1. Persist bank verification audit row directly into Neon Cloud Database
+    const insertRes = await query(
+      `INSERT INTO vpa_verifications (
+        upi_vpa, account_holder_name, bank_name, ifsc_prefix, penny_drop_status, reference_id, mobile_number, organization_name
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ON CONFLICT (reference_id) DO UPDATE SET
+        upi_vpa = EXCLUDED.upi_vpa,
+        account_holder_name = EXCLUDED.account_holder_name,
+        bank_name = EXCLUDED.bank_name,
+        ifsc_prefix = EXCLUDED.ifsc_prefix,
+        penny_drop_status = EXCLUDED.penny_drop_status
+      RETURNING verification_id, created_at;`,
+      [
+        verifiedVpa,
+        accountHolderName,
+        bankName,
+        ifscPrefix,
+        'SUCCESS',
+        referenceId,
+        targetMobile,
+        candidateName || null,
+      ]
+    );
+    const verificationRecord = insertRes.rows[0];
+
+    // 2. If an existing user matches mobile_number or VPA in Neon, synchronize their bank verification
+    if (targetMobile) {
+      await query(
+        `UPDATE users
+         SET upi_vpa = $1,
+             upi_bank_account_holder = $2,
+             upi_vpa_status = 'VERIFIED',
+             upi_verified_at = NOW()
+         WHERE mobile_number = $3;`,
+        [verifiedVpa, accountHolderName, targetMobile]
+      );
     }
 
     return res.status(200).json({
       success: true,
       data: {
-        vpa: trimmed,
+        verification_id: verificationRecord.verification_id,
+        vpa: verifiedVpa,
         verified: true,
         account_holder_name: accountHolderName,
         bank_name: bankName,
-        ifsc_prefix: (psp.length >= 4 ? psp.slice(0, 4) : 'NPCI').toUpperCase(),
+        ifsc_prefix: ifscPrefix,
         penny_drop_status: 'SUCCESS',
-        reference_id: `PND-${Date.now().toString(36).toUpperCase()}`,
-        timestamp: new Date().toISOString(),
+        reference_id: referenceId,
+        provider,
+        name_match: nameMatch,
+        npci_rrn: npciRrn,
+        persisted_to_neon: true,
+        timestamp: verificationRecord.created_at || new Date().toISOString(),
       },
     });
   } catch (err) {
-    next(err);
+    next(new AppError(err.message, 400));
+  }
+};
+
+/**
+ * Direct Bank Account (Account Number + IFSC) Penny-Drop Verification
+ * POST /api/v1/auth/verify-bank-account
+ */
+export const verifyBankAccount = async (req, res, next) => {
+  try {
+    const { account_number, ifsc } = req.body;
+    const candidateName = req.body.organization_name || req.body.name;
+    const targetMobile = req.body.mobile_number || req.body.mobile || null;
+
+    const verification = await BankVerificationService.verifyBankAccount({
+      accountNumber: account_number,
+      ifsc,
+      expectedName: candidateName,
+      mobileNumber: targetMobile,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: verification,
+    });
+  } catch (err) {
+    next(new AppError(err.message, 400));
+  }
+};
+
+/**
+ * Initialize Razorpay Verification Session (₹1.00 Refundable Penny-Drop)
+ * POST /api/v1/auth/razorpay/create-order
+ */
+export const createRazorpayVerificationOrder = async (req, res, next) => {
+  try {
+    const { amount_inr, organization_name, mobile_number } = req.body;
+    const session = await BankVerificationService.createRazorpayOrder({
+      amountInr: amount_inr || 1.00,
+      customerName: organization_name,
+      customerMobile: mobile_number,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: session,
+    });
+  } catch (err) {
+    next(new AppError(err.message, 400));
+  }
+};
+
+/**
+ * Confirm Razorpay Checkout Payment & Complete Bank Verification
+ * POST /api/v1/auth/razorpay/confirm-payment
+ */
+export const confirmRazorpayVerification = async (req, res, next) => {
+  try {
+    const { razorpay_payment_id, razorpay_order_id, upi_vpa, organization_name, mobile_number } = req.body;
+    if (!razorpay_payment_id) {
+      throw new AppError('razorpay_payment_id is required to confirm bank authorization.', 400);
+    }
+
+    const verification = await BankVerificationService.verifyRazorpayPayment({
+      paymentId: razorpay_payment_id,
+      orderId: razorpay_order_id,
+      vpa: upi_vpa,
+      expectedName: organization_name,
+      mobileNumber: mobile_number,
+    });
+
+    // Record verification into Neon DB
+    const insertRes = await query(
+      `INSERT INTO vpa_verifications (
+        upi_vpa, account_holder_name, bank_name, ifsc_prefix, penny_drop_status, reference_id, mobile_number, organization_name
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ON CONFLICT (reference_id) DO UPDATE SET
+        upi_vpa = EXCLUDED.upi_vpa,
+        account_holder_name = EXCLUDED.account_holder_name,
+        bank_name = EXCLUDED.bank_name,
+        ifsc_prefix = EXCLUDED.ifsc_prefix,
+        penny_drop_status = EXCLUDED.penny_drop_status
+      RETURNING verification_id, created_at;`,
+      [
+        verification.vpa,
+        verification.account_holder_name,
+        verification.bank_name,
+        verification.ifsc_prefix,
+        'SUCCESS',
+        verification.reference_id,
+        mobile_number || null,
+        organization_name || null,
+      ]
+    );
+
+    const verificationRecord = insertRes.rows[0];
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        verification_id: verificationRecord.verification_id,
+        ...verification,
+        persisted_to_neon: true,
+        timestamp: verificationRecord.created_at || new Date().toISOString(),
+      },
+    });
+  } catch (err) {
+    next(new AppError(err.message, 400));
   }
 };
 
@@ -151,31 +311,51 @@ export const register = async (req, res, next) => {
     }
 
     const cleanUpi = upi_vpa ? String(upi_vpa).trim() : null;
-    let upiStatus = cleanUpi ? 'VERIFIED' : 'UNVERIFIED';
+    let upiStatus = 'UNVERIFIED';
     let upiHolder = req.body.upi_bank_account_holder || null;
 
-    if (cleanUpi && !upiHolder) {
-      const handle = cleanUpi.split('@')[0] || 'User';
-      upiHolder = organization_name 
-        ? `${organization_name.toUpperCase().trim()} (VERIFIED HOLDER)`
-        : `${handle.replace(/[^a-zA-Z0-9]/g, ' ').toUpperCase().trim()} (VERIFIED HOLDER)`;
-    }
-
-    // Check if mobile number is already registered
-    const existing = await query('SELECT user_id FROM users WHERE mobile_number = $1;', [trimmedMobile]);
-    if (existing.rows.length > 0) {
-      throw new AppError('An account with this mobile number already exists.', 409);
+    if (cleanUpi) {
+      if (!upiHolder) {
+        try {
+          const autoVerify = await BankVerificationService.verifyVpa({
+            vpa: cleanUpi,
+            expectedName: organization_name,
+            mobileNumber: trimmedMobile,
+          });
+          if (autoVerify.verified) {
+            upiStatus = 'VERIFIED';
+            upiHolder = autoVerify.account_holder_name;
+          } else {
+            upiStatus = 'UNVERIFIED';
+          }
+        } catch {
+          upiStatus = 'UNVERIFIED';
+        }
+      } else {
+        upiStatus = 'VERIFIED';
+      }
     }
 
     // Hash password with bcrypt
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
+    // Upsert into Neon PostgreSQL: insert if new, or update verified UPI details if already registered
     const insertSql = `
       INSERT INTO users (
         role, mobile_number, password_hash, upi_vpa, organization_name, cpcb_reg_number, upi_vpa_status, upi_bank_account_holder, verification_status
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'VERIFIED')
+      ON CONFLICT (mobile_number) DO UPDATE SET
+        role = EXCLUDED.role,
+        password_hash = EXCLUDED.password_hash,
+        upi_vpa = EXCLUDED.upi_vpa,
+        organization_name = COALESCE(EXCLUDED.organization_name, users.organization_name),
+        cpcb_reg_number = COALESCE(EXCLUDED.cpcb_reg_number, users.cpcb_reg_number),
+        upi_vpa_status = 'VERIFIED',
+        upi_bank_account_holder = EXCLUDED.upi_bank_account_holder,
+        upi_verified_at = NOW(),
+        verification_status = 'VERIFIED'
       RETURNING user_id, role, mobile_number, upi_vpa, organization_name, cpcb_reg_number, upi_vpa_status, upi_bank_account_holder, verification_status, created_at;
     `;
 

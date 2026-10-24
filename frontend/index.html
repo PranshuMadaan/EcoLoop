@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
+  <!-- Razorpay Official Checkout Gateway SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
   <div id="app">
@@ -212,15 +214,41 @@
             <p class="text-muted">Enter the 64-character SHA-256 compliance hash issued during auction settlement.</p>
             <div class="hash-input-group">
               <input type="text" id="epr-hash-input" class="form-control font-mono" placeholder="Paste 64-char SHA-256 certificate hash..." value="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" />
-              <button class="btn btn-primary" id="btn-verify-hash">
+              <button class="btn btn-primary" id="btn-verify-hash" style="white-space: nowrap;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 Verify on Ledger
+              </button>
+            </div>
+            <!-- Quick Test Hash Chips -->
+            <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span class="text-muted" style="font-size: 0.72rem;">Try Sample Hashes:</span>
+              <button type="button" class="btn btn-secondary epr-sample-chip" data-hash="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" style="padding: 0.2rem 0.6rem; font-size: 0.72rem; border-radius: 4px; background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #34d399;">
+                ✓ Valid Lot #4 (Paper - 9.5 MT)
+              </button>
+              <button type="button" class="btn btn-secondary epr-sample-chip" data-hash="0000000000000000000000000000000000000000000000000000000000000000" style="padding: 0.2rem 0.6rem; font-size: 0.72rem; border-radius: 4px; background: rgba(244,63,94,0.1); border-color: rgba(244,63,94,0.3); color: #f87171;">
+                ✕ Fake / Counterfeit Hash Test
               </button>
             </div>
           </div>
 
           <div id="epr-verification-result" class="epr-result-card hidden">
             <!-- Dynamic CPCB Certificate View -->
+          </div>
+
+          <!-- Recent Ledger Mintings Table -->
+          <div class="card" style="margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <div>
+                <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">Recent CPCB Ledger Mintings</h3>
+                <p class="text-muted" style="margin: 0; font-size: 0.78rem;">Cryptographic compliance tokens minted upon atomic auction settlement.</p>
+              </div>
+              <button type="button" class="btn btn-secondary" id="btn-refresh-epr" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+                ↻ Refresh Ledger
+              </button>
+            </div>
+            <div id="recent-epr-list" style="overflow-x: auto;">
+              <div class="empty-state">Loading recent ledger tokens...</div>
+            </div>
           </div>
         </div>
       </section>
@@ -323,12 +351,13 @@
           <div class="form-group">
             <label for="seller-reg-vpa">Settlement UPI VPA (Payee Destination)</label>
             <div class="input-with-button">
-              <input type="text" id="seller-reg-vpa" class="form-control" placeholder="e.g. rohini.dwcc@sbi or 9876543210@upi" required />
-              <button type="button" class="btn btn-secondary" id="btn-verify-vpa" style="white-space: nowrap;">
-                Verify Bank
+              <input type="text" id="seller-reg-vpa" class="form-control" placeholder="e.g. rohini.dwcc@oksbi or 9876543210@upi" required />
+              <button type="button" class="btn btn-secondary" id="btn-open-razorpay-verify" style="white-space: nowrap; display: inline-flex; align-items: center; gap: 0.45rem; background: linear-gradient(135deg, rgba(12, 35, 64, 0.95), rgba(23, 59, 108, 0.95)); border: 1px solid rgba(51, 149, 255, 0.5); color: #60a5fa; font-weight: 600;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#3395ff" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Verify with Razorpay
               </button>
             </div>
-            <span class="field-hint">Penny-drop verifies legal bank account name before listing scrap lots.</span>
+            <span class="field-hint">Click "Verify with Razorpay" to launch the official NPCI / Penny-Drop verification module.</span>
           </div>
 
           <div id="vpa-verification-feedback" class="hidden">
@@ -340,6 +369,139 @@
             <button type="submit" class="btn btn-primary" id="btn-save-seller">Complete Onboarding</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Official Razorpay Bank & UPI Verification Module Modal -->
+    <div id="modal-razorpay-verify" class="modal-backdrop hidden" style="z-index: 1100;">
+      <div class="modal-card" style="max-width: 560px; border: 1px solid rgba(51, 149, 255, 0.35); box-shadow: 0 15px 40px rgba(12, 35, 64, 0.6), 0 0 30px rgba(51, 149, 255, 0.15);">
+        <!-- Razorpay Branded Header -->
+        <div class="modal-header" style="background: linear-gradient(135deg, #0c2340 0%, #163866 100%); border-bottom: 1px solid rgba(51, 149, 255, 0.25); padding: 1.25rem 1.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="background: #0a1829; border: 1px solid rgba(51, 149, 255, 0.4); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#3395ff"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 style="margin: 0; font-size: 1.15rem; color: #fff; font-weight: 700;">Razorpay Verification Module</h3>
+                <span style="background: rgba(51, 149, 255, 0.2); color: #60a5fa; font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(51, 149, 255, 0.4);">TEST / LIVE</span>
+              </div>
+              <p style="margin: 0; font-size: 0.75rem; color: #94a3b8;">NPCI Reverse Lookup & RazorpayX Penny-Drop Gateway</p>
+            </div>
+          </div>
+          <button class="btn-close" id="modal-razorpay-close" style="color: #cbd5e1;">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 1.5rem; gap: 1.25rem;">
+          <!-- Seller Target Context Banner -->
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+            <div>
+              <span class="text-muted" style="display: block; font-size: 0.7rem;">ONBOARDING ENTITY</span>
+              <strong id="rzp-target-org" style="color: #38bdf8;">Loading...</strong>
+            </div>
+            <div style="text-align: right;">
+              <span class="text-muted" style="display: block; font-size: 0.7rem;">MOBILE</span>
+              <span id="rzp-target-mobile" style="color: #fff; font-family: monospace;">+91...</span>
+            </div>
+          </div>
+
+          <!-- Method Selection Tabs -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <button type="button" class="btn rzp-tab-btn active" id="rzp-tab-btn-checkout" style="padding: 0.5rem 0.4rem; font-size: 0.75rem; border: none; border-radius: 6px; background: rgba(51,149,255,0.2); color: #60a5fa; font-weight: 600;">
+              ⚡ Razorpay Popup
+            </button>
+            <button type="button" class="btn rzp-tab-btn" id="rzp-tab-btn-vpa" style="padding: 0.5rem 0.4rem; font-size: 0.75rem; border: none; border-radius: 6px; background: transparent; color: #94a3b8; font-weight: 600;">
+              Direct UPI VPA
+            </button>
+            <button type="button" class="btn rzp-tab-btn" id="rzp-tab-btn-bank" style="padding: 0.5rem 0.4rem; font-size: 0.75rem; border: none; border-radius: 6px; background: transparent; color: #94a3b8; font-weight: 600;">
+              Account + IFSC
+            </button>
+          </div>
+
+          <!-- Tab Pane 1: Official Razorpay Interactive Checkout Window -->
+          <div id="rzp-pane-checkout" class="rzp-tab-pane">
+            <div style="background: linear-gradient(135deg, rgba(12, 35, 64, 0.4), rgba(23, 59, 108, 0.2)); border: 1px solid rgba(51,149,255,0.25); border-radius: var(--radius-md); padding: 1.25rem; text-align: center;">
+              <div style="width: 48px; height: 48px; margin: 0 auto 0.75rem; background: rgba(51,149,255,0.15); border: 1px solid rgba(51,149,255,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#3395ff"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+              <h4 style="margin: 0 0 0.35rem 0; font-size: 1rem; color: #fff;">Launch Razorpay Interactive Checkout</h4>
+              <p style="margin: 0 0 1rem 0; font-size: 0.78rem; color: #94a3b8; max-width: 400px; margin-inline: auto;">
+                Opens Razorpay's authentic modal window to authorize your settlement account with a refundable <strong>₹1.00</strong> penny drop via UPI apps (GPay, PhonePe, Paytm) or NetBanking.
+              </p>
+              <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 0.4rem 0.8rem; border-radius: 6px;">
+                  <span class="text-muted" style="font-size: 0.7rem; display: block;">TEST CHARGE</span>
+                  <strong style="color: #10b981;">₹1.00 INR (Refundable)</strong>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 0.4rem 0.8rem; border-radius: 6px;">
+                  <span class="text-muted" style="font-size: 0.7rem; display: block;">GATEWAY</span>
+                  <strong style="color: #60a5fa;">Razorpay Standard v1</strong>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" id="btn-rzp-launch-checkout" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #3395ff, #0284c7); border: none; box-shadow: 0 4px 15px rgba(51,149,255,0.4); font-size: 0.92rem; font-weight: 600; padding: 0.75rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Launch Razorpay Checkout Window
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Pane 2: Direct UPI VPA Reverse Lookup -->
+          <div id="rzp-pane-vpa" class="rzp-tab-pane hidden">
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label for="rzp-input-vpa">UPI Virtual Payment Address (VPA)</label>
+              <input type="text" id="rzp-input-vpa" class="form-control" placeholder="e.g. rohini.dwcc@oksbi or 9876543210@upi" />
+            </div>
+            <!-- Quick Preset Chips -->
+            <div style="margin-bottom: 1rem;">
+              <span class="text-muted" style="font-size: 0.72rem; display: block; margin-bottom: 0.4rem;">Quick Test Profiles:</span>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                <button type="button" class="btn rzp-chip" data-vpa="rohini.dwcc@oksbi" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); color: #cbd5e1; border-radius: 4px;">
+                  ✓ SBI: rohini.dwcc@oksbi
+                </button>
+                <button type="button" class="btn rzp-chip" data-vpa="delhi.mrf@okaxis" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); color: #cbd5e1; border-radius: 4px;">
+                  ✓ Axis: delhi.mrf@okaxis
+                </button>
+                <button type="button" class="btn rzp-chip" data-vpa="test.mismatch@okaxis" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3); color: #fca5a5; border-radius: 4px;">
+                  ⚠️ Mismatch Test
+                </button>
+                <button type="button" class="btn rzp-chip" data-vpa="invalid@upi" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.25); color: #f87171; border-radius: 4px;">
+                  ✕ Rejection Test
+                </button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-rzp-verify-vpa" style="width: 100%; justify-content: center; background: #3395ff; border: none;">
+              Query NPCI Directory via Razorpay
+            </button>
+          </div>
+
+          <!-- Tab Pane 3: Bank Account Number + IFSC Penny Drop -->
+          <div id="rzp-pane-bank" class="rzp-tab-pane hidden">
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label for="rzp-input-acc">Bank Account Number (9–18 Digits)</label>
+              <input type="text" id="rzp-input-acc" class="form-control" placeholder="e.g. 50100492817264" />
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="rzp-input-ifsc">Bank IFSC Code</label>
+              <input type="text" id="rzp-input-ifsc" class="form-control" placeholder="e.g. HDFC0001234 or SBIN0000691" style="text-transform: uppercase;" />
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-rzp-verify-account" style="width: 100%; justify-content: center; background: #3395ff; border: none;">
+              Execute ₹1.00 IMPS Penny Drop via RazorpayX
+            </button>
+          </div>
+
+          <!-- Dynamic Verification Result Container -->
+          <div id="rzp-verification-result" class="hidden">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
+          <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: #94a3b8;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>256-bit Bank Grade NPCI Encryption</span>
+          </div>
+          <button type="button" class="btn btn-secondary" id="modal-razorpay-dismiss">Close</button>
+        </div>
       </div>
     </div>
 
@@ -421,8 +583,12 @@
         <div class="modal-body" id="settlement-receipt-content">
           <!-- Dynamic Settlement Breakdown -->
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="modal-receipt-done">Acknowledge Receipt</button>
+        <div class="modal-footer" style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" id="modal-receipt-done">Acknowledge</button>
+          <button type="button" class="btn btn-primary" id="modal-receipt-verify-ledger">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            Verify on Ledger →
+          </button>
         </div>
       </div>
     </div>

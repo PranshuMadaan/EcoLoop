@@ -73,7 +73,7 @@ export const getUserById = async (req, res, next) => {
     }
 
     const sql = `
-      SELECT user_id, role, mobile_number, upi_vpa, verification_status, created_at
+      SELECT user_id, role, mobile_number, upi_vpa, organization_name, cpcb_reg_number, upi_vpa_status, upi_bank_account_holder, verification_status, created_at
       FROM users
       WHERE user_id = $1;
     `;
@@ -137,7 +137,7 @@ export const listUsers = async (req, res, next) => {
     const offsetPlaceholder = `$${params.length}`;
 
     const sql = `
-      SELECT user_id, role, mobile_number, upi_vpa, verification_status, created_at
+      SELECT user_id, role, mobile_number, upi_vpa, organization_name, cpcb_reg_number, upi_vpa_status, upi_bank_account_holder, verification_status, created_at
       FROM users
       ${whereClause}
       ORDER BY created_at DESC

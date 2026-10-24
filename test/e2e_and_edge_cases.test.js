@@ -2,7 +2,7 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import app from '../src/app.js';
-import { query } from '../src/config/db.js';
+import { query, pool } from '../src/config/db.js';
 
 describe('Comprehensive EcoLoop API Test Suite & Bug Hunting', () => {
   let server;
@@ -23,6 +23,7 @@ describe('Comprehensive EcoLoop API Test Suite & Bug Hunting', () => {
     if (server) {
       await new Promise((resolve) => server.close(resolve));
     }
+    await pool.end();
   });
 
   // Helper for making JSON HTTP requests

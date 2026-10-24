@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  listAllEprTokens,
   getEprTokenById,
   verifyCertificateHash,
   getRecyclerEprTokens,
@@ -9,6 +10,9 @@ const router = Router();
 
 // Public CPCB Verification Endpoint by Certificate Hash
 router.get('/verify/:hash', verifyCertificateHash);
+
+// List all recently minted EPR tokens on the Ledger
+router.get('/tokens', listAllEprTokens);
 
 // Fetch EPR Token details by UUID
 router.get('/tokens/:id', getEprTokenById);

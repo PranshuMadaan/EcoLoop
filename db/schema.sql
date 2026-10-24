@@ -127,3 +127,24 @@ CREATE INDEX IF NOT EXISTS idx_payouts_seller ON payouts(seller_id);
 CREATE INDEX IF NOT EXISTS idx_payouts_listing ON payouts(listing_id);
 CREATE INDEX IF NOT EXISTS idx_payouts_gateway_txn ON payouts(gateway_transaction_id);
 
+-- ----------------------------------------------------------------------------
+-- 6. VPA Verifications Table (Audit Trail for NPCI Penny-Drop Reverse Lookups)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS vpa_verifications (
+    verification_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    upi_vpa VARCHAR(255) NOT NULL,
+    account_holder_name VARCHAR(255) NOT NULL,
+    bank_name VARCHAR(100) NOT NULL,
+    ifsc_prefix VARCHAR(10),
+    penny_drop_status VARCHAR(20) DEFAULT 'SUCCESS',
+    reference_id VARCHAR(50) UNIQUE NOT NULL,
+    mobile_number VARCHAR(15),
+    organization_name VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_vpa_verifications_vpa ON vpa_verifications(upi_vpa);
+CREATE INDEX IF NOT EXISTS idx_vpa_verifications_ref ON vpa_verifications(reference_id);
+CREATE INDEX IF NOT EXISTS idx_vpa_verifications_mobile ON vpa_verifications(mobile_number);
+
+
