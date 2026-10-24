@@ -59,6 +59,19 @@ Every bug documented herein was resolved following the **Mandatory 6-Step Debugg
 
 ---
 
+### BUG-005: HTML5 Step-Mismatch Validation Rejection on Valid Bid Amounts
+- **Target Area**: `frontend/index.html` & `frontend/src/main.js`
+- **Severity**: Medium
+- **Symptoms**: When entering a valid bid amount (such as ₹26,760 on a ₹26,250 reserve listing), form submission was blocked with the browser validation message: *"Please enter a valid value. The two nearest valid values are 26751 and 26801."*
+- **Root Cause**: The bid input `<input type="number" id="bid-amount-input">` had `step="50"`. In HTML5 form validation, when `min` is dynamically set to an offset boundary (e.g., `targetThreshold + 1 = 26751`), the browser strictly allows only `min + (k * step)` (e.g., 26751, 26801, 26851). Arbitrary round amounts (e.g. 26760) failed the step-alignment check despite being well above the minimum bid.
+- **Resolution**:
+  1. Changed `step="50"` to `step="any"` on `bid-amount-input`, `create-weight`, and `create-price` in `frontend/index.html`.
+  2. In `frontend/src/main.js`, dynamically enforced `elements.bidAmountInput.step = 'any'` and corrected the minimum bid calculation:
+     `const minimumBid = highestBid > 0 ? highestBid + 1 : minPrice;`
+- **Verification**: Tested bid submission with ₹26,760 via API and verified form acceptance and database persistence.
+
+---
+
 ## Verification Summary
 - **Test Command**: `npm test`
 - **Total Tests**: 58 passing tests across 23 test suites

@@ -230,11 +230,15 @@ function handleListingSelectChange() {
 
   const minPrice = Number(selectedOption.getAttribute('data-min')) || 0;
   const highestBid = Number(selectedOption.getAttribute('data-highest')) || 0;
-  const targetThreshold = Math.max(minPrice, highestBid);
+  
+  // If bids already exist, new bid must strictly exceed highest bid (> highestBid).
+  // If no bids placed yet, new bid must meet or exceed the reserve price (>= minPrice).
+  const minimumBid = highestBid > 0 ? highestBid + 1 : minPrice;
 
-  elements.bidAmountInput.min = targetThreshold + 1;
-  elements.bidAmountInput.value = targetThreshold + 500;
-  elements.bidHint.textContent = `Minimum allowed bid: ₹${(targetThreshold + 1).toLocaleString('en-IN')}`;
+  elements.bidAmountInput.min = minimumBid;
+  elements.bidAmountInput.step = 'any';
+  elements.bidAmountInput.value = minimumBid > 0 ? Math.ceil(minimumBid / 100) * 100 : 1000;
+  elements.bidHint.textContent = `Minimum allowed bid: ₹${minimumBid.toLocaleString('en-IN')}`;
 
   loadListingBids(selectedOption.value);
 }
