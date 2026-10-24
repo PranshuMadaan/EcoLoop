@@ -1,0 +1,48 @@
+{
+  "name": "Patiala Municipal Ward Scenario",
+  "description": "Demo seed: one municipal garage depot, ten ward collection points, and four processing facilities around Patiala, Punjab. Coordinates are approximate seed data for the optimizer demo.",
+  "nodes": [
+    {
+      "id": 0,
+      "name": "Municipal Garage (Depot)",
+      "type": 0,
+      "lat": 30.3534,
+      "lon": 76.3608,
+      "organic": 0, "dry": 0, "hw": 0, "dry_non_recyclable": 0,
+      "service_time": 0
+    },
+    { "id": 1, "name": "Model Town", "type": 1, "lat": 30.3450, "lon": 76.3800,
+      "organic": 45, "dry": 20, "hw": 2, "dry_non_recyclable": 12, "service_time": 90 },
+    { "id": 2, "name": "Leela Bhawan", "type": 1, "lat": 30.3398, "lon": 76.3869,
+      "organic": 55, "dry": 25, "hw": 0, "dry_non_recyclable": 15, "service_time": 90 },
+    { "id": 3, "name": "Urban Estate Phase II", "type": 1, "lat": 30.3250, "lon": 76.4000,
+      "organic": 38, "dry": 18, "hw": 1, "dry_non_recyclable": 20, "service_time": 90 },
+    { "id": 4, "name": "Tripuri", "type": 1, "lat": 30.3120, "lon": 76.3750,
+      "organic": 62, "dry": 22, "hw": 0, "dry_non_recyclable": 25, "service_time": 120 },
+    { "id": 5, "name": "Rajpura Road", "type": 1, "lat": 30.3700, "lon": 76.3850,
+      "organic": 30, "dry": 28, "hw": 4, "dry_non_recyclable": 10, "service_time": 90 },
+    { "id": 6, "name": "Qila Mubarak / Old City", "type": 1, "lat": 30.3375, "lon": 76.3795,
+      "organic": 50, "dry": 15, "hw": 0, "dry_non_recyclable": 18, "service_time": 120 },
+    { "id": 7, "name": "Baradari Garden", "type": 1, "lat": 30.3520, "lon": 76.3730,
+      "organic": 25, "dry": 12, "hw": 1, "dry_non_recyclable": 8, "service_time": 60 },
+    { "id": 8, "name": "Sular Road", "type": 1, "lat": 30.3270, "lon": 76.3420,
+      "organic": 42, "dry": 16, "hw": 0, "dry_non_recyclable": 14, "service_time": 90 },
+    { "id": 9, "name": "Patiala Cantt", "type": 1, "lat": 30.3760, "lon": 76.3600,
+      "organic": 33, "dry": 24, "hw": 3, "dry_non_recyclable": 11, "service_time": 90 },
+    { "id": 10, "name": "Punjabi University", "type": 1, "lat": 30.3610, "lon": 76.4150,
+      "organic": 48, "dry": 30, "hw": 2, "dry_non_recyclable": 16, "service_time": 120 },
+
+    { "id": 11, "name": "Transfer Station (EW)", "type": 2, "lat": 30.3560, "lon": 76.3540,
+      "organic": 0, "dry": 0, "hw": 0, "dry_non_recyclable": 0, "service_time": 300 },
+    { "id": 12, "name": "Composting Facility", "type": 3, "lat": 30.3600, "lon": 76.4400,
+      "organic": 0, "dry": 0, "hw": 0, "dry_non_recyclable": 0, "service_time": 600 },
+    { "id": 13, "name": "Material Recovery Facility", "type": 4, "lat": 30.3050, "lon": 76.3900,
+      "organic": 0, "dry": 0, "hw": 0, "dry_non_recyclable": 0, "service_time": 600 },
+    { "id": 14, "name": "Landfill", "type": 5, "lat": 30.4100, "lon": 76.3100,
+      "organic": 0, "dry": 0, "hw": 0, "dry_non_recyclable": 0, "service_time": 900 }
+  ],
+  "suggested_vehicles": [
+    { "id": 1, "capacity_organic": 400, "capacity_dry": 300, "capacity_hw": 50, "capacity_dry_non_recyclable": 300, "shift_seconds": 28800 },
+    { "id": 2, "capacity_organic": 400, "capacity_dry": 300, "capacity_hw": 50, "capacity_dry_non_recyclable": 300, "shift_seconds": 28800 }
+  ]
+}

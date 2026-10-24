@@ -285,6 +285,17 @@ app.post('/api/optimize', async (req, res) => {
   });
 });
 
+// Demo scenario seed (Patiala wards + processing facilities)
+app.get('/api/scenario', (req, res) => {
+  try {
+    const scenario = JSON.parse(fs.readFileSync(path.join(__dirname, 'scenarios/patiala.json'), 'utf8'));
+    return res.json(scenario);
+  } catch (err) {
+    console.error('[server] Failed to load scenario:', err);
+    return res.status(500).json({ error: 'Failed to load scenario seed' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`EcoLoop API Bridge running on port ${PORT} ` +
     `(Mapbox matrix ${process.env.MAPBOX_ACCESS_TOKEN ? 'enabled' : 'NOT configured — haversine fallback'})`);

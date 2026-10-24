@@ -15,6 +15,18 @@ L.Icon.Default.mergeOptions({
 // One color per vehicle route, cycled when the fleet is larger
 const TRUCK_COLORS = ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#dc2626', '#0891b2'];
 
+// Node type metadata — must mirror the C++ engine's NodeType enum
+const TYPE_INFO = {
+  0: { label: 'DEPOT', color: '#3182ce' },
+  1: { label: 'STOP', color: '#38a169' },
+  2: { label: 'TRANSFER STATION', color: '#dd6b20' },
+  3: { label: 'COMPOSTING', color: '#92400e' },
+  4: { label: 'MRF', color: '#0d9488' },
+  5: { label: 'LANDFILL', color: '#718096' }
+};
+
+const isFacility = (type) => type >= 2;
+
 /**
  * Child component inside MapContainer that captures user clicks to add new collection stops.
  */
@@ -33,7 +45,7 @@ function MapClickHandler({ onMapClick }) {
 const initialNodes = [
   {
     id: 0,
-    name: 'DWCC Central Hub (Depot)',
+    name: 'Municipal Garage (Depot)',
     type: 0, // 0 = Depot
     lat: 30.3534,
     lon: 76.3608,
@@ -173,6 +185,44 @@ export default function OptimizerPage() {
     setVehicles((prev) => (prev.length > 1 ? prev.filter((v) => v.id !== id) : prev));
   };
 
+  // Load the seeded Patiala scenario (depot, wards, processing facilities)
+  const handleLoadScenario = async () => {
+    setStatusAlert(null);
+    try {
+      const response = await fetch('http://localhost:3000/api/scenario');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const scenario = await response.json();
+
+      setNodes(scenario.nodes.map((n) => ({
+        id: n.id,
+        name: n.name,
+        type: n.type,
+        lat: n.lat,
+        lon: n.lon,
+        organic: n.organic,
+        dry: n.dry,
+        hw: n.hw,
+        dry_non_recyclable: n.dry_non_recyclable,
+        service_time: n.service_time
+      })));
+      if (Array.isArray(scenario.suggested_vehicles) && scenario.suggested_vehicles.length > 0) {
+        setVehicles(scenario.suggested_vehicles);
+      }
+      setRouteResults([]);
+      setUnservedIds([]);
+      setDistanceSource(null);
+      setStatusAlert({
+        kind: 'success',
+        message: `Loaded "${scenario.name}": ${scenario.nodes.filter((n) => n.type === 1).length} wards, ${scenario.nodes.filter((n) => n.type >= 2).length} facilities.`
+      });
+    } catch (error) {
+      setStatusAlert({
+        kind: 'error',
+        message: `Could not load scenario — ${error.message}. Is the backend (localhost:3000) running?`
+      });
+    }
+  };
+
   // Interactive map click handler to add new collection point at clicked coordinates
   const handleMapClick = (lat, lng) => {
     // Clear existing routes so stale polylines disappear immediately
@@ -205,9 +255,10 @@ export default function OptimizerPage() {
     setIsOptimizing(true);
 
     // The backend builds the distance matrix (road distances when a Mapbox
-    // token is configured) — the client only sends nodes and the fleet
+    // token is configured) — the client only sends nodes and the fleet.
+    // Only collection points are routed; facilities are disposal destinations.
     const unassignedStops = nodes
-      .filter((node) => node.id !== 0)
+      .filter((node) => node.type === 1)
       .map((node) => node.id);
 
     const routingPayload = {
@@ -332,31 +383,55 @@ export default function OptimizerPage() {
         </div>
 
         {/* Primary Action Button */}
-        <button
-          id="optimize-fleet-btn"
-          onClick={handleOptimize}
-          disabled={isOptimizing}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            width: '100%',
-            padding: '11px 16px',
-            backgroundColor: isOptimizing ? '#a0aec0' : '#38a169',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '14px',
-            fontWeight: 600,
-            cursor: isOptimizing ? 'not-allowed' : 'pointer',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            transition: 'background-color 0.2s'
-          }}
-        >
-          <Play size={16} fill={isOptimizing ? 'none' : 'currentColor'} />
-          {isOptimizing ? 'Calculating Routes...' : 'Optimize Fleet Routes'}
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            id="optimize-fleet-btn"
+            onClick={handleOptimize}
+            disabled={isOptimizing}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              flex: 1,
+              padding: '11px 16px',
+              backgroundColor: isOptimizing ? '#a0aec0' : '#38a169',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: isOptimizing ? 'not-allowed' : 'pointer',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              transition: 'background-color 0.2s'
+            }}
+          >
+            <Play size={16} fill={isOptimizing ? 'none' : 'currentColor'} />
+            {isOptimizing ? 'Calculating Routes...' : 'Optimize Fleet Routes'}
+          </button>
+          <button
+            id="load-scenario-btn"
+            onClick={handleLoadScenario}
+            title="Replace the node list with the seeded Patiala wards and processing facilities"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '11px 12px',
+              backgroundColor: '#ffffff',
+              color: '#2d3748',
+              border: '1px solid #cbd5e0',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            <MapPin size={14} />
+            Patiala Scenario
+          </button>
+        </div>
 
         {/* Status Alert */}
         {statusAlert && (() => {
@@ -598,7 +673,7 @@ export default function OptimizerPage() {
               Collection Points & Demands
             </h3>
             <span style={{ fontSize: '11px', color: '#718096' }}>
-              {nodes.length} stops (incl. Depot)
+              {nodes.filter((n) => n.type === 1).length} stops • {nodes.filter((n) => n.type >= 2).length} facilities • 1 depot
             </span>
           </div>
           <div
@@ -624,7 +699,8 @@ export default function OptimizerPage() {
         {/* Nodes List / Form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
           {nodes.map((node) => {
-            const isDepot = node.id === 0;
+            const info = TYPE_INFO[node.type] || TYPE_INFO[1];
+            const isDepot = node.type === 0;
             const isUnserved = unservedIds.includes(node.id);
             return (
               <div
@@ -633,7 +709,7 @@ export default function OptimizerPage() {
                   padding: '12px',
                   backgroundColor: isDepot ? '#f7fafc' : '#ffffff',
                   border: isUnserved ? '1px solid #fc8181' : (isDepot ? '1px solid #cbd5e0' : '1px solid #e2e8f0'),
-                  borderLeft: isDepot ? '4px solid #3182ce' : (isUnserved ? '4px solid #e53e3e' : '4px solid #38a169'),
+                  borderLeft: `4px solid ${isUnserved ? '#e53e3e' : info.color}`,
                   borderRadius: '6px',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
                 }}
@@ -647,12 +723,12 @@ export default function OptimizerPage() {
                         fontWeight: 700,
                         padding: '2px 6px',
                         borderRadius: '4px',
-                        backgroundColor: isDepot ? '#ebf8ff' : (isUnserved ? '#fff5f5' : '#f0fff4'),
-                        color: isDepot ? '#2b6cb0' : (isUnserved ? '#c53030' : '#276749'),
+                        backgroundColor: isUnserved ? '#fff5f5' : (isDepot ? '#ebf8ff' : '#f0fff4'),
+                        color: isUnserved ? '#c53030' : (isDepot ? '#2b6cb0' : '#276749'),
                         flexShrink: 0
                       }}
                     >
-                      {isDepot ? 'DEPOT' : (isUnserved ? 'UNSERVED' : `STOP #${node.id}`)}
+                      {isUnserved ? 'UNSERVED' : (isFacility(node.type) ? info.label : (isDepot ? 'DEPOT' : `STOP #${node.id}`))}
                     </span>
                     <span
                       style={{
@@ -699,6 +775,45 @@ export default function OptimizerPage() {
                       style={{ ...inputStyle, borderColor: '#e2e8f0' }}
                     />
                   </div>
+                  <div>
+                    <label htmlFor={`hw-${node.id}`} style={labelStyle}>Hazardous/E-waste (kg)</label>
+                    <input
+                      id={`hw-${node.id}`}
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={node.hw}
+                      onChange={(e) => handleWasteChange(node.id, 'hw', e.target.value)}
+                      style={{ ...inputStyle, borderColor: '#e2e8f0' }}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor={`nr-${node.id}`} style={labelStyle}>Non-Recyclable (kg)</label>
+                    <input
+                      id={`nr-${node.id}`}
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={node.dry_non_recyclable}
+                      onChange={(e) => handleWasteChange(node.id, 'dry_non_recyclable', e.target.value)}
+                      style={{ ...inputStyle, borderColor: '#e2e8f0' }}
+                    />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label htmlFor={`service-${node.id}`} style={labelStyle}>Service Time (minutes)</label>
+                    <input
+                      id={`service-${node.id}`}
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={node.service_time === '' ? '' : Number(node.service_time) / 60}
+                      onChange={(e) => {
+                        const minutes = e.target.value === '' ? '' : Math.max(0, parseFloat(e.target.value) || 0);
+                        setNodes((prev) => prev.map((n) => n.id === node.id ? { ...n, service_time: minutes === '' ? '' : minutes * 60 } : n));
+                      }}
+                      style={{ ...inputStyle, borderColor: '#e2e8f0' }}
+                    />
+                  </div>
                 </div>
               </div>
             );
@@ -741,23 +856,53 @@ export default function OptimizerPage() {
               </Popup>
             </CircleMarker>
           ))}
-          {nodes.map((node) => (
-            <Marker key={node.id} position={[Number(node.lat), Number(node.lon)]}>
-              <Popup>
-                <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
-                  <strong style={{ color: node.id === 0 ? '#2b6cb0' : '#276749' }}>
-                    {node.id === 0 ? 'DWCC Central Hub (Depot)' : (node.name || `Collection Point ${node.id}`)}
-                  </strong>
-                  <div style={{ marginTop: '4px', color: '#4a5568' }}>
-                    <div><strong>Node ID:</strong> {node.id}</div>
-                    <div><strong>Organic Waste:</strong> {node.organic} kg</div>
-                    <div><strong>Dry Waste:</strong> {node.dry} kg</div>
-                    <div><strong>Coordinates:</strong> {Number(node.lat).toFixed(4)}, {Number(node.lon).toFixed(4)}</div>
+          {nodes.map((node) => {
+            const pos = [Number(node.lat), Number(node.lon)];
+            if (isFacility(node.type)) {
+              const info = TYPE_INFO[node.type] || TYPE_INFO[2];
+              const accepts = {
+                2: 'Hazardous / e-waste',
+                3: 'Organic (composting)',
+                4: 'Dry recyclables (MRF)',
+                5: 'Non-recyclable residue'
+              }[node.type];
+              return (
+                <CircleMarker
+                  key={node.id}
+                  center={pos}
+                  radius={9}
+                  pathOptions={{ color: '#ffffff', fillColor: info.color, fillOpacity: 0.95, weight: 2 }}
+                >
+                  <Popup>
+                    <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
+                      <strong style={{ color: info.color }}>{info.label}</strong>
+                      <div>{node.name}</div>
+                      <div style={{ marginTop: '4px', color: '#4a5568' }}>
+                        <div><strong>Accepts:</strong> {accepts}</div>
+                      </div>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              );
+            }
+            return (
+              <Marker key={node.id} position={pos}>
+                <Popup>
+                  <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
+                    <strong style={{ color: node.type === 0 ? '#2b6cb0' : '#276749' }}>
+                      {node.type === 0 ? 'Municipal Garage (Depot)' : (node.name || `Collection Point ${node.id}`)}
+                    </strong>
+                    <div style={{ marginTop: '4px', color: '#4a5568' }}>
+                      <div><strong>Node ID:</strong> {node.id}</div>
+                      <div><strong>Organic Waste:</strong> {node.organic} kg</div>
+                      <div><strong>Dry Waste:</strong> {node.dry} kg</div>
+                      <div><strong>Coordinates:</strong> {Number(node.lat).toFixed(4)}, {Number(node.lon).toFixed(4)}</div>
+                    </div>
                   </div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+                </Popup>
+              </Marker>
+            );
+          })}
         </MapContainer>
       </main>
     </div>
