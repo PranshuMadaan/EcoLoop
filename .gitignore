@@ -10,3 +10,5 @@ Thumbs.db
 .neon
 .agents/
 skills-lock.json
+route-engine/build/
+.cache/

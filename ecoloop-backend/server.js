@@ -1,9 +1,14 @@
 const express = require('express');
 const { spawn } = require('child_process');
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// C++ routing engine binary produced by CMake (route-engine/README.md has build steps)
+const ENGINE_BIN = path.resolve(__dirname, '../route-engine/build/src/waste_router_cli');
 
 // Middleware
 app.use(cors());
@@ -15,8 +20,14 @@ app.post('/api/optimize', (req, res) => {
 
   console.log('[server] POST /api/optimize received. Request body keys:', Object.keys(req.body));
 
-  // Spawn C++ binary located at '../route-engine/build/optimise-routes'
-  const engineProcess = spawn('../route-engine/build/optimise-routes');
+  if (!fs.existsSync(ENGINE_BIN)) {
+    console.error(`[server] Route engine binary not found at ${ENGINE_BIN}`);
+    return res.status(500).json({
+      error: 'Route engine binary not found. Build it first — see route-engine/README.md'
+    });
+  }
+
+  const engineProcess = spawn(ENGINE_BIN);
 
   let outputData = '';
   let errorData = '';
