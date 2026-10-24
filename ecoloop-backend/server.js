@@ -118,6 +118,32 @@ app.post('/api/optimize', (req, res) => {
   });
 });
 
+// POST /api/ivr-dispatch endpoint (Tier 2 IVR mock for Twilio/Exotel)
+app.post('/api/ivr-dispatch', (req, res) => {
+  const { phone_number, language } = req.body;
+
+  if (!phone_number) {
+    return res.status(400).json({ error: 'Phone number is required for IVR dispatch' });
+  }
+
+  let text_to_speech;
+  switch (language) {
+    case 'hi':
+      text_to_speech = 'DWCC Central Hub par pickup uplabdh hai. 15 kilo sookha kachra jama karein.';
+      break;
+    case 'en':
+    default:
+      text_to_speech = 'Pickup available at DWCC Central Hub. Deliver 15kg of dry waste.';
+      break;
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    action: 'play_audio',
+    text_to_speech
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`EcoLoop API Bridge running on port ${PORT}`);
 });

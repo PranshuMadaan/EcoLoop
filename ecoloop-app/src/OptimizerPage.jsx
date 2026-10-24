@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MapContainer, TileLayer, Polyline, Marker, Popup, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { Play, AlertCircle, Truck, MapPin } from 'lucide-react'
+import { Play, AlertCircle, Truck, MapPin, ClipboardList } from 'lucide-react'
 import L from 'leaflet'
 
 // Fix for Vite + Leaflet missing marker icons
@@ -149,6 +149,20 @@ export default function OptimizerPage() {
   const [routePoints, setRoutePoints] = useState([])
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [statusAlert, setStatusAlert] = useState(null)
+  const [workerId, setWorkerId] = useState('');
+  const [depositVolume, setDepositVolume] = useState('');
+
+  // Tier 3 Manual Intake Ledger submission handler
+  const handleDepositLog = (e) => {
+    e.preventDefault();
+    if (!workerId || !depositVolume) {
+      alert('Please fill in both fields');
+      return;
+    }
+    alert(`Deposit of ${depositVolume}kg logged for Worker ${workerId}. Trust Score updated.`);
+    setWorkerId('');
+    setDepositVolume('');
+  };
 
   // Handle editing organic and dry waste values for a node
   const handleWasteChange = (id, field, value) => {
@@ -479,6 +493,98 @@ export default function OptimizerPage() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Tier 3: Depot Intake (No Phone) */}
+        <div
+          style={{
+            padding: '12px',
+            backgroundColor: '#f7fafc',
+            border: '1px solid #edf2f7',
+            borderRadius: '6px',
+            fontSize: '12px',
+            color: '#4a5568'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#2d3748', marginBottom: '8px' }}>
+            <ClipboardList size={14} color="#d69e2e" />
+            <span>Tier 3: Depot Intake (No Phone)</span>
+          </div>
+          <form onSubmit={handleDepositLog} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div>
+                <label
+                  htmlFor="worker-id-input"
+                  style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
+                >
+                  Worker ID
+                </label>
+                <input
+                  id="worker-id-input"
+                  type="text"
+                  placeholder="e.g. W-102"
+                  value={workerId}
+                  onChange={(e) => setWorkerId(e.target.value)}
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '6px 8px',
+                    fontSize: '12px',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '4px',
+                    backgroundColor: '#ffffff',
+                    color: '#2d3748'
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="deposit-volume-input"
+                  style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
+                >
+                  Segregated Volume (kg)
+                </label>
+                <input
+                  id="deposit-volume-input"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  placeholder="e.g. 15"
+                  value={depositVolume}
+                  onChange={(e) => setDepositVolume(e.target.value)}
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '6px 8px',
+                    fontSize: '12px',
+                    border: '1px solid #cbd5e0',
+                    borderRadius: '4px',
+                    backgroundColor: '#ffffff',
+                    color: '#2d3748'
+                  }}
+                />
+              </div>
+            </div>
+            <button
+              id="log-deposit-btn"
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '7px 12px',
+                backgroundColor: '#3182ce',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+                marginTop: '2px'
+              }}
+            >
+              Log Deposit & Update Score
+            </button>
+          </form>
         </div>
 
         {/* Nodes Form Header & Map Click Hint */}
