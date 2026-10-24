@@ -258,9 +258,29 @@ function renderListings(listings) {
     })
     .join('');
 
-  // Attach dynamic card actions
+  // Attach dynamic card actions: clicking anywhere on a scrap card opens the bidding panel
+  document.querySelectorAll('.listing-card').forEach((card) => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      // Don't trigger if clicking the accept bid button
+      if (e.target.closest('.btn-accept-bid')) return;
+      const listingId = card.getAttribute('data-id');
+      switchTab('bids');
+      if (elements.bidListingSelect) {
+        elements.bidListingSelect.value = listingId;
+        handleListingSelectChange();
+      }
+      // Smooth scroll to bidding form
+      const formBid = document.getElementById('form-bid');
+      if (formBid) {
+        formBid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  });
+
   document.querySelectorAll('.btn-quick-bid').forEach((btn) => {
     btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const listingId = e.currentTarget.getAttribute('data-id');
       switchTab('bids');
       elements.bidListingSelect.value = listingId;
@@ -270,6 +290,7 @@ function renderListings(listings) {
 
   document.querySelectorAll('.btn-accept-bid').forEach((btn) => {
     btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
       const listingId = e.currentTarget.getAttribute('data-id');
       await handleAcceptBid(listingId);
     });
@@ -1319,6 +1340,9 @@ function switchTab(tabName) {
   if (tabName === 'epr') {
     fetchRecentEprTokens();
   }
+  if (tabName === 'iwl') {
+    loadWorkerLedgerData();
+  }
 }
 
 // ============================================================================
@@ -1449,11 +1473,448 @@ async function loadSellersFromDatabase() {
   }
 }
 
-// Initial loads
+  // Theme Management (Light / Dark mode)
+  initTheme();
+
+  // IWL (Informal Worker Ledger) initial setup
+  initIwlListeners();
+
+  // Initial loads
   checkHealth();
   fetchListings();
   loadSellersFromDatabase();
   fetchRecentEprTokens();
 }
 
+// ============================================================================
+// IWL (Informal Worker Digital Ledger) Frontend Controllers
+// ============================================================================
+
+let currentIwlLanguage = 'hi';
+
+function generateDeterministicSvgQr(hashString, size = 140) {
+  const gridSize = 21;
+  const cellSize = size / gridSize;
+  let seed = 0;
+  for (let i = 0; i < hashString.length; i++) {
+    seed = (seed * 31 + hashString.charCodeAt(i)) >>> 0;
+  }
+  const pseudoRandom = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return (seed >>> 16) / 65536;
+  };
+
+  const isPositionFinder = (r, c) => {
+    if (r < 7 && c < 7) {
+      if (r === 0 || r === 6 || c === 0 || c === 6) return true;
+      if (r >= 2 && r <= 4 && c >= 2 && c <= 4) return true;
+      return false;
+    }
+    if (r < 7 && c >= gridSize - 7) {
+      const oc = c - (gridSize - 7);
+      if (r === 0 || r === 6 || oc === 0 || oc === 6) return true;
+      if (r >= 2 && r <= 4 && oc >= 2 && oc <= 4) return true;
+      return false;
+    }
+    if (r >= gridSize - 7 && c < 7) {
+      const or = r - (gridSize - 7);
+      if (or === 0 || or === 6 || c === 0 || c === 6) return true;
+      if (or >= 2 && or <= 4 && c >= 2 && c <= 4) return true;
+      return false;
+    }
+    return null;
+  };
+
+  let rects = '';
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      const finder = isPositionFinder(r, c);
+      let filled;
+      if (finder !== null) {
+        filled = finder;
+      } else if (r === 6 || c === 6) {
+        filled = (r + c) % 2 === 0;
+      } else {
+        filled = pseudoRandom() > 0.45;
+      }
+      if (filled) {
+        rects += `<rect x="${c * cellSize}" y="${r * cellSize}" width="${cellSize}" height="${cellSize}" fill="#064e3b" />`;
+      }
+    }
+  }
+
+  return `
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="background: #ffffff; border-radius: 8px; padding: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+      <rect width="${size}" height="${size}" fill="#ffffff" rx="6" />
+      ${rects}
+    </svg>
+  `;
+}
+
+async function loadWorkerLedgerData() {
+  const workerSelect = document.getElementById('iwl-worker-select');
+  const workerId = workerSelect ? workerSelect.value : '77777777-7777-7777-7777-777777777701';
+
+  const cardContainer = document.getElementById('iwl-digital-id-card');
+  const receiptsContainer = document.getElementById('iwl-receipts-table-container');
+
+  try {
+    const res = await fetch(`${API_BASE}/iwl/worker/${workerId}/ledger`);
+    const body = await res.json();
+
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Failed to load worker ledger');
+    }
+
+    const { worker, lifetime_impact, recent_payout_receipts } = body.data;
+
+    // Update Environmental Impact stats
+    const elRecycled = document.getElementById('iwl-stat-recycled');
+    const elCo2 = document.getElementById('iwl-stat-co2');
+    const elTrees = document.getElementById('iwl-stat-trees');
+
+    if (elRecycled) elRecycled.textContent = `${lifetime_impact.total_weight_kg.toLocaleString('en-IN')} kg`;
+    if (elCo2) elCo2.textContent = `${lifetime_impact.estimated_co2_offset_kg.toLocaleString('en-IN')} kg`;
+    if (elTrees) elTrees.textContent = `${lifetime_impact.equivalent_trees_planted.toLocaleString('en-IN')}`;
+
+    // Render Scannable Digital ID Card
+    const qrSvg = generateDeterministicSvgQr(worker.qr_code_hash, 130);
+    const initials = worker.full_name ? worker.full_name.slice(0, 2).toUpperCase() : 'WK';
+
+    if (cardContainer) {
+      cardContainer.innerHTML = `
+        <div class="worker-id-card" style="background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%); border: 1px solid rgba(16,185,129,0.35); border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative; overflow: hidden; color: #ffffff;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="background: #10b981; color: #ffffff; font-weight: 900; font-size: 0.85rem; padding: 3px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(16,185,129,0.4);">♻</span>
+              <div>
+                <span style="font-size: 0.8rem; font-weight: 800; color: #34d399; letter-spacing: 0.5px; text-transform: uppercase;">EcoLoop IWL</span>
+                <span style="font-size: 0.7rem; color: #ffffff; display: block; opacity: 0.95;">Informal Worker Digital ID</span>
+              </div>
+            </div>
+            <span style="background: rgba(16,185,129,0.25); border: 1px solid #10b981; color: #6ee7b7; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;">
+              ✓ Verified Green-Collar
+            </span>
+          </div>
+
+          <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.25rem;">
+            <div style="width: 58px; height: 58px; border-radius: 14px; background: #022c22; border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; color: #34d399; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+              ${initials}
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <h3 style="margin: 0; font-size: 1.25rem; color: #ffffff !important; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${worker.full_name}</h3>
+              <p style="margin: 3px 0 5px 0; font-size: 0.78rem; color: #a7f3d0; font-weight: 500;">${worker.cooperative || 'Independent Recycler'}</p>
+              <span style="font-family: monospace; font-size: 0.75rem; color: #ffffff !important; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25); padding: 3px 8px; border-radius: 6px; display: inline-block; font-weight: 700;">ID: ${worker.municipal_id || 'MCD-2026-IWL'}</span>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 0.85rem; display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+            <div style="flex-shrink: 0;">${qrSvg}</div>
+            <div style="flex: 1; font-size: 0.75rem; color: #ffffff;">
+              <div style="margin-bottom: 0.45rem;">
+                <span style="display: block; font-size: 0.68rem; text-transform: uppercase; color: #e2e8f0; font-weight: 600; letter-spacing: 0.03em;">UPI Settlement VPA</span>
+                <strong style="color: #34d399; font-family: monospace; font-size: 0.85rem;">${worker.upi_vpa || 'Not Linked'}</strong>
+              </div>
+              <div style="margin-bottom: 0.45rem;">
+                <span style="display: block; font-size: 0.68rem; text-transform: uppercase; color: #e2e8f0; font-weight: 600; letter-spacing: 0.03em;">Mobile</span>
+                <span style="color: #ffffff; font-family: monospace; font-weight: 600;">${worker.mobile_number || '+91...'}</span>
+              </div>
+              <div>
+                <span style="display: block; font-size: 0.68rem; text-transform: uppercase; color: #e2e8f0; font-weight: 600; letter-spacing: 0.03em;">QR Hash</span>
+                <span style="font-family: monospace; font-size: 0.7rem; color: #ffffff; word-break: break-all; opacity: 0.95;">${worker.qr_code_hash}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard?.writeText('${worker.qr_code_hash}'); showToast('QR Hash copied to clipboard!');" style="flex: 1; padding: 0.55rem; font-size: 0.78rem; color: #ffffff !important; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);">
+              📋 Copy QR Hash
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="window.print()" style="flex: 1; padding: 0.55rem; font-size: 0.78rem; color: #ffffff !important; font-weight: 700;">
+              🖨️ Print ID Card
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render Recent Receipts Table
+    if (receiptsContainer) {
+      if (!recent_payout_receipts || recent_payout_receipts.length === 0) {
+        receiptsContainer.innerHTML = '<div class="empty-state">No recorded payout transactions for this worker yet.</div>';
+      } else {
+        receiptsContainer.innerHTML = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>UTR Number</th>
+                <th>Material</th>
+                <th>Weight</th>
+                <th>Rate</th>
+                <th>Amount (INR)</th>
+                <th>Destination VPA</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${recent_payout_receipts
+                .map(
+                  (r) => `
+                <tr>
+                  <td><strong style="color: #34d399; font-family: monospace;">${r.utr_number || '--'}</strong></td>
+                  <td>${(r.material_grade || '').replace(/_/g, ' ')}</td>
+                  <td>${r.net_weight_kg} kg</td>
+                  <td>₹${r.rate_per_kg}/kg</td>
+                  <td><strong style="color: #fff;">₹${Number(r.amount_inr).toLocaleString('en-IN')}</strong></td>
+                  <td style="font-family: monospace; font-size: 0.75rem; color: #94a3b8;">${r.upi_vpa}</td>
+                  <td><span class="status-tag COMPLETED">${r.status || 'PROCESSED'}</span></td>
+                  <td style="font-size: 0.75rem; color: #94a3b8;">${new Date(r.processed_at).toLocaleDateString('en-IN')}</td>
+                </tr>
+              `
+                )
+                .join('')}
+            </tbody>
+          </table>
+        `;
+      }
+    }
+  } catch (err) {
+    if (cardContainer) {
+      cardContainer.innerHTML = `<div class="empty-state" style="color: #f87171;">Failed to load worker profile: ${err.message}</div>`;
+    }
+  }
+}
+
+function calculateIwlWeighIn() {
+  const grossInput = document.getElementById('iwl-gross-weight');
+  const tareInput = document.getElementById('iwl-tare-weight');
+  const displayPayout = document.getElementById('iwl-display-payout');
+  const mathText = document.getElementById('iwl-weight-math');
+
+  const selectedGradeRadio = document.querySelector('input[name="iwl_grade"]:checked');
+  const rate = selectedGradeRadio ? parseFloat(selectedGradeRadio.getAttribute('data-rate')) : 22.0;
+
+  const gross = parseFloat(grossInput ? grossInput.value : 0) || 0;
+  const tare = parseFloat(tareInput ? tareInput.value : 0) || 0;
+  const net = Math.max(0, parseFloat((gross - tare).toFixed(2)));
+  const total = Math.max(0, parseFloat((net * rate).toFixed(2)));
+
+  if (displayPayout) {
+    displayPayout.textContent = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  }
+  if (mathText) {
+    mathText.textContent = `Net: ${net.toFixed(2)} kg × ₹${rate.toFixed(2)}/kg`;
+  }
+
+  return { gross, tare, net, rate, total };
+}
+
+function handleIwlVoicePulse() {
+  const pulseBtn = document.getElementById('btn-iwl-voice-pulse');
+  const feedback = document.getElementById('iwl-voice-feedback');
+
+  if (!pulseBtn) return;
+
+  pulseBtn.style.transform = 'scale(1.15)';
+  pulseBtn.style.background = '#f43f5e';
+  pulseBtn.textContent = '🎙️';
+  if (feedback) feedback.textContent = 'Listening... Speak scrap weight and material grade';
+
+  setTimeout(() => {
+    pulseBtn.style.transform = 'scale(1)';
+    pulseBtn.style.background = '#10b981';
+    pulseBtn.textContent = '🎤';
+
+    const presets = {
+      hi: { text: '28 किलो पीईटी प्लास्टिक', grade: 'PET_CLEAR', gross: '30.5', tare: '2.5' },
+      mr: { text: '35 किलो पुठ्ठा गत्ता', grade: 'CORRUGATED_CARDBOARD', gross: '37.0', tare: '2.0' },
+      kn: { text: '20 ಕೆಜಿ ಪ್ಲಾಸ್ಟಿಕ್ ಬಾಟಲಿ', grade: 'PET_CLEAR', gross: '22.5', tare: '2.5' },
+      en: { text: '42 kg rigid HDPE drums', grade: 'HDPE_RIGID', gross: '44.5', tare: '2.5' },
+    };
+
+    const choice = presets[currentIwlLanguage] || presets.hi;
+    if (feedback) {
+      feedback.textContent = `Transcribed: "${choice.text}" → Parsed: ${choice.grade}`;
+    }
+
+    const radio = document.querySelector(`input[name="iwl_grade"][value="${choice.grade}"]`);
+    if (radio) radio.checked = true;
+
+    const grossInput = document.getElementById('iwl-gross-weight');
+    const tareInput = document.getElementById('iwl-tare-weight');
+    if (grossInput) grossInput.value = choice.gross;
+    if (tareInput) tareInput.value = choice.tare;
+
+    calculateIwlWeighIn();
+    showToast(`Voice parsed: ${choice.gross - choice.tare} kg ${choice.grade}`);
+  }, 1800);
+}
+
+async function handleIwlWeighInSubmit(e) {
+  e.preventDefault();
+  const workerSelect = document.getElementById('iwl-worker-select');
+  const workerId = workerSelect ? workerSelect.value : '77777777-7777-7777-7777-777777777701';
+
+  const { gross, tare, net, rate, total } = calculateIwlWeighIn();
+  if (net <= 0) {
+    showToast('Gross weight must be strictly greater than Tare weight.', 'error');
+    return;
+  }
+
+  const selectedGradeRadio = document.querySelector('input[name="iwl_grade"]:checked');
+  const materialGrade = selectedGradeRadio ? selectedGradeRadio.value : 'PET_CLEAR';
+
+  const submitBtn = document.getElementById('btn-iwl-submit-payout');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing Instant Razorpay Payout...';
+  }
+
+  try {
+    // 1. Post weigh-in with auto_payout: true
+    const res = await fetch(`${API_BASE}/workers/weigh-ins`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        worker_id: workerId,
+        material_grade: materialGrade,
+        gross_weight_kg: gross,
+        tare_weight_kg: tare,
+        applied_rate_per_kg: rate,
+        dwcc_center_name: 'SWaCH DWCC Kothrud, Pune',
+        auto_payout: true,
+      }),
+    });
+
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Failed to process instant payout');
+    }
+
+    const weighIn = body.data.weigh_in;
+    const payout = body.data.payout_receipt || {};
+
+    // 2. Open Animated Receipt Modal
+    const modal = document.getElementById('modal-iwl-receipt');
+    const modalBody = document.getElementById('iwl-receipt-modal-body');
+
+    if (modal && modalBody) {
+      const utr = payout.utr_number || `${Date.now().toString().slice(-6)}${Math.floor(100000 + Math.random() * 900000)}`;
+      const payoutId = payout.razorpay_payout_id || `pout_mock_iwl_${Math.random().toString(16).slice(2, 10)}`;
+
+      modalBody.innerHTML = `
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #34d399; font-weight: 800;">
+            NPCI Instant Transfer Successful
+          </div>
+          <div style="font-size: 2.5rem; font-weight: 900; color: #fff; margin: 0.25rem 0;">
+            ₹${Number(weighIn.total_payable_inr).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </div>
+          <div style="font-size: 0.8rem; color: #94a3b8;">
+            Deposited to UPI VPA: <strong style="color: #34d399; font-family: monospace;">${payout.seller_upi_vpa || 'worker@upi'}</strong>
+          </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; font-size: 0.8rem; space-y: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <span class="text-muted">12-Digit Bank UTR:</span>
+            <strong style="color: #34d399; font-family: monospace; font-size: 0.9rem;">${utr}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span class="text-muted">Material Grade:</span>
+            <span style="color: #fff; font-weight: 600;">${materialGrade.replace(/_/g, ' ')}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span class="text-muted">Net Weight:</span>
+            <span style="color: #fff;">${weighIn.net_weight_kg} kg (@ ₹${rate}/kg)</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+            <span class="text-muted">Razorpay Payout ID:</span>
+            <span style="font-family: monospace; font-size: 0.72rem; color: #94a3b8;">${payoutId}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span class="text-muted">Hub Location:</span>
+            <span style="color: #fff;">SWaCH DWCC Kothrud, Pune</span>
+          </div>
+        </div>
+      `;
+      modal.classList.remove('hidden');
+    }
+
+    showToast(`Instant payout of ₹${weighIn.total_payable_inr} processed!`);
+    await loadWorkerLedgerData();
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '⚡ Log Weigh-In & Pay Spot UPI Instantly';
+    }
+  }
+}
+
+function initIwlListeners() {
+  const workerSelect = document.getElementById('iwl-worker-select');
+  workerSelect?.addEventListener('change', loadWorkerLedgerData);
+
+  const grossInput = document.getElementById('iwl-gross-weight');
+  const tareInput = document.getElementById('iwl-tare-weight');
+  grossInput?.addEventListener('input', calculateIwlWeighIn);
+  tareInput?.addEventListener('input', calculateIwlWeighIn);
+
+  document.querySelectorAll('input[name="iwl_grade"]').forEach((radio) => {
+    radio.addEventListener('change', calculateIwlWeighIn);
+  });
+
+  document.querySelectorAll('.iwl-lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.iwl-lang-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentIwlLanguage = btn.getAttribute('data-lang') || 'hi';
+    });
+  });
+
+  const pulseBtn = document.getElementById('btn-iwl-voice-pulse');
+  pulseBtn?.addEventListener('click', handleIwlVoicePulse);
+
+  const formWeighIn = document.getElementById('form-iwl-weigh-in');
+  formWeighIn?.addEventListener('submit', handleIwlWeighInSubmit);
+
+  const refreshLedgerBtn = document.getElementById('btn-refresh-iwl-ledger');
+  refreshLedgerBtn?.addEventListener('click', loadWorkerLedgerData);
+
+  const modalReceipt = document.getElementById('modal-iwl-receipt');
+  document.getElementById('modal-iwl-receipt-close')?.addEventListener('click', () => modalReceipt?.classList.add('hidden'));
+  document.getElementById('modal-iwl-receipt-done')?.addEventListener('click', () => modalReceipt?.classList.add('hidden'));
+}
+
+// ============================================================================
+// Theme Management (Dark / Light Mode)
+// ============================================================================
+function initTheme() {
+  const savedTheme = localStorage.getItem('ecoloop_theme');
+  const initialTheme = savedTheme || 'dark';
+  
+  setTheme(initialTheme);
+
+  const toggleBtn = document.getElementById('btn-theme-toggle');
+  toggleBtn?.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    showToast(`Switched to ${nextTheme === 'light' ? 'Light' : 'Dark'} mode`);
+  });
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('ecoloop_theme', theme);
+  const toggleBtn = document.getElementById('btn-theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.setAttribute('title', `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', init);
+

@@ -46,9 +46,17 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
             CPCB EPR Audit
           </button>
+          <button class="nav-link" data-tab="iwl">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+            Worker Ledger & Kiosk
+          </button>
         </nav>
 
         <div class="nav-actions">
+          <button type="button" class="theme-toggle-btn" id="btn-theme-toggle" title="Switch to Light mode" aria-label="Toggle Light / Dark Mode">
+            <span class="theme-icon-sun">☀️</span>
+            <span class="theme-icon-moon">🌙</span>
+          </button>
           <div class="api-status-badge" id="api-status">
             <span class="status-dot"></span>
             <span class="status-label">Connecting...</span>
@@ -157,6 +165,21 @@
           <div class="card auction-card-lead">
             <h3>Place Competitive Bid</h3>
             <p class="text-muted">Select an active listing to submit an instant offer exceeding current reserve.</p>
+
+            <!-- 5 Commercial Differentiators Banner -->
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 0.75rem; margin: 0.85rem 0 1rem 0; font-size: 0.78rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #34d399; font-size: 0.7rem;">Commercial Advantages (vs MSTC/GeM)</span>
+                <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;">100% CPCB Backed</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; color: #cbd5e1;">
+                <div><strong style="color: #10b981;">✓</strong> Dual-Token Physical+EPR</div>
+                <div><strong style="color: #10b981;">✓</strong> Intake Quality Assayed</div>
+                <div><strong style="color: #10b981;">✓</strong> 14/30-Day Working Credit</div>
+                <div><strong style="color: #10b981;">✓</strong> Digital Form-6 Manifest</div>
+              </div>
+            </div>
+
             <form id="form-bid" class="bid-form">
               <div class="form-group">
                 <label for="bid-listing-select">Target Scrap Listing</label>
@@ -249,6 +272,168 @@
             <div id="recent-epr-list" style="overflow-x: auto;">
               <div class="empty-state">Loading recent ledger tokens...</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: Informal Worker Digital Ledger (IWL / IWF) & DWCC Kiosk -->
+      <section id="tab-iwl" class="tab-pane">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Informal Worker Digital Ledger (IWL)</h2>
+            <p class="section-subtitle">Financial inclusion, municipal identity cards, voice-assisted weigh-ins, and instant UPI spot payouts.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <label for="iwl-worker-select" style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Active Worker:</label>
+            <select id="iwl-worker-select" class="form-control" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.85rem; border-color: #10b981;">
+              <option value="77777777-7777-7777-7777-777777777701">Ramesh Kumar (Hasiru Dala - Bengaluru)</option>
+              <option value="77777777-7777-7777-7777-777777777702">Sunita Devi (Chintan Collective - Delhi)</option>
+              <option value="77777777-7777-7777-7777-777777777703">Maruti Shinde (SWaCH - Pune)</option>
+              <option value="77777777-7777-7777-7777-777777777704">Lakshmi Bai (SWaCH - Pune)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- IWL Grid: Left: Digital ID Card + Impact, Right: DWCC Weigh-In Kiosk -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+          
+          <!-- Column 1: Scannable Digital ID Card -->
+          <div>
+            <div id="iwl-digital-id-card" style="margin-bottom: 1.5rem;">
+              <!-- Rendered via JS -->
+              <div class="loader-box"><div class="spinner"></div><span>Loading Worker Digital ID...</span></div>
+            </div>
+
+            <!-- Municipal Impact & Carbon Offsets Card -->
+            <div class="card" id="iwl-impact-card">
+              <h3 style="margin-top: 0; font-size: 1.1rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🌱 Environmental & Carbon Offset</span>
+              </h3>
+              <p class="text-muted" style="font-size: 0.78rem;">Verified emissions reduction calculated using EPA WARM recycling displacement factors.</p>
+
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1rem;">
+                <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--radius-md); padding: 0.75rem; text-align: center;">
+                  <span class="text-muted" style="font-size: 0.7rem; display: block; text-transform: uppercase;">Lifetime Waste</span>
+                  <strong id="iwl-stat-recycled" style="font-size: 1.25rem; color: #34d399;">-- kg</strong>
+                </div>
+                <div style="background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.25); border-radius: var(--radius-md); padding: 0.75rem; text-align: center;">
+                  <span class="text-muted" style="font-size: 0.7rem; display: block; text-transform: uppercase;">CO2 Offset</span>
+                  <strong id="iwl-stat-co2" style="font-size: 1.25rem; color: #38bdf8;">-- kg</strong>
+                </div>
+                <div style="background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: var(--radius-md); padding: 0.75rem; text-align: center;">
+                  <span class="text-muted" style="font-size: 0.7rem; display: block; text-transform: uppercase;">Trees Equiv.</span>
+                  <strong id="iwl-stat-trees" style="font-size: 1.25rem; color: #fbbf24;">--</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: DWCC Voice Weigh-In Kiosk -->
+          <div>
+            <div class="card" style="border-color: rgba(16,185,129,0.3);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div>
+                  <h3 style="margin: 0; font-size: 1.15rem; color: #fff;">DWCC Operator Weigh-In</h3>
+                  <p class="text-muted" style="margin: 0; font-size: 0.78rem;">Voice-assisted batch logging with instant spot UPI transfer.</p>
+                </div>
+                <div style="display: flex; gap: 0.25rem;">
+                  <button type="button" class="btn btn-secondary btn-sm iwl-lang-btn active" data-lang="hi" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">हिंदी</button>
+                  <button type="button" class="btn btn-secondary btn-sm iwl-lang-btn" data-lang="mr" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">मराठी</button>
+                  <button type="button" class="btn btn-secondary btn-sm iwl-lang-btn" data-lang="kn" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">ಕನ್ನಡ</button>
+                  <button type="button" class="btn btn-secondary btn-sm iwl-lang-btn" data-lang="en" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">ENG</button>
+                </div>
+              </div>
+
+              <!-- Voice Pulse Button & STT Preview -->
+              <div style="background: linear-gradient(135deg, rgba(6,78,59,0.3), rgba(15,23,42,0.8)); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-md); padding: 1.25rem; text-align: center; margin-bottom: 1.25rem;">
+                <button type="button" id="btn-iwl-voice-pulse" style="width: 72px; height: 72px; border-radius: 50%; background: #10b981; border: none; color: #022c22; font-size: 1.8rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 25px rgba(16,185,129,0.4);" title="Single-Tap Voice Logging">
+                  🎤
+                </button>
+                <div style="font-weight: 700; font-size: 0.85rem; color: #34d399; margin-top: 0.75rem;">
+                  Single-Tap Voice Logging
+                </div>
+                <div id="iwl-voice-feedback" style="font-size: 0.78rem; color: #94a3b8; font-family: monospace; margin-top: 0.25rem;">
+                  Tap microphone to simulate voice note (e.g. "25 kilo PET plastic")
+                </div>
+              </div>
+
+              <!-- Weigh-In Form -->
+              <form id="form-iwl-weigh-in">
+                <div class="form-group">
+                  <label>Material Grade & Benchmark Rate</label>
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                    <label class="radio-card" style="padding: 0.6rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: rgba(255,255,255,0.02); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                      <input type="radio" name="iwl_grade" value="PET_CLEAR" data-rate="22" checked />
+                      <span style="font-size: 0.8rem; color: #fff;">PET Clear</span>
+                      <strong style="font-size: 0.8rem; color: #10b981;">₹22.00/kg</strong>
+                    </label>
+                    <label class="radio-card" style="padding: 0.6rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: rgba(255,255,255,0.02); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                      <input type="radio" name="iwl_grade" value="HDPE_RIGID" data-rate="18.5" />
+                      <span style="font-size: 0.8rem; color: #fff;">HDPE Rigid</span>
+                      <strong style="font-size: 0.8rem; color: #10b981;">₹18.50/kg</strong>
+                    </label>
+                    <label class="radio-card" style="padding: 0.6rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: rgba(255,255,255,0.02); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                      <input type="radio" name="iwl_grade" value="CORRUGATED_CARDBOARD" data-rate="12" />
+                      <span style="font-size: 0.8rem; color: #fff;">Cardboard/गत्ता</span>
+                      <strong style="font-size: 0.8rem; color: #10b981;">₹12.00/kg</strong>
+                    </label>
+                    <label class="radio-card" style="padding: 0.6rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: rgba(255,255,255,0.02); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                      <input type="radio" name="iwl_grade" value="FERROUS_METAL" data-rate="32" />
+                      <span style="font-size: 0.8rem; color: #fff;">Metal / लोहा</span>
+                      <strong style="font-size: 0.8rem; color: #10b981;">₹32.00/kg</strong>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Weight Inputs: Gross vs Tare -->
+                <div class="form-row" style="margin-top: 1rem;">
+                  <div class="form-group">
+                    <label for="iwl-gross-weight">Gross Weight (kg)</label>
+                    <input type="number" step="0.05" id="iwl-gross-weight" class="form-control" style="font-size: 1.15rem; font-weight: 700; font-family: monospace;" placeholder="45.5" value="45.5" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="iwl-tare-weight">Tare Deduction (kg)</label>
+                    <input type="number" step="0.05" id="iwl-tare-weight" class="form-control" style="font-size: 1.15rem; font-weight: 700; font-family: monospace;" placeholder="2.5" value="2.5" required />
+                  </div>
+                </div>
+
+                <!-- Live Auto-Deduction Math Box -->
+                <div style="background: rgba(0,0,0,0.4); border: 2px solid rgba(16,185,129,0.4); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span class="text-muted" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; display: block;">Calculated Spot Payout</span>
+                    <div id="iwl-display-payout" style="font-size: 1.85rem; font-weight: 900; color: #34d399; font-family: monospace;">₹946.00</div>
+                    <span id="iwl-weight-math" class="text-muted" style="font-size: 0.75rem;">Net: 43.00 kg × ₹22.00/kg</span>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="display: inline-block; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #34d399; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 999px;">
+                      ⚡ Razorpay Spot UPI
+                    </span>
+                    <span style="display: block; font-size: 0.7rem; color: #94a3b8; margin-top: 0.25rem;">Direct to worker VPA</span>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btn-iwl-submit-payout" class="btn btn-primary btn-block" style="margin-top: 1.25rem; padding: 0.85rem; font-size: 1rem; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+                  <span>⚡ Log Weigh-In & Pay Spot UPI Instantly</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Worker Payout Receipts Table -->
+        <div class="card" style="margin-top: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+              <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">Recent Worker UPI Payout Receipts</h3>
+              <p class="text-muted" style="margin: 0; font-size: 0.78rem;">Audited 12-digit bank UTR numbers and instant settlement receipts.</p>
+            </div>
+            <button type="button" class="btn btn-secondary" id="btn-refresh-iwl-ledger" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+              ↻ Refresh Ledger
+            </button>
+          </div>
+          <div id="iwl-receipts-table-container" style="overflow-x: auto;">
+            <div class="empty-state">Loading worker payout transactions...</div>
           </div>
         </div>
       </section>
@@ -589,6 +774,29 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             Verify on Ledger →
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- IWL Instant Worker UPI Receipt Modal -->
+    <div id="modal-iwl-receipt" class="modal-backdrop hidden">
+      <div class="modal-card" style="max-width: 480px; border-color: rgba(16,185,129,0.4);">
+        <div class="modal-header" style="border-bottom-color: rgba(16,185,129,0.2);">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(16,185,129,0.2); border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: bold;">✓</div>
+            <div>
+              <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">Spot UPI Deposit Confirmed</h3>
+              <p class="text-muted" style="font-size: 0.75rem; margin: 0;">Razorpay Payouts instant bank settlement</p>
+            </div>
+          </div>
+          <button class="btn-close" id="modal-iwl-receipt-close">&times;</button>
+        </div>
+        <div class="modal-body" id="iwl-receipt-modal-body">
+          <!-- Dynamic Content -->
+        </div>
+        <div class="modal-footer" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="window.print()">🖨️ Print Receipt</button>
+          <button type="button" class="btn btn-primary" id="modal-iwl-receipt-done">Acknowledge</button>
         </div>
       </div>
     </div>

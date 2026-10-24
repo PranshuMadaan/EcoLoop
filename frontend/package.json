@@ -12,6 +12,9 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
-    "ecoloop-backend": "file:.."
+    "axios": "^1.20.0",
+    "ecoloop-backend": "file:..",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }
