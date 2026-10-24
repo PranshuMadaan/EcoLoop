@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { MapContainer, TileLayer, Polyline, Marker, Popup, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Polyline, Marker, Popup, CircleMarker, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { Play, AlertCircle, Truck, MapPin } from 'lucide-react'
+import { Play, AlertCircle, Truck, MapPin, Plus, X, CheckCircle2 } from 'lucide-react'
 import L from 'leaflet'
 
 // Fix for Vite + Leaflet missing marker icons
@@ -11,6 +11,9 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
+
+// One color per vehicle route, cycled when the fleet is larger
+const TRUCK_COLORS = ['#2563eb', '#16a34a', '#d97706', '#7c3aed', '#dc2626', '#0891b2'];
 
 /**
  * Child component inside MapContainer that captures user clicks to add new collection stops.
@@ -131,24 +134,44 @@ const initialNodes = [
   }
 ];
 
-// Initial vehicles state: 1 current truck
-const initialVehicles = [
-  {
-    id: 1,
-    capacity_organic: 1000.0,
-    capacity_dry: 1000.0,
-    capacity_hw: 200.0,
-    capacity_dry_non_recyclable: 1000.0,
-    shift_seconds: 28800.0
-  }
-];
+const makeDefaultVehicle = (id) => ({
+  id,
+  capacity_organic: 1000.0,
+  capacity_dry: 1000.0,
+  capacity_hw: 200.0,
+  capacity_dry_non_recyclable: 1000.0,
+  shift_seconds: 28800.0
+});
+
+// Start with two trucks so multi-vehicle splitting is visible immediately
+const initialVehicles = [makeDefaultVehicle(1), makeDefaultVehicle(2)];
+
+const inputStyle = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: '6px 8px',
+  fontSize: '12px',
+  border: '1px solid #cbd5e0',
+  borderRadius: '4px',
+  backgroundColor: '#ffffff',
+  color: '#2d3748'
+};
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '11px',
+  fontWeight: 500,
+  color: '#718096',
+  marginBottom: '3px'
+};
 
 export default function OptimizerPage() {
   const [nodes, setNodes] = useState(initialNodes)
   const [vehicles, setVehicles] = useState(initialVehicles)
-  const [routePoints, setRoutePoints] = useState([])
+  const [routeResults, setRouteResults] = useState([])
+  const [unservedIds, setUnservedIds] = useState([])
   const [isOptimizing, setIsOptimizing] = useState(false)
-  const [statusAlert, setStatusAlert] = useState(null)
+  const [statusAlert, setStatusAlert] = useState(null) // { kind: 'error' | 'success' | 'warning', message }
 
   // Handle editing organic and dry waste values for a node
   const handleWasteChange = (id, field, value) => {
@@ -165,24 +188,36 @@ export default function OptimizerPage() {
     );
   };
 
-  // Handle editing vehicle capacity values for vehicles[0]
-  const handleVehicleCapacityChange = (field, value) => {
+  // Handle editing a vehicle capacity / shift field (shift displayed in hours)
+  const handleVehicleChange = (id, field, value) => {
+    setVehicles((prev) =>
+      prev.map((v) => {
+        if (v.id !== id) return v;
+        if (field === 'shift_hours') {
+          const hours = Math.max(0, parseFloat(value) || 0);
+          return { ...v, shift_seconds: value === '' ? '' : hours * 3600 };
+        }
+        return { ...v, [field]: value === '' ? '' : Math.max(0, parseFloat(value) || 0) };
+      })
+    );
+  };
+
+  const addVehicle = () => {
     setVehicles((prev) => {
-      const updated = [...prev];
-      if (updated.length > 0) {
-        updated[0] = {
-          ...updated[0],
-          [field]: value === '' ? '' : Math.max(0, parseFloat(value) || 0)
-        };
-      }
-      return updated;
+      const nextId = prev.length > 0 ? Math.max(...prev.map((v) => v.id)) + 1 : 1;
+      return [...prev, makeDefaultVehicle(nextId)];
     });
+  };
+
+  const removeVehicle = (id) => {
+    setVehicles((prev) => (prev.length > 1 ? prev.filter((v) => v.id !== id) : prev));
   };
 
   // Interactive map click handler to add new collection point at clicked coordinates
   const handleMapClick = (lat, lng) => {
-    // State Clearing: explicitly clear existing route so polyline disappears immediately
-    setRoutePoints([]);
+    // Clear existing routes so stale polylines disappear immediately
+    setRouteResults([]);
+    setUnservedIds([]);
 
     setNodes((prevNodes) => {
       const nextId = prevNodes.length > 0 ? Math.max(...prevNodes.map((n) => n.id)) + 1 : 1;
@@ -201,65 +236,30 @@ export default function OptimizerPage() {
         dry_non_recyclable: 10.0,
         service_time: 60.0
       };
-      console.log(`[OptimizerPage] Map clicked at [${exactLat}, ${exactLon}]. Added stop ${nextId}:`, newNode);
       return [...prevNodes, newNode];
     });
   };
 
   const handleOptimize = async () => {
-    console.log("[OptimizerPage] handleOptimize triggered: starting fleet route optimization...");
     setStatusAlert(null);
-
-    // Capacity Validation: check if any node's 'organic' or 'dry' value exceeds vehicles[0].capacity_organic or capacity_dry
-    const vehicleOrganicCap = Number(vehicles[0]?.capacity_organic) || 0;
-    const vehicleDryCap = Number(vehicles[0]?.capacity_dry) || 0;
-
-    for (const node of nodes) {
-      const nodeOrganic = Number(node.organic) || 0;
-      const nodeDry = Number(node.dry) || 0;
-
-      if (nodeOrganic > vehicleOrganicCap || nodeDry > vehicleDryCap) {
-        console.warn(
-          `[OptimizerPage] Capacity validation failed for Stop ${node.id} (${node.name}): ` +
-          `Organic ${nodeOrganic} > ${vehicleOrganicCap} or Dry ${nodeDry} > ${vehicleDryCap}`
-        );
-        alert('Error: A stop exceeds vehicle capacity');
-        return;
-      }
-    }
-
     setIsOptimizing(true);
-    console.log("[OptimizerPage] State update: isOptimizing = true");
 
-    // Dynamic fallback coordinates connecting all current nodes back to depot
-    const fallbackCoordinates = [
-      ...nodes.map((n) => [Number(n.lat), Number(n.lon)]),
-      nodes.length > 0 ? [Number(nodes[0].lat), Number(nodes[0].lon)] : [30.3534, 76.3608]
-    ];
-
-    // 5-second timeout for backend fetch
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, 5000);
-
-    // Auto-generate edges array using Haversine formula right before fetch call
+    // Dynamic edges via Haversine (matrix moves server-side with road data later)
     const dynamicEdges = generateEdges(nodes);
-    console.log(`[OptimizerPage] Generated ${dynamicEdges.length} dynamic edges via Haversine formula:`, dynamicEdges);
 
-    // Unassigned stops: all node IDs except the depot (ID 0)
     const unassignedStops = nodes
       .filter((node) => node.id !== 0)
       .map((node) => node.id);
 
-    // Dynamic C++ VRP routing engine payload constructed from React state
     const routingPayload = {
-      action: "optimize_ward",
       depot_id: 0,
       vehicles: vehicles.map((v) => ({
-        ...v,
-        capacity_organic: Number(v.capacity_organic) || 1000.0,
-        capacity_dry: Number(v.capacity_dry) || 1000.0
+        id: v.id,
+        capacity_organic: Number(v.capacity_organic) || 0,
+        capacity_dry: Number(v.capacity_dry) || 0,
+        capacity_hw: Number(v.capacity_hw) || 0,
+        capacity_dry_non_recyclable: Number(v.capacity_dry_non_recyclable) || 0,
+        shift_seconds: Number(v.shift_seconds) || 28800.0
       })),
       nodes: nodes.map((n) => ({
         id: n.id,
@@ -276,9 +276,12 @@ export default function OptimizerPage() {
       unassigned_stops: unassignedStops
     };
 
+    // Generous timeout: engine solve plus potential matrix building on the backend
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
-      console.log("[OptimizerPage] Dispatching POST request to http://localhost:3000/api/optimize with dynamic payload:", routingPayload);
-      const response = await fetch('http://localhost:3000/api/optimize', { 
+      const response = await fetch('http://localhost:3000/api/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(routingPayload),
@@ -286,37 +289,48 @@ export default function OptimizerPage() {
       });
       clearTimeout(timeoutId);
 
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(data.error ? `${data.error}${data.details ? `: ${data.details}` : ''}` : `HTTP ${response.status}`);
+      }
+      if (!Array.isArray(data.routes) || data.routes.length === 0) {
+        throw new Error('No routes returned from routing engine');
       }
 
-      const data = await response.json();
-      console.log("[OptimizerPage] Received backend response:", data);
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      const colored = data.routes.map((route, index) => ({
+        ...route,
+        color: TRUCK_COLORS[index % TRUCK_COLORS.length]
+      }));
+      setRouteResults(colored);
+      setUnservedIds(Array.isArray(data.unserved_stops) ? data.unserved_stops : []);
 
-      if (!data.optimized_waypoints || data.optimized_waypoints.length === 0) {
-        console.log("[OptimizerPage] Backend response missing 'optimized_waypoints', triggering fallback simulation.");
-        throw new Error("No optimized waypoints returned from backend API");
-      }
-
-      console.log("[OptimizerPage] State update: routePoints set with API waypoints:", data.optimized_waypoints);
-      setRoutePoints(data.optimized_waypoints);
+      const totalKm = ((data.total_fleet_distance_m || 0) / 1000).toFixed(1);
+      const unservedCount = (data.unserved_stops || []).length;
+      setStatusAlert({
+        kind: unservedCount > 0 ? 'warning' : 'success',
+        message: unservedCount > 0
+          ? `Solved ${data.routes.length} route(s), ${totalKm} km total — ${unservedCount} stop(s) could not be served (shown in red).`
+          : `Solved ${data.routes.length} route(s), ${totalKm} km total.`
+      });
     } catch (error) {
       clearTimeout(timeoutId);
-      console.log("[OptimizerPage] Route calculation failed or timed out:", error.name === 'AbortError' ? 'Request timed out after 5000ms' : (error.message || error));
-      console.log("[OptimizerPage] Node server is unreachable or returned error. Using fallback simulation:", error);
-      console.error("[OptimizerPage] Routing error details:", error);
-      setStatusAlert("Node server is unreachable or timed out. Loaded fallback simulated route coordinates.");
-      console.log("[OptimizerPage] State update: routePoints set with fallback coordinates:", fallbackCoordinates);
-      setRoutePoints(fallbackCoordinates);
+      const reason = error.name === 'AbortError'
+        ? 'Timed out after 15s'
+        : (error.message || 'Unknown error');
+      // Keep the last successful routes visible; surface the failure honestly
+      setStatusAlert({ kind: 'error', message: `Optimization failed — ${reason}. Is the backend (localhost:3000) running?` });
     } finally {
       setIsOptimizing(false);
-      console.log("[OptimizerPage] State update: isOptimizing = false (finished)");
     }
   };
+
+  const alertStyles = {
+    error: { backgroundColor: '#fff5f5', color: '#c53030', borderColor: '#feb2b2', Icon: AlertCircle },
+    warning: { backgroundColor: '#fffaf0', color: '#dd6b20', borderColor: '#fbd38d', Icon: AlertCircle },
+    success: { backgroundColor: '#f0fff4', color: '#276749', borderColor: '#9ae6b4', Icon: CheckCircle2 }
+  };
+
+  const unservedNodes = nodes.filter((n) => unservedIds.includes(n.id));
 
   return (
     <div
@@ -359,22 +373,19 @@ export default function OptimizerPage() {
         </div>
 
         {/* Primary Action Button */}
-        <button 
+        <button
           id="optimize-fleet-btn"
-          onClick={() => {
-            console.log("[OptimizerPage] 'Optimize Fleet Route' button clicked.");
-            handleOptimize();
-          }} 
+          onClick={handleOptimize}
           disabled={isOptimizing}
-          style={{ 
+          style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
             width: '100%',
-            padding: '11px 16px', 
+            padding: '11px 16px',
             backgroundColor: isOptimizing ? '#a0aec0' : '#38a169',
-            color: 'white', 
+            color: 'white',
             border: 'none',
             borderRadius: '6px',
             fontSize: '14px',
@@ -385,101 +396,223 @@ export default function OptimizerPage() {
           }}
         >
           <Play size={16} fill={isOptimizing ? 'none' : 'currentColor'} />
-          {isOptimizing ? 'Calculating Route...' : 'Optimize Fleet Route'}
+          {isOptimizing ? 'Calculating Routes...' : 'Optimize Fleet Routes'}
         </button>
 
         {/* Status Alert */}
-        {statusAlert && (
-          <div 
-            role="alert"
-            style={{ 
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '8px', 
-              padding: '10px 12px',
-              backgroundColor: '#fffaf0',
-              color: '#dd6b20', 
-              border: '1px solid #fbd38d',
-              borderRadius: '6px',
-              fontSize: '12px',
-              lineHeight: '1.4'
-            }}
-          >
-            <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
-            <span>{statusAlert}</span>
-          </div>
-        )}
+        {statusAlert && (() => {
+          const style = alertStyles[statusAlert.kind] || alertStyles.error;
+          const Icon = style.Icon;
+          return (
+            <div
+              role="alert"
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px',
+                padding: '10px 12px',
+                backgroundColor: style.backgroundColor,
+                color: style.color,
+                border: `1px solid ${style.borderColor}`,
+                borderRadius: '6px',
+                fontSize: '12px',
+                lineHeight: '1.4'
+              }}
+            >
+              <Icon size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span>{statusAlert.message}</span>
+            </div>
+          );
+        })()}
 
-        {/* Vehicle Fleet Status with Editable Capacity Inputs */}
-        <div
-          style={{
-            padding: '12px',
-            backgroundColor: '#f7fafc',
-            border: '1px solid #edf2f7',
-            borderRadius: '6px',
-            fontSize: '12px',
-            color: '#4a5568'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#2d3748', marginBottom: '8px' }}>
-            <Truck size={14} color="#3182ce" />
-            <span>Active Fleet ({vehicles.length} Vehicle)</span>
+        {/* Fleet Editor */}
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#2d3748', fontSize: '12px' }}>
+              <Truck size={14} color="#3182ce" />
+              <span>Active Fleet ({vehicles.length} {vehicles.length === 1 ? 'Vehicle' : 'Vehicles'})</span>
+            </div>
+            <button
+              onClick={addVehicle}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '4px 8px',
+                backgroundColor: '#ebf8ff',
+                color: '#2b6cb0',
+                border: '1px solid #90cdf4',
+                borderRadius: '6px',
+                fontSize: '11px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={12} />
+              Add Truck
+            </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <div>
-              <label
-                htmlFor="vehicle-capacity-organic"
-                style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
-              >
-                Organic Cap (kg)
-              </label>
-              <input
-                id="vehicle-capacity-organic"
-                type="number"
-                min="0"
-                step="50"
-                value={vehicles[0]?.capacity_organic ?? ''}
-                onChange={(e) => handleVehicleCapacityChange('capacity_organic', e.target.value)}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {vehicles.map((vehicle, index) => (
+              <div
+                key={vehicle.id}
                 style={{
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  padding: '6px 8px',
+                  padding: '12px',
+                  backgroundColor: '#f7fafc',
+                  border: '1px solid #edf2f7',
+                  borderLeft: `4px solid ${TRUCK_COLORS[index % TRUCK_COLORS.length]}`,
+                  borderRadius: '6px',
                   fontSize: '12px',
-                  border: '1px solid #cbd5e0',
-                  borderRadius: '4px',
-                  backgroundColor: '#ffffff',
-                  color: '#2d3748'
+                  color: '#4a5568'
                 }}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="vehicle-capacity-dry"
-                style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
               >
-                Dry Cap (kg)
-              </label>
-              <input
-                id="vehicle-capacity-dry"
-                type="number"
-                min="0"
-                step="50"
-                value={vehicles[0]?.capacity_dry ?? ''}
-                onChange={(e) => handleVehicleCapacityChange('capacity_dry', e.target.value)}
-                style={{
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  padding: '6px 8px',
-                  fontSize: '12px',
-                  border: '1px solid #cbd5e0',
-                  borderRadius: '4px',
-                  backgroundColor: '#ffffff',
-                  color: '#2d3748'
-                }}
-              />
-            </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontWeight: 600, color: '#2d3748', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '10px',
+                        height: '10px',
+                        borderRadius: '50%',
+                        backgroundColor: TRUCK_COLORS[index % TRUCK_COLORS.length]
+                      }}
+                    />
+                    Truck {vehicle.id}
+                  </span>
+                  {vehicles.length > 1 && (
+                    <button
+                      onClick={() => removeVehicle(vehicle.id)}
+                      title={`Remove Truck ${vehicle.id}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '3px',
+                        padding: '2px 7px',
+                        backgroundColor: '#fff5f5',
+                        color: '#c53030',
+                        border: '1px solid #feb2b2',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <X size={11} />
+                      Remove
+                    </button>
+                  )}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div>
+                    <label htmlFor={`cap-organic-${vehicle.id}`} style={labelStyle}>Organic Cap (kg)</label>
+                    <input
+                      id={`cap-organic-${vehicle.id}`}
+                      type="number"
+                      min="0"
+                      step="50"
+                      value={vehicle.capacity_organic}
+                      onChange={(e) => handleVehicleChange(vehicle.id, 'capacity_organic', e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor={`cap-dry-${vehicle.id}`} style={labelStyle}>Dry Cap (kg)</label>
+                    <input
+                      id={`cap-dry-${vehicle.id}`}
+                      type="number"
+                      min="0"
+                      step="50"
+                      value={vehicle.capacity_dry}
+                      onChange={(e) => handleVehicleChange(vehicle.id, 'capacity_dry', e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor={`cap-hw-${vehicle.id}`} style={labelStyle}>HW Cap (kg)</label>
+                    <input
+                      id={`cap-hw-${vehicle.id}`}
+                      type="number"
+                      min="0"
+                      step="10"
+                      value={vehicle.capacity_hw}
+                      onChange={(e) => handleVehicleChange(vehicle.id, 'capacity_hw', e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor={`cap-nr-${vehicle.id}`} style={labelStyle}>Non-Recyclable Cap (kg)</label>
+                    <input
+                      id={`cap-nr-${vehicle.id}`}
+                      type="number"
+                      min="0"
+                      step="50"
+                      value={vehicle.capacity_dry_non_recyclable}
+                      onChange={(e) => handleVehicleChange(vehicle.id, 'capacity_dry_non_recyclable', e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label htmlFor={`shift-${vehicle.id}`} style={labelStyle}>Shift Duration (hours)</label>
+                    <input
+                      id={`shift-${vehicle.id}`}
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={vehicle.shift_seconds === '' ? '' : (Number(vehicle.shift_seconds) / 3600)}
+                      onChange={(e) => handleVehicleChange(vehicle.id, 'shift_hours', e.target.value)}
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+
+        {/* Solved Routes Legend */}
+        {routeResults.length > 0 && (
+          <div>
+            <h3 style={{ margin: '0 0 8px', fontSize: '14px', fontWeight: 600, color: '#2d3748' }}>
+              Solved Routes
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {routeResults.map((route) => (
+                <div
+                  key={route.vehicle_id}
+                  style={{
+                    padding: '10px 12px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderLeft: `4px solid ${route.color}`,
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    color: '#4a5568',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <span style={{ fontWeight: 600, color: '#2d3748', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '10px',
+                        height: '10px',
+                        borderRadius: '50%',
+                        backgroundColor: route.color
+                      }}
+                    />
+                    Truck {route.vehicle_id}
+                  </span>
+                  <span style={{ fontSize: '11px', color: '#718096' }}>
+                    {route.stops.length} stops • {((route.distance_m || 0) / 1000).toFixed(1)} km • {Math.round((route.duration_s || 0) / 60)} min
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Nodes Form Header & Map Click Hint */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
@@ -515,14 +648,15 @@ export default function OptimizerPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
           {nodes.map((node) => {
             const isDepot = node.id === 0;
+            const isUnserved = unservedIds.includes(node.id);
             return (
               <div
                 key={node.id}
                 style={{
                   padding: '12px',
                   backgroundColor: isDepot ? '#f7fafc' : '#ffffff',
-                  border: isDepot ? '1px solid #cbd5e0' : '1px solid #e2e8f0',
-                  borderLeft: isDepot ? '4px solid #3182ce' : '4px solid #38a169',
+                  border: isUnserved ? '1px solid #fc8181' : (isDepot ? '1px solid #cbd5e0' : '1px solid #e2e8f0'),
+                  borderLeft: isDepot ? '4px solid #3182ce' : (isUnserved ? '4px solid #e53e3e' : '4px solid #38a169'),
                   borderRadius: '6px',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
                 }}
@@ -536,12 +670,12 @@ export default function OptimizerPage() {
                         fontWeight: 700,
                         padding: '2px 6px',
                         borderRadius: '4px',
-                        backgroundColor: isDepot ? '#ebf8ff' : '#f0fff4',
-                        color: isDepot ? '#2b6cb0' : '#276749',
+                        backgroundColor: isDepot ? '#ebf8ff' : (isUnserved ? '#fff5f5' : '#f0fff4'),
+                        color: isDepot ? '#2b6cb0' : (isUnserved ? '#c53030' : '#276749'),
                         flexShrink: 0
                       }}
                     >
-                      {isDepot ? 'DEPOT' : `STOP #${node.id}`}
+                      {isDepot ? 'DEPOT' : (isUnserved ? 'UNSERVED' : `STOP #${node.id}`)}
                     </span>
                     <span
                       style={{
@@ -565,12 +699,7 @@ export default function OptimizerPage() {
                 {/* Waste Demand Inputs */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <div>
-                    <label
-                      htmlFor={`organic-${node.id}`}
-                      style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#718096', marginBottom: '3px' }}
-                    >
-                      Organic (kg)
-                    </label>
+                    <label htmlFor={`organic-${node.id}`} style={labelStyle}>Organic (kg)</label>
                     <input
                       id={`organic-${node.id}`}
                       type="number"
@@ -578,25 +707,11 @@ export default function OptimizerPage() {
                       step="1"
                       value={node.organic}
                       onChange={(e) => handleWasteChange(node.id, 'organic', e.target.value)}
-                      style={{
-                        width: '100%',
-                        boxSizing: 'border-box',
-                        padding: '6px 8px',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        color: '#2d3748',
-                        backgroundColor: '#ffffff'
-                      }}
+                      style={{ ...inputStyle, borderColor: '#e2e8f0' }}
                     />
                   </div>
                   <div>
-                    <label
-                      htmlFor={`dry-${node.id}`}
-                      style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#718096', marginBottom: '3px' }}
-                    >
-                      Dry (kg)
-                    </label>
+                    <label htmlFor={`dry-${node.id}`} style={labelStyle}>Dry (kg)</label>
                     <input
                       id={`dry-${node.id}`}
                       type="number"
@@ -604,16 +719,7 @@ export default function OptimizerPage() {
                       step="1"
                       value={node.dry}
                       onChange={(e) => handleWasteChange(node.id, 'dry', e.target.value)}
-                      style={{
-                        width: '100%',
-                        boxSizing: 'border-box',
-                        padding: '6px 8px',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        color: '#2d3748',
-                        backgroundColor: '#ffffff'
-                      }}
+                      style={{ ...inputStyle, borderColor: '#e2e8f0' }}
                     />
                   </div>
                 </div>
@@ -636,9 +742,28 @@ export default function OptimizerPage() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          {routePoints.length > 0 && (
-            <Polyline positions={routePoints} color="#38a169" weight={5} opacity={0.85} />
-          )}
+          {/* One polyline per vehicle route, in the truck's color */}
+          {routeResults.map((route) => (
+            <Polyline
+              key={`route-${route.vehicle_id}`}
+              positions={route.waypoints}
+              pathOptions={{ color: route.color, weight: 4, opacity: 0.9 }}
+            />
+          ))}
+          {/* Unserved stops flagged in red on the map */}
+          {unservedNodes.map((node) => (
+            <CircleMarker
+              key={`unserved-${node.id}`}
+              center={[Number(node.lat), Number(node.lon)]}
+              radius={14}
+              pathOptions={{ color: '#e53e3e', fillColor: '#fed7d7', fillOpacity: 0.9, weight: 2 }}
+            >
+              <Popup>
+                <strong>Stop #{node.id} could not be served</strong>
+                <div>No truck has spare capacity for this demand.</div>
+              </Popup>
+            </CircleMarker>
+          ))}
           {nodes.map((node) => (
             <Marker key={node.id} position={[Number(node.lat), Number(node.lon)]}>
               <Popup>

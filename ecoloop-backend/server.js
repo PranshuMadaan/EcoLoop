@@ -32,6 +32,19 @@ app.post('/api/optimize', (req, res) => {
   let outputData = '';
   let errorData = '';
 
+  // Watchdog: the engine normally finishes in well under a second; a hang
+  // (e.g. a pathological payload) must not hold the request open forever
+  const ENGINE_TIMEOUT_MS = 12000;
+  const engineTimeout = setTimeout(() => {
+    engineProcess.kill('SIGKILL');
+    if (!res.headersSent) {
+      return res.status(500).json({
+        error: 'Routing engine timed out',
+        details: `Engine produced no result within ${ENGINE_TIMEOUT_MS} ms`
+      });
+    }
+  }, ENGINE_TIMEOUT_MS);
+
   // Pipe req.body as a stringified JSON into the spawned process's stdin
   engineProcess.stdin.write(inputData);
   engineProcess.stdin.end();
@@ -59,6 +72,7 @@ app.post('/api/optimize', (req, res) => {
 
   // Handle process completion
   engineProcess.on('close', (code) => {
+    clearTimeout(engineTimeout);
     if (res.headersSent) return;
 
     if (code !== 0) {
@@ -86,8 +100,8 @@ app.post('/api/optimize', (req, res) => {
 
     // ── Build a node-id → [lat, lon] lookup from the input payload ─────────
     // The C++ engine accepts nodes as { id, lat, lon, ... } and returns
-    // routes[].stops as an ordered array of NodeId integers.
-    // We reconstruct [lat, lon] waypoints by joining stop IDs → input nodes.
+    // routes[].stops as an ordered array of NodeId integers. Each route keeps
+    // its own ordered waypoints so the map can draw one polyline per vehicle.
     const inputNodes = Array.isArray(req.body.nodes) ? req.body.nodes : [];
     const nodeMap = {};
     for (const n of inputNodes) {
@@ -100,31 +114,26 @@ app.post('/api/optimize', (req, res) => {
     }
     console.log(`[server] Input node map built: ${Object.keys(nodeMap).length} nodes`);
 
-    // Flatten all stops across all routes into an ordered [lat, lon] array
-    const routes = Array.isArray(result.routes) ? result.routes : [];
-
-    let optimized_waypoints = routes.flatMap((route) =>
-      (route.stops || [])
+    const engineRoutes = Array.isArray(result.routes) ? result.routes : [];
+    const routes = engineRoutes.map((route) => ({
+      vehicle_id: route.vehicle_id,
+      stops: route.stops || [],
+      distance_m: route.distance_m,
+      duration_s: route.duration_s,
+      waypoints: (route.stops || [])
         .filter((stopId) => nodeMap[stopId] !== undefined)
         .map((stopId) => nodeMap[stopId])
-    );
-
-    // If the engine returned routes with stops but we have no node map (e.g.
-    // the caller did not send a nodes array), surface the raw stop IDs so the
-    // frontend still gets a non-empty signal and can handle it.
-    if (optimized_waypoints.length === 0 && routes.some((r) => r.stops && r.stops.length > 0)) {
-      console.warn('[server] Routes have stops but no lat/lon node map was found in the request. ' +
-        'Include a "nodes" array with { id, lat, lon } in your payload for coordinate mapping.');
-    }
+    }));
 
     const normalized = {
-      optimized_waypoints,            // [[lat, lon], ...] – what the React map needs
-      routes: result.routes,          // raw route objects with node IDs and metrics
+      routes,
+      unserved_stops: Array.isArray(result.unserved_stops) ? result.unserved_stops : [],
       total_fleet_distance_m: result.total_fleet_distance_m,
       total_fleet_duration_s: result.total_fleet_duration_s
     };
 
-    console.log(`[server] Responding with ${optimized_waypoints.length} waypoints across ${routes.length} route(s).`);
+    console.log(`[server] Responding with ${routes.length} route(s), ` +
+      `${normalized.unserved_stops.length} unserved stop(s).`);
     return res.json(normalized);
   });
 });
