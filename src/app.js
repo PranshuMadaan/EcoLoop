@@ -1,3 +1,6 @@
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -8,6 +11,10 @@ import listingRoutes from './routes/listingRoutes.js';
 import eprRoutes from './routes/eprRoutes.js';
 import { pingDatabase } from './config/db.js';
 import { errorHandler, AppError } from './middleware/errorHandler.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendDist = path.join(__dirname, '../frontend/dist');
 
 const app = express();
 
@@ -74,8 +81,17 @@ app.get('/health', async (req, res, next) => {
   }
 });
 
-// Root API Welcome Route
-app.get('/', (req, res) => {
+// Serve static frontend assets if build exists (index: false preserves GET / API root)
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist, { index: false }));
+}
+
+// Root Route: Frontend for browser navigations (text/html), API welcome JSON for API clients
+app.get('/', (req, res, next) => {
+  const acceptsHtml = req.headers.accept && req.headers.accept.includes('text/html');
+  if (acceptsHtml && fs.existsSync(path.join(frontendDist, 'index.html'))) {
+    return res.sendFile(path.join(frontendDist, 'index.html'));
+  }
   return res.status(200).json({
     success: true,
     data: {
@@ -99,6 +115,14 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/listings', listingRoutes);
 app.use('/api/v1/epr', eprRoutes);
+
+// SPA client-side fallback: serve index.html for non-API GET requests
+app.get('*', (req, res, next) => {
+  if (!req.path.startsWith('/api') && fs.existsSync(path.join(frontendDist, 'index.html'))) {
+    return res.sendFile(path.join(frontendDist, 'index.html'));
+  }
+  next(new AppError(`Endpoint '${req.originalUrl}' not found on this server.`, 404));
+});
 
 // Catch-all route for unhandled endpoints
 app.all('*', (req, res, next) => {
