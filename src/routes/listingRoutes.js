@@ -8,7 +8,10 @@ import {
   placeBid,
   getListingBids,
 } from '../controllers/bidController.js';
-import { acceptBid } from '../controllers/auctionController.js';
+import {
+  acceptBid,
+  createPaymentIntent,
+} from '../controllers/auctionController.js';
 
 const router = Router();
 
@@ -26,6 +29,9 @@ router.post('/:listing_id/bids', placeBid);
 
 // GET /api/v1/listings/:listing_id/bids -> View all bids on a listing
 router.get('/:listing_id/bids', getListingBids);
+
+// POST /api/v1/listings/:listing_id/payment-intent -> Generate dynamic UPI intent & B2B VAN for recycler
+router.post('/:listing_id/payment-intent', createPaymentIntent);
 
 // POST /api/v1/listings/:listing_id/accept-bid -> Finalize auction, process UPI payout & mint EPR token
 router.post('/:listing_id/accept-bid', acceptBid);

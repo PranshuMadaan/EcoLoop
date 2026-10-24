@@ -36,6 +36,9 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS organization_name VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS cpcb_reg_number VARCHAR(100);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS upi_vpa_status VARCHAR(20) DEFAULT 'VERIFIED';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS upi_bank_account_holder VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS upi_verified_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
 -- Indexes for fast user lookups by role and mobile number
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
@@ -100,3 +103,27 @@ CREATE TABLE IF NOT EXISTS epr_tokens (
 CREATE INDEX IF NOT EXISTS idx_epr_tokens_listing_id ON epr_tokens(listing_id);
 CREATE INDEX IF NOT EXISTS idx_epr_tokens_recycler_id ON epr_tokens(recycler_id);
 CREATE INDEX IF NOT EXISTS idx_epr_tokens_cpcb_hash ON epr_tokens(cpcb_certificate_hash);
+
+-- ----------------------------------------------------------------------------
+-- 5. Payouts Ledger Table (Real-time Escrow Liquidation & Payout Audit)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS payouts (
+    payout_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    listing_id UUID NOT NULL REFERENCES scrap_listings(listing_id) ON DELETE CASCADE,
+    seller_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    payee_vpa VARCHAR(255) NOT NULL,
+    gross_amount NUMERIC(10, 2) NOT NULL,
+    seller_net_amount NUMERIC(10, 2) NOT NULL,
+    platform_fee NUMERIC(10, 2) NOT NULL,
+    welfare_levy NUMERIC(10, 2) NOT NULL,
+    gateway_transaction_id VARCHAR(100) UNIQUE NOT NULL,
+    bank_rrn VARCHAR(50) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'SUCCESS'
+        CHECK (status IN ('PENDING', 'SUCCESS', 'FAILED', 'REVERSED')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_payouts_seller ON payouts(seller_id);
+CREATE INDEX IF NOT EXISTS idx_payouts_listing ON payouts(listing_id);
+CREATE INDEX IF NOT EXISTS idx_payouts_gateway_txn ON payouts(gateway_transaction_id);
+

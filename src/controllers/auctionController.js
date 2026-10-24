@@ -14,23 +14,97 @@ export const generateCpcbHash = ({ listingId, recyclerId, materialGrade, weightM
 };
 
 /**
- * Simulate Real-time UPI Payout to Seller's VPA
+ * Simulate Real-time UPI Payout to Seller's VPA with Automated Split
  */
 export const executeUpiPayout = ({ sellerVpa, amountInr, sellerId }) => {
   const transactionId = `UPI-TXN-${Date.now()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
   const rrn = `RRN${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+  const gross = Number(amountInr);
+  const sellerNet = Number((gross * 0.985).toFixed(2));
+  const platformFee = Number((gross * 0.010).toFixed(2));
+  const welfareLevy = Number((gross * 0.005).toFixed(2));
 
   return {
     transaction_id: transactionId,
     bank_rrn: rrn,
     seller_id: sellerId,
     payee_vpa: sellerVpa || 'seller.default@upi',
-    amount_inr: Number(amountInr),
+    amount_inr: gross,
+    gross_amount_inr: gross,
+    seller_net_amount_inr: sellerNet,
+    platform_fee_inr: platformFee,
+    welfare_levy_inr: welfareLevy,
+    split: {
+      seller_share_percent: 98.5,
+      platform_commission_percent: 1.0,
+      informal_picker_welfare_percent: 0.5,
+    },
     currency: 'INR',
     status: 'SUCCESS',
     timestamp: new Date().toISOString(),
     gateway: 'EcoLoop FastEscrow Instant Settlement',
   };
+};
+
+/**
+ * Generate Dynamic Payment Intent for Recycler (Payer)
+ * Supports Mobile UPI Intent, Dynamic QR, and B2B Virtual Account (RTGS/NEFT)
+ * POST /api/v1/listings/:listing_id/payment-intent
+ */
+export const createPaymentIntent = async (req, res, next) => {
+  try {
+    const { listing_id } = req.params;
+    const { bid_amount } = req.body;
+
+    if (!listing_id || !UUID_REGEX.test(listing_id)) {
+      throw new AppError('Invalid listing_id format. Must be a valid UUID.', 400);
+    }
+
+    const { query: dbQuery } = await import('../config/db.js');
+    const listingRes = await dbQuery(
+      'SELECT listing_id, material_grade, weight_kg, min_price, mstc_lot_no, status FROM scrap_listings WHERE listing_id = $1;',
+      [listing_id]
+    );
+    if (listingRes.rows.length === 0) {
+      throw new AppError(`Listing with id '${listing_id}' not found.`, 404);
+    }
+
+    const listing = listingRes.rows[0];
+    const amount = Number(bid_amount) || Number(listing.min_price);
+    if (isNaN(amount) || amount <= 0) {
+      throw new AppError('bid_amount must be a positive numeric value.', 400);
+    }
+
+    const lotTag = listing.mstc_lot_no || `LOT-${listing_id.slice(0, 8)}`;
+    const encodedDesc = encodeURIComponent(`EcoLoop Escrow Lot ${lotTag}`);
+    const upiUri = `upi://pay?pa=ecoloop.escrow@icici&pn=EcoLoop%20Escrow&am=${amount.toFixed(2)}&cu=INR&tn=${encodedDesc}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiUri)}`;
+    const vanNumber = `ECOP${listing_id.replace(/-/g, '').slice(0, 12).toUpperCase()}`;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        listing_id,
+        material_grade: listing.material_grade,
+        weight_kg: Number(listing.weight_kg),
+        amount_inr: amount,
+        escrow_merchant_vpa: 'ecoloop.escrow@icici',
+        merchant_name: 'EcoLoop Clearing & Escrow Account',
+        upi_intent_uri: upiUri,
+        dynamic_qr_url: qrUrl,
+        van_b2b_details: {
+          beneficiary_name: 'EcoLoop Clearing & Escrow Services',
+          virtual_account_number: vanNumber,
+          ifsc_code: 'ICIC0000104',
+          bank_name: 'ICICI Bank Corporate Clearing (B2B RTGS/NEFT Rail)',
+          threshold_note: 'Recommended for bulk industrial scrap settlements (>= ₹1,00,000)',
+        },
+        expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 /**
@@ -149,12 +223,30 @@ export const acceptBid = async (req, res, next) => {
       [listing_id]
     );
 
-    // 6. Execute Simulated Real-time UPI Payout to Seller
+    // 6. Execute Simulated Real-time UPI Payout to Seller with Automated Split
     const payoutReceipt = executeUpiPayout({
       sellerVpa: listing.seller_upi_vpa,
       amountInr: winningBid.bid_amount,
       sellerId: listing.seller_id,
     });
+
+    // Record payout in immutable payouts ledger table
+    await client.query(`
+      INSERT INTO payouts (
+        listing_id, seller_id, payee_vpa, gross_amount, seller_net_amount, platform_fee, welfare_levy, gateway_transaction_id, bank_rrn, status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'SUCCESS');
+    `, [
+      listing.listing_id,
+      listing.seller_id,
+      payoutReceipt.payee_vpa,
+      payoutReceipt.gross_amount_inr,
+      payoutReceipt.seller_net_amount_inr,
+      payoutReceipt.platform_fee_inr,
+      payoutReceipt.welfare_levy_inr,
+      payoutReceipt.transaction_id,
+      payoutReceipt.bank_rrn,
+    ]);
 
     // 7. Mint CPCB Cryptographic EPR Compliance Token
     // Weight converted from kg to Metric Tonnes (MT)
@@ -229,4 +321,5 @@ export default {
   acceptBid,
   generateCpcbHash,
   executeUpiPayout,
+  createPaymentIntent,
 };

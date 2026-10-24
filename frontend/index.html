@@ -51,6 +51,10 @@
             <span class="status-dot"></span>
             <span class="status-label">Connecting...</span>
           </div>
+          <button class="btn btn-secondary" id="btn-register-seller" style="padding: 0.55rem 0.9rem; font-size: 0.85rem;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Seller UPI Onboarding
+          </button>
           <button class="btn btn-primary" id="btn-create-listing">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
             Post Scrap Lot
@@ -177,6 +181,10 @@
               <button type="submit" class="btn btn-primary btn-block" id="btn-submit-bid">
                 Submit Auction Bid
               </button>
+              <button type="button" class="btn btn-secondary btn-block" id="btn-preview-escrow" style="margin-top: 0.5rem; font-size: 0.85rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                View Payment Rails (UPI / QR / RTGS)
+              </button>
             </form>
           </div>
 
@@ -229,9 +237,12 @@
           <div class="form-group">
             <label for="create-seller">Seller Account (Picker or DWCC)</label>
             <select id="create-seller" class="form-control" required>
-              <option value="22222222-2222-2222-2222-222222222201">DWCC: Ward 150 Collection Centre (Semi-formal hub)</option>
-              <option value="11111111-1111-1111-1111-111111111101">Picker: Ramesh Kumar (Informal waste collector)</option>
-              <option value="11111111-1111-1111-1111-111111111102">Picker: Sunita Devi (Aggregator)</option>
+              <option value="22222222-2222-2222-2222-222222222201">Municipal Corporation of Delhi (MCD MRF Dwarka)</option>
+              <option value="22222222-2222-2222-2222-222222222202">Bruhat Bengaluru Mahanagara Palike (BBMP Ward 150 Hub)</option>
+              <option value="22222222-2222-2222-2222-222222222203">Western Railway Scrap Disposal Depot (Mahalaxmi, Mumbai)</option>
+              <option value="22222222-2222-2222-2222-222222222204">Indian Oil Corporation Limited (IOCL Panipat Complex)</option>
+              <option value="11111111-1111-1111-1111-111111111101">Picker: Ramesh Kumar (Hasiru Dala Waste Pickers SHG)</option>
+              <option value="11111111-1111-1111-1111-111111111102">Picker: Sunita Devi (Chintan Aggregation Collective)</option>
             </select>
           </div>
 
@@ -266,6 +277,153 @@
             <button type="submit" class="btn btn-primary" id="btn-save-listing">Publish Lot</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Seller UPI Onboarding Modal -->
+    <div id="modal-register-seller" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3>Seller UPI Onboarding</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin: 0;">Register settlement VPA with instant NPCI reverse verification.</p>
+          </div>
+          <button class="btn-close" id="modal-seller-close">&times;</button>
+        </div>
+        <form id="form-register-seller" class="modal-body">
+          <div class="form-group">
+            <label for="seller-reg-role">Account Role</label>
+            <select id="seller-reg-role" class="form-control" required>
+              <option value="DWCC">DWCC / Material Recovery Facility (MRF Aggregator)</option>
+              <option value="Picker">Informal Waste Collector / Picker Collective (SHG)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="seller-reg-org">Organization / Hub Name</label>
+            <input type="text" id="seller-reg-org" class="form-control" placeholder="e.g. Rohini Sector 16 DWCC Aggregation Hub" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="seller-reg-mobile">Mobile Number (10 Digits)</label>
+              <input type="tel" id="seller-reg-mobile" class="form-control" placeholder="+919876543210" required />
+            </div>
+            <div class="form-group">
+              <label for="seller-reg-password">Account Password</label>
+              <input type="password" id="seller-reg-password" class="form-control" placeholder="Min 6 characters" minlength="6" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="seller-reg-cpcb">CPCB / SWM Registration Ref (Optional)</label>
+            <input type="text" id="seller-reg-cpcb" class="form-control" placeholder="e.g. DPCC/WMC/2024/MRF-089" />
+          </div>
+
+          <div class="form-group">
+            <label for="seller-reg-vpa">Settlement UPI VPA (Payee Destination)</label>
+            <div class="input-with-button">
+              <input type="text" id="seller-reg-vpa" class="form-control" placeholder="e.g. rohini.dwcc@sbi or 9876543210@upi" required />
+              <button type="button" class="btn btn-secondary" id="btn-verify-vpa" style="white-space: nowrap;">
+                Verify Bank
+              </button>
+            </div>
+            <span class="field-hint">Penny-drop verifies legal bank account name before listing scrap lots.</span>
+          </div>
+
+          <div id="vpa-verification-feedback" class="hidden">
+            <!-- Dynamic Penny Drop Result Card -->
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="modal-seller-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-seller">Complete Onboarding</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Recycler Payment Rails (Inbound Escrow Gateway) Modal -->
+    <div id="modal-payment-rails" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3>Recycler Payment Gateway</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin: 0;">Multi-rail escrow holding pool for competitive bidding.</p>
+          </div>
+          <button class="btn-close" id="modal-payment-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="text-muted" style="font-size: 0.8rem;">Escrow Target Lot:</span>
+              <strong id="escrow-modal-lot" style="color: #38bdf8;">Loading...</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+              <span class="text-muted" style="font-size: 0.8rem;">Required Escrow Deposit:</span>
+              <strong id="escrow-modal-amount" style="font-size: 1.25rem; color: #10b981;">₹0</strong>
+            </div>
+          </div>
+
+          <div class="payment-methods-grid">
+            <!-- Method 1: Mobile UPI Intent -->
+            <div>
+              <strong style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option A: 1-Tap Mobile UPI Intent</strong>
+              <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 0.5rem;">Directly opens installed banking apps (GPay, PhonePe, Paytm, BHIM, Cred).</p>
+              <a id="escrow-upi-intent-link" href="#" class="btn btn-primary btn-block" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                Launch UPI App & Enter PIN
+              </a>
+            </div>
+
+            <!-- Method 2: Dynamic QR -->
+            <div>
+              <strong style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option B: Scan Dynamic Payment QR</strong>
+              <div class="qr-container">
+                <img id="escrow-modal-qr-img" src="" alt="Dynamic UPI Payment QR" />
+                <span class="qr-caption">Scan with any UPI app on your phone</span>
+              </div>
+            </div>
+
+            <!-- Method 3: Corporate B2B RTGS/NEFT Rail -->
+            <div>
+              <strong style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option C: High-Value B2B Rail (RTGS / NEFT)</strong>
+              <div class="van-box">
+                <span class="van-label">Beneficiary Account Name</span>
+                <span style="color: #fff;">EcoLoop Clearing & Escrow Services</span>
+
+                <span class="van-label" style="margin-top: 0.35rem;">Dedicated Virtual Account Number (VAN)</span>
+                <span class="van-value" id="escrow-van-number">ECOP4444...</span>
+
+                <span class="van-label" style="margin-top: 0.35rem;">Bank / IFSC Code</span>
+                <span style="color: #fff;">ICICI Bank Corporate Clearing / <strong style="color: #38bdf8;">ICIC0000104</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="modal-payment-done">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settlement Payout Receipt Modal -->
+    <div id="modal-settlement-receipt" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3>Auction Settlement Payout Receipt</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin: 0;">Instant atomic liquidation & CPCB EPR minting confirmation.</p>
+          </div>
+          <button class="btn-close" id="modal-receipt-close">&times;</button>
+        </div>
+        <div class="modal-body" id="settlement-receipt-content">
+          <!-- Dynamic Settlement Breakdown -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="modal-receipt-done">Acknowledge Receipt</button>
+        </div>
       </div>
     </div>
 

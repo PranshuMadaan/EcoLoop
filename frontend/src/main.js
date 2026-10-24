@@ -6,6 +6,7 @@ const state = {
   activeTab: 'marketplace',
   listings: [],
   selectedListing: null,
+  lastVerifiedVpa: null,
 };
 
 // DOM Elements
@@ -31,12 +32,44 @@ const elements = {
   btnVerifyHash: document.getElementById('btn-verify-hash'),
   eprVerificationResult: document.getElementById('epr-verification-result'),
 
-  // Modal Elements
+  // Modal: Create Listing
   btnCreateListing: document.getElementById('btn-create-listing'),
   modalCreateListing: document.getElementById('modal-create-listing'),
   modalClose: document.getElementById('modal-close'),
   modalCancel: document.getElementById('modal-cancel'),
   formCreateListing: document.getElementById('form-create-listing'),
+
+  // Modal: Seller UPI Onboarding
+  btnRegisterSeller: document.getElementById('btn-register-seller'),
+  modalRegisterSeller: document.getElementById('modal-register-seller'),
+  modalSellerClose: document.getElementById('modal-seller-close'),
+  modalSellerCancel: document.getElementById('modal-seller-cancel'),
+  formRegisterSeller: document.getElementById('form-register-seller'),
+  sellerRegRole: document.getElementById('seller-reg-role'),
+  sellerRegOrg: document.getElementById('seller-reg-org'),
+  sellerRegMobile: document.getElementById('seller-reg-mobile'),
+  sellerRegPassword: document.getElementById('seller-reg-password'),
+  sellerRegCpcb: document.getElementById('seller-reg-cpcb'),
+  sellerRegVpa: document.getElementById('seller-reg-vpa'),
+  btnVerifyVpa: document.getElementById('btn-verify-vpa'),
+  vpaVerificationFeedback: document.getElementById('vpa-verification-feedback'),
+
+  // Modal: Recycler Inbound Payment Rails
+  btnPreviewEscrow: document.getElementById('btn-preview-escrow'),
+  modalPaymentRails: document.getElementById('modal-payment-rails'),
+  modalPaymentClose: document.getElementById('modal-payment-close'),
+  modalPaymentDone: document.getElementById('modal-payment-done'),
+  escrowModalLot: document.getElementById('escrow-modal-lot'),
+  escrowModalAmount: document.getElementById('escrow-modal-amount'),
+  escrowUpiIntentLink: document.getElementById('escrow-upi-intent-link'),
+  escrowModalQrImg: document.getElementById('escrow-modal-qr-img'),
+  escrowVanNumber: document.getElementById('escrow-van-number'),
+
+  // Modal: Settlement Payout Receipt
+  modalSettlementReceipt: document.getElementById('modal-settlement-receipt'),
+  modalReceiptClose: document.getElementById('modal-receipt-close'),
+  modalReceiptDone: document.getElementById('modal-receipt-done'),
+  settlementReceiptContent: document.getElementById('settlement-receipt-content'),
 
   // Toast Container
   toastContainer: document.getElementById('toast-container'),
@@ -348,12 +381,244 @@ async function handleAcceptBid(listingId) {
     
     // Auto-display minted EPR certificate in EPR tab
     if (body.data.epr_token) {
-      switchTab('epr');
       elements.eprHashInput.value = body.data.epr_token.cpcb_certificate_hash;
-      await handleVerifyHash();
+    }
+
+    // Display Settlement Payout Receipt Modal
+    if (body.data.payout) {
+      renderSettlementReceipt(body.data);
     }
 
     await fetchListings();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function renderSettlementReceipt(data) {
+  const { payout, epr_token } = data;
+  elements.settlementReceiptContent.innerHTML = `
+    <div style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span class="text-muted" style="font-size: 0.8rem;">DISPATCH STATUS</span>
+        <span class="status-tag SOLD" style="background: rgba(16,185,129,0.2); color: #10b981; font-weight: 600;">UPI INSTANT SETTLED</span>
+      </div>
+      <div style="margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: baseline;">
+        <span style="color: #fff; font-size: 0.9rem;">Gross Auction Settlement:</span>
+        <strong style="color: #10b981; font-size: 1.35rem;">₹${Number(payout.gross_amount).toLocaleString('en-IN')}</strong>
+      </div>
+    </div>
+
+    <table class="receipt-table">
+      <thead>
+        <tr>
+          <th>Automated Ledger Allocation</th>
+          <th style="text-align: right;">Split %</th>
+          <th style="text-align: right;">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong style="color: #fff;">Seller Net Proceeds</strong>
+            <div class="text-muted" style="font-size: 0.72rem;">Beneficiary: ${payout.beneficiary_name} (${payout.destination_upi_vpa})</div>
+          </td>
+          <td style="text-align: right; color: #10b981; font-weight: 600;">98.5%</td>
+          <td style="text-align: right; font-weight: 700; color: #10b981;">₹${Number(payout.seller_net_payout).toLocaleString('en-IN')}</td>
+        </tr>
+        <tr>
+          <td>
+            <strong style="color: #fff;">Platform Clearing Fee</strong>
+            <div class="text-muted" style="font-size: 0.72rem;">Escrow processing, KYC & smart contracts</div>
+          </td>
+          <td style="text-align: right; color: #38bdf8;">1.0%</td>
+          <td style="text-align: right; font-weight: 600; color: #38bdf8;">₹${Number(payout.platform_commission).toLocaleString('en-IN')}</td>
+        </tr>
+        <tr>
+          <td>
+            <strong style="color: #fff;">Informal Waste Picker Welfare</strong>
+            <div class="text-muted" style="font-size: 0.72rem;">Health micro-insurance & safety equipment pool</div>
+          </td>
+          <td style="text-align: right; color: #fbbf24;">0.5%</td>
+          <td style="text-align: right; font-weight: 600; color: #fbbf24;">₹${Number(payout.picker_welfare_fund).toLocaleString('en-IN')}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 1rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem; font-size: 0.75rem; font-family: monospace;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+        <span class="text-muted">BANK RRN:</span>
+        <span style="color: #fff;">${payout.bank_rrn}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+        <span class="text-muted">GATEWAY TXN ID:</span>
+        <span style="color: #fff;">${payout.gateway_transaction_id}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span class="text-muted">CPCB EPR LEDGER HASH:</span>
+        <span style="color: #38bdf8; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${epr_token ? epr_token.cpcb_certificate_hash : 'VERIFIED'}</span>
+      </div>
+    </div>
+  `;
+  elements.modalSettlementReceipt.classList.remove('hidden');
+}
+
+// ============================================================================
+// Seller UPI Onboarding & Penny-Drop Bank Verification
+// ============================================================================
+async function handleVerifyVpa() {
+  const vpa = elements.sellerRegVpa.value.trim();
+  if (!vpa) {
+    showToast('Please enter a UPI VPA (e.g. org@sbi).', 'error');
+    return;
+  }
+
+  elements.btnVerifyVpa.disabled = true;
+  elements.btnVerifyVpa.textContent = 'Verifying...';
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/verify-vpa`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vpa }),
+    });
+
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Failed to verify UPI VPA');
+    }
+
+    state.lastVerifiedVpa = body.data;
+
+    elements.vpaVerificationFeedback.className = 'penny-drop-card';
+    elements.vpaVerificationFeedback.style.borderColor = 'rgba(16,185,129,0.4)';
+    elements.vpaVerificationFeedback.style.background = 'rgba(16,185,129,0.06)';
+    elements.vpaVerificationFeedback.innerHTML = `
+      <div class="penny-drop-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <strong style="color: #10b981;">Penny-Drop Reverse Lookup Succeeded</strong>
+      </div>
+      <div style="font-size: 0.82rem; margin-top: 0.4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <div>
+          <span class="text-muted" style="display: block; font-size: 0.7rem;">LEGAL BANK ACCOUNT HOLDER</span>
+          <strong style="color: #fff;">${body.data.account_holder_name}</strong>
+        </div>
+        <div>
+          <span class="text-muted" style="display: block; font-size: 0.7rem;">ISSUING PSP / BANK</span>
+          <span style="color: #38bdf8;">${body.data.bank_name}</span>
+        </div>
+      </div>
+      <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 0.4rem;">
+        Verified at: ${new Date(body.data.verified_at).toLocaleTimeString('en-IN')} &bull; Status: <span style="color: #10b981; font-weight: 600;">ACTIVE_NPCI</span>
+      </div>
+    `;
+    elements.vpaVerificationFeedback.classList.remove('hidden');
+    showToast(`Bank Account Verified: ${body.data.account_holder_name} (${body.data.bank_name})`);
+  } catch (err) {
+    elements.vpaVerificationFeedback.className = 'penny-drop-card';
+    elements.vpaVerificationFeedback.style.borderColor = 'rgba(244,63,94,0.4)';
+    elements.vpaVerificationFeedback.style.background = 'rgba(244,63,94,0.06)';
+    elements.vpaVerificationFeedback.innerHTML = `
+      <div style="color: #f43f5e; font-weight: 600; font-size: 0.85rem;">
+        ❌ Verification Failed: ${err.message}
+      </div>
+    `;
+    elements.vpaVerificationFeedback.classList.remove('hidden');
+    showToast(err.message, 'error');
+  } finally {
+    elements.btnVerifyVpa.disabled = false;
+    elements.btnVerifyVpa.textContent = 'Verify Bank';
+  }
+}
+
+async function handleRegisterSellerSubmit(e) {
+  e.preventDefault();
+  const role = elements.sellerRegRole.value;
+  const organization_name = elements.sellerRegOrg.value.trim();
+  const mobile = elements.sellerRegMobile.value.trim();
+  const password = elements.sellerRegPassword.value;
+  const cpcb_registration_number = elements.sellerRegCpcb.value.trim() || undefined;
+  const upi_vpa = elements.sellerRegVpa.value.trim();
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        organization_name,
+        role,
+        mobile,
+        password,
+        cpcb_registration_number,
+        upi_vpa,
+        upi_bank_account_holder: state.lastVerifiedVpa?.account_holder_name || organization_name,
+      }),
+    });
+
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Failed to register seller');
+    }
+
+    const newUser = body.data.user;
+    showToast(`Seller onboarded successfully! UPI VPA ${upi_vpa} linked.`);
+
+    // Add new seller to create-seller select in modal
+    const createSellerSelect = document.getElementById('create-seller');
+    if (createSellerSelect && newUser) {
+      const opt = document.createElement('option');
+      opt.value = newUser.user_id;
+      opt.textContent = `${newUser.organization_name} (${newUser.role} - ${upi_vpa})`;
+      opt.selected = true;
+      createSellerSelect.appendChild(opt);
+    }
+
+    // Close modal & reset
+    elements.modalRegisterSeller.classList.add('hidden');
+    elements.formRegisterSeller.reset();
+    elements.vpaVerificationFeedback.classList.add('hidden');
+    state.lastVerifiedVpa = null;
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+// ============================================================================
+// Recycler Inbound Escrow Gateway & Payment Rails Preview
+// ============================================================================
+async function handlePreviewEscrowRails() {
+  const listingId = elements.bidListingSelect.value;
+  if (!listingId) {
+    showToast('Please select a target scrap listing first.', 'error');
+    return;
+  }
+
+  const selectedLot = state.listings.find((l) => l.listing_id === listingId);
+  const bidAmount = Number(elements.bidAmountInput.value) || (selectedLot ? Number(selectedLot.min_price) : 25000);
+
+  elements.escrowModalLot.textContent = selectedLot
+    ? `${selectedLot.material_grade} (${(selectedLot.weight_kg / 1000).toFixed(1)} MT / ${selectedLot.weight_kg.toLocaleString()} kg)`
+    : 'Selected Scrap Lot';
+  elements.escrowModalAmount.textContent = `₹${bidAmount.toLocaleString('en-IN')}`;
+
+  try {
+    const res = await fetch(`${API_BASE}/listings/${listingId}/payment-intent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: bidAmount }),
+    });
+
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      throw new Error(body.error || 'Failed to generate payment intent');
+    }
+
+    const intent = body.data;
+    elements.escrowUpiIntentLink.href = intent.upi_intent_uri;
+    elements.escrowModalQrImg.src = intent.qr_code_url;
+    elements.escrowVanNumber.textContent = intent.virtual_account.account_number;
+
+    elements.modalPaymentRails.classList.remove('hidden');
   } catch (err) {
     showToast(err.message, 'error');
   }
@@ -494,11 +759,33 @@ function init() {
   // EPR events
   elements.btnVerifyHash.addEventListener('click', handleVerifyHash);
 
-  // Modal events
-  elements.btnCreateListing.addEventListener('click', () => elements.modalCreateListing.classList.remove('hidden'));
-  elements.modalClose.addEventListener('click', () => elements.modalCreateListing.classList.add('hidden'));
-  elements.modalCancel.addEventListener('click', () => elements.modalCreateListing.classList.add('hidden'));
-  elements.formCreateListing.addEventListener('submit', handleCreateListing);
+  // Create Listing Modal events
+  elements.btnCreateListing?.addEventListener('click', () => elements.modalCreateListing.classList.remove('hidden'));
+  elements.modalClose?.addEventListener('click', () => elements.modalCreateListing.classList.add('hidden'));
+  elements.modalCancel?.addEventListener('click', () => elements.modalCreateListing.classList.add('hidden'));
+  elements.formCreateListing?.addEventListener('submit', handleCreateListing);
+
+  // Seller UPI Onboarding Modal events
+  elements.btnRegisterSeller?.addEventListener('click', () => elements.modalRegisterSeller.classList.remove('hidden'));
+  elements.modalSellerClose?.addEventListener('click', () => elements.modalRegisterSeller.classList.add('hidden'));
+  elements.modalSellerCancel?.addEventListener('click', () => elements.modalRegisterSeller.classList.add('hidden'));
+  elements.btnVerifyVpa?.addEventListener('click', handleVerifyVpa);
+  elements.formRegisterSeller?.addEventListener('submit', handleRegisterSellerSubmit);
+
+  // Recycler Payment Rails Modal events
+  elements.btnPreviewEscrow?.addEventListener('click', handlePreviewEscrowRails);
+  elements.modalPaymentClose?.addEventListener('click', () => elements.modalPaymentRails.classList.add('hidden'));
+  elements.modalPaymentDone?.addEventListener('click', () => elements.modalPaymentRails.classList.add('hidden'));
+
+  // Settlement Payout Receipt Modal events
+  elements.modalReceiptClose?.addEventListener('click', () => elements.modalSettlementReceipt.classList.add('hidden'));
+  elements.modalReceiptDone?.addEventListener('click', () => {
+    elements.modalSettlementReceipt.classList.add('hidden');
+    if (elements.eprHashInput.value) {
+      switchTab('epr');
+      handleVerifyHash();
+    }
+  });
 
   // Initial loads
   checkHealth();
