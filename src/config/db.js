@@ -7,13 +7,20 @@ const { Pool } = pg;
 
 // Construct pool configuration: preferentially use DATABASE_URL if present,
 // falling back to granular parameters.
+const shouldUseSsl =
+  process.env.NODE_ENV === 'production' ||
+  (process.env.DATABASE_URL &&
+    (process.env.DATABASE_URL.includes('neon.tech') ||
+      process.env.DATABASE_URL.includes('sslmode=require'))) ||
+  process.env.PGSSL === 'true';
+
 const poolConfig = process.env.DATABASE_URL
   ? {
       connectionString: process.env.DATABASE_URL,
       max: Number(process.env.PG_MAX_POOL) || 20,
       idleTimeoutMillis: Number(process.env.PG_IDLE_TIMEOUT_MS) || 30000,
-      connectionTimeoutMillis: Number(process.env.PG_CONNECTION_TIMEOUT_MS) || 2000,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      connectionTimeoutMillis: Number(process.env.PG_CONNECTION_TIMEOUT_MS) || 10000,
+      ssl: shouldUseSsl ? { rejectUnauthorized: false } : false,
     }
   : {
       host: process.env.PGHOST || 'localhost',
@@ -23,8 +30,8 @@ const poolConfig = process.env.DATABASE_URL
       database: process.env.PGDATABASE || 'ecoloop_db',
       max: Number(process.env.PG_MAX_POOL) || 20,
       idleTimeoutMillis: Number(process.env.PG_IDLE_TIMEOUT_MS) || 30000,
-      connectionTimeoutMillis: Number(process.env.PG_CONNECTION_TIMEOUT_MS) || 2000,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      connectionTimeoutMillis: Number(process.env.PG_CONNECTION_TIMEOUT_MS) || 10000,
+      ssl: shouldUseSsl ? { rejectUnauthorized: false } : false,
     };
 
 export const pool = new Pool(poolConfig);

@@ -13,6 +13,7 @@ const server = app.listen(PORT, () => {
   console.log(`🩺 Health check: http://localhost:${PORT}/health`);
   console.log(`👥 Users API: http://localhost:${PORT}/api/v1/users`);
   console.log(`📦 Listings API: http://localhost:${PORT}/api/v1/listings`);
+  console.log(`🌿 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`========================================================`);
 });
 
