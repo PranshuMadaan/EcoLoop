@@ -477,10 +477,11 @@ async function handleVerifyVpa() {
   elements.btnVerifyVpa.textContent = 'Verifying...';
 
   try {
+    const orgName = elements.sellerRegOrg?.value?.trim() || '';
     const res = await fetch(`${API_BASE}/auth/verify-vpa`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ vpa }),
+      body: JSON.stringify({ upi_vpa: vpa, vpa, organization_name: orgName }),
     });
 
     const body = await res.json();
@@ -547,10 +548,13 @@ async function handleRegisterSellerSubmit(e) {
       body: JSON.stringify({
         organization_name,
         role,
-        mobile,
+        mobile_number: mobile,
+        mobile: mobile,
         password,
+        cpcb_reg_number: cpcb_registration_number,
         cpcb_registration_number,
         upi_vpa,
+        vpa: upi_vpa,
         upi_bank_account_holder: state.lastVerifiedVpa?.account_holder_name || organization_name,
       }),
     });

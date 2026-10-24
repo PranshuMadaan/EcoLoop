@@ -49,8 +49,13 @@ const KNOWN_PSP_BANKS = {
   okicici: 'ICICI Bank',
   icici: 'ICICI Bank',
   paytm: 'Paytm Payments Bank',
+  ptyes: 'YES Bank (Paytm)',
+  pthdfc: 'HDFC Bank (Paytm)',
+  ptsbi: 'State Bank of India (Paytm)',
+  ptaxis: 'Axis Bank (Paytm)',
   apl: 'Amazon Pay (Axis Bank)',
   ybl: 'YES Bank (PhonePe)',
+  axl: 'Axis Bank (PhonePe)',
   ibl: 'IndusInd Bank',
   upi: 'NPCI National Clearing Network',
 };
@@ -61,12 +66,12 @@ const KNOWN_PSP_BANKS = {
  */
 export const verifyVpa = async (req, res, next) => {
   try {
-    const { upi_vpa } = req.body;
-    if (!upi_vpa || typeof upi_vpa !== 'string') {
+    const rawVpa = req.body.upi_vpa || req.body.vpa;
+    if (!rawVpa || typeof rawVpa !== 'string') {
       throw new AppError('A valid upi_vpa string is required.', 400);
     }
 
-    const trimmed = upi_vpa.trim().toLowerCase();
+    const trimmed = rawVpa.trim().toLowerCase();
     if (!VPA_REGEX.test(trimmed)) {
       throw new AppError('Invalid UPI VPA format. Expected handle like user@bank or 9876543210@upi', 400);
     }
@@ -75,8 +80,11 @@ export const verifyVpa = async (req, res, next) => {
     const bankName = KNOWN_PSP_BANKS[psp] || `${psp.toUpperCase()} Partner Bank`;
     
     // Derive account holder name from handle or mock registry
-    let accountHolderName = 'RAMESH KUMAR (VERIFIED HOLDER)';
-    if (handle.includes('mcd')) accountHolderName = 'MUNICIPAL CORPORATION OF DELHI';
+    let accountHolderName = 'PRIMARY ACCOUNT HOLDER (VERIFIED)';
+    const candidateName = req.body.organization_name || req.body.name;
+    if (candidateName) {
+      accountHolderName = `${candidateName.toUpperCase().trim()} (VERIFIED HOLDER)`;
+    } else if (handle.includes('mcd')) accountHolderName = 'MUNICIPAL CORPORATION OF DELHI';
     else if (handle.includes('bbmp')) accountHolderName = 'BRUHAT BENGALURU MAHANAGARA PALIKE';
     else if (handle.includes('railway') || handle.includes('rly')) accountHolderName = 'WESTERN RAILWAY CENTRAL STORES';
     else if (handle.includes('iocl')) accountHolderName = 'INDIAN OIL CORPORATION LIMITED';
@@ -84,7 +92,9 @@ export const verifyVpa = async (req, res, next) => {
     else if (handle.includes('attero')) accountHolderName = 'ATTERO RECYCLING PVT LTD';
     else if (handle.includes('banyan')) accountHolderName = 'BANYAN ECO TECH LLP';
     else if (handle.includes('ganesha')) accountHolderName = 'GANESHA ECOSPHERE LTD';
-    else {
+    else if (/^\d{10,12}$/.test(handle)) {
+      accountHolderName = `VERIFIED HOLDER (MOB +91-${handle.slice(-10)})`;
+    } else {
       accountHolderName = `${handle.replace(/[^a-zA-Z0-9]/g, ' ').toUpperCase().trim()} (VERIFIED)`;
     }
 
@@ -112,7 +122,11 @@ export const verifyVpa = async (req, res, next) => {
  */
 export const register = async (req, res, next) => {
   try {
-    const { role, mobile_number, password, upi_vpa, organization_name, cpcb_reg_number } = req.body;
+    const { role, password } = req.body;
+    const mobile_number = req.body.mobile_number || req.body.mobile;
+    const organization_name = req.body.organization_name || req.body.name;
+    const cpcb_reg_number = req.body.cpcb_reg_number || req.body.cpcb_registration_number;
+    const upi_vpa = req.body.upi_vpa || req.body.vpa;
 
     // Validate role
     if (!role || !VALID_ROLES.includes(role)) {
@@ -138,11 +152,13 @@ export const register = async (req, res, next) => {
 
     const cleanUpi = upi_vpa ? String(upi_vpa).trim() : null;
     let upiStatus = cleanUpi ? 'VERIFIED' : 'UNVERIFIED';
-    let upiHolder = null;
+    let upiHolder = req.body.upi_bank_account_holder || null;
 
-    if (cleanUpi) {
+    if (cleanUpi && !upiHolder) {
       const handle = cleanUpi.split('@')[0] || 'User';
-      upiHolder = `${handle.replace(/[^a-zA-Z0-9]/g, ' ').toUpperCase().trim()} (VERIFIED HOLDER)`;
+      upiHolder = organization_name 
+        ? `${organization_name.toUpperCase().trim()} (VERIFIED HOLDER)`
+        : `${handle.replace(/[^a-zA-Z0-9]/g, ' ').toUpperCase().trim()} (VERIFIED HOLDER)`;
     }
 
     // Check if mobile number is already registered
