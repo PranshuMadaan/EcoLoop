@@ -32,8 +32,10 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Idempotent column addition if users table pre-existed
+-- Idempotent column additions if users table pre-existed
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS organization_name VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS cpcb_reg_number VARCHAR(100);
 
 -- Indexes for fast user lookups by role and mobile number
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
@@ -50,12 +52,19 @@ CREATE TABLE IF NOT EXISTS scrap_listings (
     min_price NUMERIC(10, 2) NOT NULL CHECK (min_price >= 0),
     status VARCHAR(50) NOT NULL DEFAULT 'OPEN' 
         CHECK (status IN ('OPEN', 'BIDDING', 'SOLD', 'CANCELLED')),
+    mstc_lot_no VARCHAR(100),
+    origin_location VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Idempotent column additions for scrap_listings
+ALTER TABLE scrap_listings ADD COLUMN IF NOT EXISTS mstc_lot_no VARCHAR(100);
+ALTER TABLE scrap_listings ADD COLUMN IF NOT EXISTS origin_location VARCHAR(255);
 
 CREATE INDEX IF NOT EXISTS idx_scrap_listings_seller_id ON scrap_listings(seller_id);
 CREATE INDEX IF NOT EXISTS idx_scrap_listings_material_grade ON scrap_listings(material_grade);
 CREATE INDEX IF NOT EXISTS idx_scrap_listings_status ON scrap_listings(status);
+CREATE INDEX IF NOT EXISTS idx_scrap_listings_mstc_lot ON scrap_listings(mstc_lot_no);
 CREATE INDEX IF NOT EXISTS idx_scrap_listings_created_at ON scrap_listings(created_at DESC);
 
 -- ----------------------------------------------------------------------------

@@ -142,9 +142,20 @@ function renderListings(listings) {
               <span class="status-tag ${item.status}">${item.status}</span>
             </div>
 
-            <div class="listing-meta-row">
+            ${
+              item.mstc_lot_no
+                ? `<div style="font-size: 0.72rem; font-family: monospace; color: #38bdf8; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.25); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 0.4rem;">🏛️ ${item.mstc_lot_no}</div>`
+                : ''
+            }
+            ${
+              item.origin_location
+                ? `<div style="font-size: 0.78rem; color: #94a3b8; margin: 0.35rem 0 0.5rem 0;">📍 ${item.origin_location}</div>`
+                : ''
+            }
+
+            <div class="listing-meta-row" style="margin-top: 0.4rem;">
               <span class="text-muted">Available Weight:</span>
-              <span class="listing-weight">${item.weight_kg.toLocaleString()} kg</span>
+              <span class="listing-weight">${(item.weight_kg / 1000).toFixed(1)} MT <span style="font-size: 0.75rem; color: #94a3b8;">(${item.weight_kg.toLocaleString()} kg)</span></span>
             </div>
 
             <div class="listing-price-box">
@@ -163,8 +174,12 @@ function renderListings(listings) {
             <div class="seller-info">
               <div class="seller-avatar">${item.seller.role ? item.seller.role[0] : 'U'}</div>
               <div>
-                <strong style="color: #fff;">${item.seller.role}</strong>
-                <div>${item.seller.verification_status || 'VERIFIED'}</div>
+                <strong style="color: #fff; font-size: 0.85rem; display: block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.seller.organization_name || item.seller.role}">
+                  ${item.seller.organization_name || item.seller.role}
+                </strong>
+                <div style="font-size: 0.72rem; color: #10b981;">
+                  ${item.seller.cpcb_reg_number ? `CPCB: ${item.seller.cpcb_reg_number}` : (item.seller.verification_status || 'VERIFIED')}
+                </div>
               </div>
             </div>
 
@@ -212,7 +227,7 @@ function populateBidDropdown(listings) {
       .map(
         (l) => `
       <option value="${l.listing_id}" data-min="${l.min_price}" data-highest="${l.highest_bid}">
-        ${l.material_grade} (${l.weight_kg}kg) - Reserve ₹${l.min_price} | Top Bid ₹${l.highest_bid || 0}
+        ${l.mstc_lot_no ? `[${l.mstc_lot_no}] ` : ''}${l.material_grade} (${(l.weight_kg / 1000).toFixed(1)} MT) - Reserve ₹${Number(l.min_price).toLocaleString('en-IN')} | Top Bid ₹${Number(l.highest_bid || 0).toLocaleString('en-IN')}
       </option>
     `
       )
