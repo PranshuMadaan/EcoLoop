@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoLoop – Tier 2 Municipal Direct-Sale Counter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--card2:#f6f9fb;--ink:#0f172a;--mute:#52627a;--line:#d6e0ea;--teal:#0f766e;--tealt:#0d9488;--tint:#d5f2ee;--warn:#b45309;--bad:#dc2626;--btn:#0f766e;--btnt:#fff;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1628;--card:#1b263b;--card2:#16203a;--ink:#f4f7fb;--mute:#9fb0c6;--line:#2c3b57;--teal:#2dd4bf;--tealt:#2dd4bf;--tint:#123a42;--warn:#fbbf24;--bad:#f87171;--btn:#0f9488;--btnt:#fff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1628;--card:#1b263b;--card2:#16203a;--ink:#f4f7fb;--mute:#9fb0c6;--line:#2c3b57;--teal:#2dd4bf;--tealt:#2dd4bf;--tint:#123a42;--warn:#fbbf24;--bad:#f87171;--btn:#0f9488;--btnt:#fff;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;max-width:1120px;margin:0 auto}
+.chip{font-size:14px;color:var(--mute);border:1px solid var(--line);border-radius:99px;padding:6px 14px}
+#th{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px 60px}
+.hero{text-align:center;padding:26px 0 26px}
+.hero h1{font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:-.02em}
+.hero .sub{color:var(--teal);font-weight:600;margin:6px 0 8px;font-size:18px}
+.hero p{color:var(--mute);max-width:780px;margin:0 auto}
+.demo{display:inline-block;font-size:13px;color:var(--warn);border:1px solid var(--warn);border-radius:99px;padding:2px 12px;margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:8px 0 22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 20px}
+.stat b{display:block;font-size:26px;font-weight:700;line-height:1.25;color:var(--teal)}
+.stat span{color:var(--mute);font-size:13.5px}
+.two{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+@media(max-width:960px){.two{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;margin-bottom:20px}
+.box h3{font-size:18px;font-weight:600;margin-bottom:6px}
+.hint{color:var(--mute);font-size:14px;margin-bottom:16px}
+label{display:block;font-weight:600;font-size:15px;margin:10px 0 6px}
+input[type=text],input[type=number],select{width:100%;min-height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink);font:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 26px;border-radius:99px;border:0;background:var(--btn);color:var(--btnt);font:600 16px Inter,sans-serif;cursor:pointer;width:100%;margin-top:18px}
+.btn:hover{filter:brightness(1.1)}.btn:active{transform:scale(.98)}
+.btn.g{background:none;color:var(--ink);border:1px solid var(--line)}
+.scanrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.scan{font-size:13px;font-weight:600;border:1px dashed var(--tealt);color:var(--teal);background:var(--tint);border-radius:99px;padding:5px 12px;cursor:pointer}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.mode{border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;cursor:pointer;font-weight:600;background:var(--card2)}
+.mode small{display:block;font-weight:500;color:var(--mute);font-size:12.5px}
+.mode.on{border-color:var(--tealt);background:var(--tint);color:var(--teal)}
+.calc{border:1px dashed var(--line);border-radius:16px;padding:16px;margin-top:18px;background:var(--card2)}
+.calc .row{display:flex;justify-content:space-between;font-size:15px;padding:4px 0}
+.calc .row.big{font-size:19px;font-weight:700;color:var(--teal);border-top:1px solid var(--line);margin-top:8px;padding-top:10px}
+.calc .row.bad{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;color:var(--mute);font-weight:600;font-size:12.5px;padding:8px 8px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.03em}
+td{padding:11px 8px;border-bottom:1px solid var(--line)}
+tr:last-child td{border:0}
+.tw{overflow-x:auto}
+.tag{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--tint);color:var(--teal);white-space:nowrap}
+.tag.c{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+.tag.u{background:transparent;border:1px solid var(--tealt);color:var(--teal)}
+.card-prev{display:flex;gap:14px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--card2);margin-top:14px}
+.qr{width:88px;height:88px;border-radius:12px;background:
+ repeating-conic-gradient(var(--ink) 0 25%,var(--card2) 0 50%) 0 0/22px 22px;border:5px solid var(--ink);flex:none}
+.card-prev b{font-size:20px;letter-spacing:.06em}
+.card-prev small{color:var(--mute);display:block}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:14px 24px;border-radius:99px;opacity:0;pointer-events:none;transition:.3s;z-index:60;font-weight:600;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot{text-align:center;color:var(--mute);font-size:14px;padding:30px 0 10px}
+.foot b{display:block;color:var(--teal);font-weight:600;margin-top:4px}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="chip">♻️ EcoLoop · Tier 2 · Municipal Direct-Sale Counter</span>
+  <button id="th" aria-label="Toggle theme">🌓</button>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Tier 2 — Pickers without a Phone</h1>
+    <p class="sub">Same routes. Official rates. Zero middlemen.</p>
+    <p>Offline rag pickers keep collecting along their normal routes — but at the end of the day they sell
+    <b>directly at the municipal counter</b> using a physical QR card. The counter pays the official rate-card
+    price instantly in cash or UPI, and EcoLoop records exactly how much extra the picker earned versus a
+    middleman sale.</p>
+    <span class="demo">Counter-desk demo — mirrors POST /api/v1/municipal/centers/:id/sales</span>
+  </section>
+
+  <div class="stats">
+    <div class="stat"><b id="sSales">2</b><span>Direct sales today</span></div>
+    <div class="stat"><b id="sKg">20.5 kg</b><span>Material bought at counter</span></div>
+    <div class="stat"><b id="sPaid">₹606</b><span>Paid to pickers (official rates)</span></div>
+    <div class="stat"><b id="sUplift">₹205</b><span>Middleman cut avoided</span></div>
+  </div>
+
+  <div class="two">
+    <!-- ============ SALE DESK ============ -->
+    <div class="box">
+      <h3>Record a walk-in direct sale</h3>
+      <p class="hint">Operator flow: scan the picker’s card → choose material → enter the weighed kg → pay.</p>
+
+      <label for="card">Picker card code (QR scan)</label>
+      <input type="text" id="card" placeholder="ECO-XXXXXX" value="ECO-4F2A91">
+      <div class="scanrow">
+        <span class="scan" onclick="fill('ECO-4F2A91')">📷 Scan · Bhagwan Das</span>
+        <span class="scan" onclick="fill('ECO-9D5B22')">📷 Scan · Phoolwati Devi</span>
+        <span class="scan" onclick="fill('ECO-000000')">Scan unknown card</span>
+      </div>
+
+      <label for="mat">Material (weighed &amp; segregated)</label>
+      <select id="mat"></select>
+
+      <label for="wt">Weight (kg)</label>
+      <input type="number" id="wt" min="0.5" step="0.5" value="12.5">
+
+      <label>Payment at counter</label>
+      <div class="modes">
+        <div class="mode on" id="mCash" onclick="setMode('CASH')">💵 Cash<small>dispensed from drawer</small></div>
+        <div class="mode" id="mUpi" onclick="setMode('UPI')">📲 UPI<small>shared family VPA</small></div>
+      </div>
+
+      <div class="calc" id="calc"></div>
+
+      <button class="btn" onclick="record()">✅ Pay picker &amp; record sale</button>
+    </div>
+
+    <!-- ============ RATE CARD + CARD ISSUANCE ============ -->
+    <div>
+      <div class="box">
+        <h3>Official rate card (public)</h3>
+        <p class="hint">One price for the whole city — Tier-1 IVR estimates, counter payouts and auction
+        floors all anchor here. <code>GET /api/v1/municipal/rates</code></p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Material</th><th>Official</th><th>Middleman</th><th>Uplift</th></tr></thead>
+            <tbody id="rateRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Register a new offline picker</h3>
+        <p class="hint">No phone needed — the ULB issues a physical card with an unambiguous code
+        (<code>POST /api/v1/municipal/pickers/offline</code>).</p>
+        <label for="pname">Picker name</label>
+        <input type="text" id="pname" placeholder="e.g. Kamla Devi">
+        <label for="proute">Normal collection route</label>
+        <input type="text" id="proute" placeholder="e.g. Dabri mor → Sector 6 market line">
+        <button class="btn g" onclick="issueCard()">🪪 Issue physical card</button>
+        <div id="cardOut"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>Counter ledger &amp; anti-middleman impact</h3>
+    <p class="hint"><code>GET /api/v1/municipal/centers/:id/sales</code> — every sale snapshots official and
+    middleman rates, so the income uplift is provable, not rhetorical.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Time</th><th>Picker</th><th>Card</th><th>Material</th><th>Weight</th>
+        <th>Official paid</th><th>Middleman would pay</th><th>Extra earned</th><th>Payment</th></tr></thead>
+        <tbody id="ledger"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="foot">EcoLoop · 2-Tier Picker Intake System · Tier 2 = municipal direct-sale counters<br>
+  <b>Team EcoMirai — TIET Japan Hackathon</b></p>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== theme =====
+const th=document.getElementById('th');
+const setTheme=t=>{document.documentElement.dataset.theme=t;localStorage.theme=t};
+th.onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+if(localStorage.theme)setTheme(localStorage.theme);
+
+// ===== data mirroring db seed =====
+const RATES=[
+ {g:'E-Waste',r:65,m:40},{g:'Metal',r:45,m:32},{g:'HDPE',r:32,m:22},{g:'PP',r:30,m:20},
+ {g:'PET',r:28,m:18},{g:'LDPE',r:20,m:12},{g:'Paper',r:14,m:9},{g:'Cardboard',r:10,m:6},
+];
+const PICKERS={'ECO-4F2A91':{name:'Bhagwan Das',upi:null},'ECO-9D5B22':{name:'Phoolwati Devi',upi:'phoolwati.family@ybl'}};
+const fmt=n=>'₹'+n.toLocaleString('en-IN',{maximumFractionDigits:2});
+const $=id=>document.getElementById(id);
+
+let mode='CASH';
+function setMode(m){mode=m;$('mCash').classList.toggle('on',m==='CASH');$('mUpi').classList.toggle('on',m==='UPI');calc()}
+
+// material select
+$('mat').innerHTML=RATES.map((x,i)=>`<option value="${i}"${x.g==='PET'?' selected':''}>${x.g} — official ${fmt(x.r)}/kg</option>`).join('');
+$('mat').onchange=calc;$('wt').oninput=calc;
+
+function rate(){return RATES[Number($('mat').value)]}
+function calc(){
+  const x=rate();const w=Number($('wt').value)||0;
+  const gross=Math.round(w*x.r*100)/100, mid=Math.round(w*x.m*100)/100, up=Math.round((gross-mid)*100)/100;
+  const pct=mid>0?Math.round(up/mid*1000)/10:0;
+  $('calc').innerHTML=`
+   <div class="row"><span>Official rate</span><b>${fmt(x.r)}/kg</b></div>
+   <div class="row bad"><span>Middleman would pay</span><b>${fmt(x.m)}/kg → ${fmt(mid)}</b></div>
+   <div class="row"><span>Extra earned by picker</span><b>+${fmt(up)} (+${pct}%)</b></div>
+   <div class="row big"><span>Pay now (${mode})</span><span>${fmt(gross)}</span></div>`;
+}
+calc();
+
+// ===== ledger (seeded with db/seed.sql rows) =====
+let sales=[
+ {t:'Yesterday · 11:20',card:'ECO-4F2A91',g:'PET',w:12.5,r:28,m:18,gross:350,up:125,pay:'CASH_DISPENSED'},
+ {t:'Today · 09:05',card:'ECO-9D5B22',g:'HDPE',w:8,r:32,m:22,gross:256,up:80,pay:'UPI · SUCCESS'},
+];
+let totals={sales:2,kg:20.5,paid:606,uplift:205};
+
+function render(){
+  $('ledger').innerHTML=sales.map(s=>{
+    const p=PICKERS[s.card]||{name:'—'};
+    const payTag=s.pay.startsWith('UPI')?'<span class="tag">UPI · SUCCESS</span>':'<span class="tag c">CASH</span>';
+    return `<tr><td>${s.t}</td><td><b>${p.name}</b></td><td><code>${s.card}</code></td><td>${s.g}</td>
+    <td>${s.w} kg</td><td><b>${fmt(s.gross)}</b></td><td style="color:var(--mute)">${fmt(s.w*s.m)}</td>
+    <td style="color:var(--teal);font-weight:700">+${fmt(s.up)}</td><td>${payTag}</td></tr>`;
+  }).join('');
+  $('sSales').textContent=totals.sales;
+  $('sKg').textContent=totals.kg+' kg';
+  $('sPaid').textContent=fmt(totals.paid);
+  $('sUplift').textContent=fmt(totals.uplift);
+}
+
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2600)}
+function fill(c){$('card').value=c;calc()}
+
+function record(){
+  const code=$('card').value.trim().toUpperCase();
+  const picker=PICKERS[code];
+  if(!picker){toast('❌ No picker card matches '+code+' — register the picker first (404)');return}
+  const x=rate();const w=Number($('wt').value);
+  if(!(w>0)){toast('❌ Enter a valid weight in kg');return}
+  const gross=Math.round(w*x.r*100)/100, mid=Math.round(w*x.m*100)/100, up=Math.round((gross-mid)*100)/100;
+  const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const pay=mode==='UPI'?'UPI · SUCCESS':'CASH_DISPENSED';
+  sales.unshift({t:'Today · '+now,card:code,g:x.g,w,r:x.r,m:x.m,gross,up,pay});
+  totals={sales:totals.sales+1,kg:Math.round((totals.kg+w)*100)/100,paid:Math.round((totals.paid+gross)*100)/100,uplift:Math.round((totals.uplift+up)*100)/100};
+  render();
+  toast(`✅ ${picker.name} paid ${fmt(gross)} (${mode}) · +${fmt(up)} vs middleman`);
+}
+
+// ===== card issuance =====
+const ALPHA='23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+function issueCard(){
+  const name=$('pname').value.trim();
+  if(name.length<2){toast('Enter the picker’s name to issue a card');return}
+  const code='ECO-'+Array.from({length:6},()=>ALPHA[Math.floor(Math.random()*ALPHA.length)]).join('');
+  PICKERS[code]={name,upi:null};
+  $('cardOut').innerHTML=`
+   <div class="card-prev">
+     <div class="qr" aria-hidden="true"></div>
+     <div>
+       <b>${code}</b>
+       <small>${name} · ${$('proute').value.trim()||'route not specified'}</small>
+       <small>QR payload: ECOLOOP:CARD:${code}</small>
+       <div class="scanrow" style="margin-top:8px"><span class="scan" onclick="fill('${code}')">Use this card at the desk →</span></div>
+     </div>
+   </div>`;
+  toast('🪪 Card issued for '+name+' — tier OFFLINE');
+}
+
+// rate card table
+$('rateRows').innerHTML=RATES.map(x=>{
+  const up=x.r-x.m, pct=Math.round(up/x.m*1000)/10;
+  return `<tr><td><b>${x.g}</b></td><td>${fmt(x.r)}/kg</td><td style="color:var(--mute)">${fmt(x.m)}/kg</td>
+  <td><span class="tag u">+${fmt(up)}/kg · +${pct}%</span></td></tr>`;
+}).join('');
+
+render();
+</script>
+</body>
+</html>
