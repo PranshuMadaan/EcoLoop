@@ -1,16 +1,27 @@
-# React + Vite
+# EcoLoop Optimizer (frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite + Leaflet map UI for the municipal route optimizer. Talks to the
+Express bridge at `http://localhost:3000` (see `ecoloop-backend/`), which spawns the
+C++ engine in `route-engine/`.
 
-Currently, two official plugins are available:
+## Run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev        # Vite dev server (prints the local URL)
+```
 
-## React Compiler
+Start the backend in a second terminal:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cd ../ecoloop-backend
+npm install
+npm start          # Express bridge on :3000 — requires the C++ engine to be built
+```
 
-## Expanding the ESLint configuration
+The routing engine must be built once (see `route-engine/README.md`):
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+cd ../route-engine
+cmake -B build && cmake --build build
+```
