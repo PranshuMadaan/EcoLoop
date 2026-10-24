@@ -33,9 +33,36 @@ For informal waste collectors with limited alphanumeric typing comfort:
 
 ---
 
-## 2. Settlement & Payout Engine
+## 2. Two-Sided Payment Mechanics: Recycler (Payer) vs. Seller (Payee)
 
-### 2.1 Trigger Condition
+A critical design principle of the marketplace is that **buyers/payers (Recyclers) do not register a static UPI ID in advance—only sellers (payees) do**. 
+
+### 2.1 Why Recyclers Do Not Pre-Register a UPI ID
+- **Security & Authorization**: In the UPI architecture, a payer cannot be debited by simply storing their UPI VPA. Every debit mandates live user authorization via the user's secret **4-digit or 6-digit UPI PIN** inside their own bank's app.
+- **Pull vs. Push Architecture**:
+  - **Inbound Collection (Recycler)**: Pull-based. A dynamic payment request or intent is generated on-demand by EcoLoop's gateway.
+  - **Outbound Payout (Seller)**: Push-based. EcoLoop pushes net sale proceeds directly into the seller's pre-verified bank destination.
+
+### 2.2 How the Recycler Pays Without a Stored UPI ID
+1. **Dynamic UPI Intent (Mobile Native)**:
+   - When a recycler places a bid or completes checkout, tapping *"Pay Bid Amount"* generates an NPCI UPI Intent link (`upi://pay?pa=ecoloop.escrow@bank&am=...&tr=...`).
+   - The device automatically pops up installed UPI apps (Google Pay, PhonePe, Paytm, BHIM, Cred).
+   - The recycler selects their app, reviews the verified merchant name (*"EcoLoop Clearing & Escrow Account"*), enters their private **UPI PIN**, and authorizes the bank debit.
+2. **Dynamic QR Code (Desktop & B2B Web)**:
+   - For recyclers operating from desktop procurement desks, the portal renders an instant dynamic QR code.
+   - The recycler scans the QR with any mobile banking app to authorize the exact transaction amount without manual entry.
+3. **B2B Bulk Channels (RTGS / NEFT via Virtual Account Numbers - VAN)**:
+   - Standard retail UPI transactions have a per-transaction limit (typically ₹1,00,000 to ₹5,00,000 depending on bank tier).
+   - For industrial scrap lots valued at ₹4,00,000 to ₹20,00,000+ (e.g. 15 MT PET or Railway metal scrap), EcoLoop generates an instant **Dedicated Virtual Account Number (VAN)** (e.g., `ECOP<ListingID>` with Yes Bank / ICICI / Axis API).
+   - The recycler transfers funds directly via Corporate NetBanking RTGS/NEFT, and a webhook instantly reconciles the deposit into escrow.
+4. **Earnest Money Deposit (EMD) / Auction Wallet Reserve**:
+   - Authorized recyclers can maintain a pre-funded security deposit / wallet balance to instantly place binding bids without authorizing individual micro-debits on each increment.
+
+---
+
+## 3. Settlement & Payout Engine
+
+### 3.1 Trigger Condition
 Payout is executed within the **atomic auction finalization transaction** (`POST /api/v1/listings/:id/accept-bid`):
 ```mermaid
 sequenceDiagram
@@ -57,7 +84,7 @@ sequenceDiagram
     API-->>Seller: HTTP 200 (Payout Receipt & EPR Certificate)
 ```
 
-### 2.2 Split Settlement Breakdown
+### 3.2 Split Settlement Breakdown
 Upon auction acceptance for amount $A$:
 - **Seller Net Proceeds**: $98.5\% \times A$ (Instant transfer to `seller.upi_vpa`).
 - **EcoLoop Marketplace Commission**: $1.0\% \times A$ (Retained in platform settlement pool).
@@ -65,7 +92,7 @@ Upon auction acceptance for amount $A$:
 
 ---
 
-## 3. Financial Inclusion: Shared Custody for Informal Pickers
+## 4. Financial Inclusion: Shared Custody for Informal Pickers
 
 For pickers without active personal bank accounts or smartphones:
 1. **Self-Help Group (SHG) / DWCC Hub Proxy**:
@@ -76,7 +103,7 @@ For pickers without active personal bank accounts or smartphones:
 
 ---
 
-## 4. Multi-Lingual WhatsApp & Voice SMS Notifications
+## 5. Multi-Lingual WhatsApp & Voice SMS Notifications
 
 Immediately following successful payout:
 - **WhatsApp Webhook**: Automated invoice and CPCB EPR credit summary delivered to seller's mobile number.
@@ -85,7 +112,7 @@ Immediately following successful payout:
 
 ---
 
-## 5. Proposed Database Schema Additions (For Future Migration)
+## 6. Proposed Database Schema Additions (For Future Migration)
 
 ```sql
 -- Schema extensions for Phase 3 Payout Integration
@@ -117,7 +144,7 @@ CREATE INDEX IF NOT EXISTS idx_payouts_gateway_txn ON payouts(gateway_transactio
 
 ---
 
-## 6. Implementation Checklist (When Triggered)
+## 7. Implementation Checklist (When Triggered)
 - [ ] Connect Payment Gateway Sandbox (Cashfree Payouts / RazorpayX).
 - [ ] Implement VPA format verification regex & test penny-drop endpoint (`POST /api/v1/users/verify-vpa`).
 - [ ] Add Camera QR Scanner modal to registration form.
