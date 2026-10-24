@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoLoop | B2B Digital Scrap Marketplace & CPCB EPR Compliance</title>
+  <meta name="description" content="Next-generation transparent B2B scrap marketplace connecting waste pickers, DWCCs, and certified recyclers with real-time UPI payouts and cryptographic CPCB EPR compliance tokens." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Navigation Bar -->
+    <header class="navbar">
+      <div class="nav-container">
+        <div class="brand">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"></path>
+              <path d="M11 19h8.2a1.8 1.8 0 0 0 1.7-1.1c.3-.8 0-1.8-.7-2.3L16 11"></path>
+              <path d="m14 13-3-3 3-3"></path>
+              <path d="M12 5V3"></path>
+              <path d="m9 7.5 2-2 2 2"></path>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">Eco<span class="gradient-text">Loop</span></span>
+            <span class="brand-tag">B2B Marketplace & EPR</span>
+          </div>
+        </div>
+
+        <nav class="nav-menu">
+          <button class="nav-link active" data-tab="marketplace">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>
+            Marketplace
+          </button>
+          <button class="nav-link" data-tab="bids">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Live Auctions
+          </button>
+          <button class="nav-link" data-tab="epr">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+            CPCB EPR Audit
+          </button>
+        </nav>
+
+        <div class="nav-actions">
+          <div class="api-status-badge" id="api-status">
+            <span class="status-dot"></span>
+            <span class="status-label">Connecting...</span>
+          </div>
+          <button class="btn btn-primary" id="btn-create-listing">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Post Scrap Lot
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Stat Banner -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="pulse-sparkle">✦</span> Circular Economy Infrastructure v2.0
+        </div>
+        <h1 class="hero-title">
+          India's Transparent <span class="gradient-text">B2B Scrap Exchange</span> & Verified EPR Registry
+        </h1>
+        <p class="hero-subtitle">
+          Direct digital price discovery between informal waste pickers, Dry Waste Collection Centres (DWCCs), and certified recyclers. Instant UPI escrow settlements paired with deterministic SHA-256 CPCB credit minting.
+        </p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Active Scrap Lots</span>
+            <span class="stat-value" id="stat-total-listings">--</span>
+            <span class="stat-hint">PET, HDPE, E-Waste & Paper</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Settlement Mode</span>
+            <span class="stat-value text-emerald">Instant UPI</span>
+            <span class="stat-hint">Sub-second VPA escrow release</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Compliance Protocol</span>
+            <span class="stat-value text-cyan">CPCB SHA-256</span>
+            <span class="stat-hint">Immutable cryptographic credits</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">System Concurrency</span>
+            <span class="stat-value text-violet">Row-Locked</span>
+            <span class="stat-hint">Zero race-condition bidding</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+      <!-- TAB 1: Marketplace Listings -->
+      <section id="tab-marketplace" class="tab-pane active">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Verified Scrap Lots</h2>
+            <p class="section-subtitle">Real-time marketplace feed of audited industrial and segregated dry waste.</p>
+          </div>
+          <div class="filter-bar">
+            <select id="filter-material" class="select-control">
+              <option value="">All Materials</option>
+              <option value="PET">PET (Bottles & Flakes)</option>
+              <option value="HDPE">HDPE (Rigid Drums)</option>
+              <option value="LDPE">LDPE (Film & Wraps)</option>
+              <option value="PP">PP (Woven & Crates)</option>
+              <option value="E-Waste">E-Waste (Circuits & PCBs)</option>
+              <option value="Paper">Paper & Cardboard</option>
+              <option value="Metal">Industrial Metal Scrap</option>
+            </select>
+            <select id="filter-status" class="select-control">
+              <option value="ALL">All Statuses</option>
+              <option value="OPEN" selected>Open for Bids</option>
+              <option value="BIDDING">Active Bidding</option>
+              <option value="SOLD">Settled / Sold</option>
+            </select>
+            <button class="btn btn-secondary" id="btn-refresh-listings">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div id="listings-grid" class="listings-grid">
+          <div class="loader-box">
+            <div class="spinner"></div>
+            <span>Loading marketplace lots...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Live Bids & Auctions -->
+      <section id="tab-bids" class="tab-pane">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Live Auction Engine</h2>
+            <p class="section-subtitle">Real-time bids backed by PostgreSQL row-level locks and transparent escrow reserves.</p>
+          </div>
+        </div>
+
+        <div class="auction-dashboard-grid">
+          <div class="card auction-card-lead">
+            <h3>Place Competitive Bid</h3>
+            <p class="text-muted">Select an active listing to submit an instant offer exceeding current reserve.</p>
+            <form id="form-bid" class="bid-form">
+              <div class="form-group">
+                <label for="bid-listing-select">Target Scrap Listing</label>
+                <select id="bid-listing-select" class="form-control" required>
+                  <option value="">Select an active listing...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="bid-recycler-select">Authorized Recycler Profile</label>
+                <select id="bid-recycler-select" class="form-control" required>
+                  <option value="33333333-3333-3333-3333-333333333301">EcoGreen Polymers Pvt Ltd (Plastic Re-granulator)</option>
+                  <option value="33333333-3333-3333-3333-333333333302">CleanEarth E-Recyclers (Authorized Smelter)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="bid-amount-input">Bid Amount (₹ INR)</label>
+                <input type="number" id="bid-amount-input" class="form-control" placeholder="e.g. 42000" min="1" step="50" required />
+                <span class="field-hint" id="bid-hint">Must exceed current reserve or highest active bid.</span>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block" id="btn-submit-bid">
+                Submit Auction Bid
+              </button>
+            </form>
+          </div>
+
+          <div class="card auction-card-history">
+            <h3>Recent Auction Transactions</h3>
+            <div id="auction-history-list" class="bid-history-list">
+              <div class="empty-state">Select a listing to view historical bids and price movements.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: CPCB EPR Audit & Verification -->
+      <section id="tab-epr" class="tab-pane">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">CPCB EPR Certificate Registry</h2>
+            <p class="section-subtitle">Audit and cryptographically verify Central Pollution Control Board recycling credits.</p>
+          </div>
+        </div>
+
+        <div class="epr-verification-container">
+          <div class="card epr-search-card">
+            <h3>Verify Certificate Authenticity</h3>
+            <p class="text-muted">Enter the 64-character SHA-256 compliance hash issued during auction settlement.</p>
+            <div class="hash-input-group">
+              <input type="text" id="epr-hash-input" class="form-control font-mono" placeholder="Paste 64-char SHA-256 certificate hash..." value="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" />
+              <button class="btn btn-primary" id="btn-verify-hash">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                Verify on Ledger
+              </button>
+            </div>
+          </div>
+
+          <div id="epr-verification-result" class="epr-result-card hidden">
+            <!-- Dynamic CPCB Certificate View -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Create Listing Modal -->
+    <div id="modal-create-listing" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Create New Scrap Lot</h3>
+          <button class="btn-close" id="modal-close">&times;</button>
+        </div>
+        <form id="form-create-listing" class="modal-body">
+          <div class="form-group">
+            <label for="create-seller">Seller Account (Picker or DWCC)</label>
+            <select id="create-seller" class="form-control" required>
+              <option value="22222222-2222-2222-2222-222222222201">DWCC: Ward 150 Collection Centre (Semi-formal hub)</option>
+              <option value="11111111-1111-1111-1111-111111111101">Picker: Ramesh Kumar (Informal waste collector)</option>
+              <option value="11111111-1111-1111-1111-111111111102">Picker: Sunita Devi (Aggregator)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="create-material">Material Grade</label>
+              <select id="create-material" class="form-control" required>
+                <option value="PET">PET</option>
+                <option value="HDPE">HDPE</option>
+                <option value="LDPE">LDPE</option>
+                <option value="PP">PP</option>
+                <option value="E-Waste">E-Waste</option>
+                <option value="Paper">Paper</option>
+                <option value="Cardboard">Cardboard</option>
+                <option value="Metal">Metal</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="create-weight">Weight (kg)</label>
+              <input type="number" id="create-weight" class="form-control" placeholder="e.g. 500" min="1" step="0.5" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="create-price">Reserve Price (₹ INR)</label>
+            <input type="number" id="create-price" class="form-control" placeholder="e.g. 15000" min="0" step="100" required />
+            <span class="field-hint">Minimum threshold acceptable for auction settlement.</span>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-listing">Publish Lot</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
