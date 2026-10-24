@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoLoop – Tier 1 IVR Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--card2:#f6f9fb;--ink:#0f172a;--mute:#52627a;--line:#d6e0ea;--teal:#0f766e;--tealt:#0d9488;--tint:#d5f2ee;--warn:#b45309;--bad:#dc2626;--btn:#0f766e;--btnt:#fff;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1628;--card:#1b263b;--card2:#16203a;--ink:#f4f7fb;--mute:#9fb0c6;--line:#2c3b57;--teal:#2dd4bf;--tealt:#2dd4bf;--tint:#123a42;--warn:#fbbf24;--bad:#f87171;--btn:#0f9488;--btnt:#fff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1628;--card:#1b263b;--card2:#16203a;--ink:#f4f7fb;--mute:#9fb0c6;--line:#2c3b57;--teal:#2dd4bf;--tealt:#2dd4bf;--tint:#123a42;--warn:#fbbf24;--bad:#f87171;--btn:#0f9488;--btnt:#fff;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;max-width:1120px;margin:0 auto}
+.chip{font-size:14px;color:var(--mute);border:1px solid var(--line);border-radius:99px;padding:6px 14px}
+#th{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px 60px}
+.hero{text-align:center;padding:26px 0 26px}
+.hero h1{font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:-.02em}
+.hero .sub{color:var(--teal);font-weight:600;margin:6px 0 8px;font-size:18px}
+.hero p{color:var(--mute);max-width:760px;margin:0 auto}
+.demo{display:inline-block;font-size:13px;color:var(--warn);border:1px solid var(--warn);border-radius:99px;padding:2px 12px;margin-top:12px}
+.cols{display:grid;grid-template-columns:390px 1fr;gap:24px;align-items:start}
+@media(max-width:960px){.cols{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;margin-bottom:20px}
+.box h3{font-size:18px;font-weight:600;margin-bottom:10px}
+.box .hint{color:var(--mute);font-size:14px;margin-bottom:14px}
+/* phone frame */
+.phone{border:1px solid var(--line);border-radius:38px;background:var(--card);padding:18px 14px 20px;box-shadow:0 24px 50px -30px rgba(0,0,0,.55)}
+.pscreen{background:var(--card2);border:1px solid var(--line);border-radius:24px;padding:16px 14px;min-height:120px}
+.pscreen .who{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute);margin-bottom:8px}
+.pscreen .who b{color:var(--ink);font-size:15px}
+.callstate{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--teal);background:var(--tint);border-radius:99px;padding:3px 11px}
+.callstate i{width:8px;height:8px;border-radius:50%;background:var(--tealt);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.transcript{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.bub{max-width:92%;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.5;animation:fi .3s both}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}}
+.bub.ivr{background:var(--tint);color:var(--ink);border-bottom-left-radius:5px;align-self:flex-start}
+.bub.picker{background:var(--btn);color:var(--btnt);border-bottom-right-radius:5px;align-self:flex-end}
+.bub.sys{background:transparent;color:var(--mute);font-size:12.5px;align-self:center;border:1px dashed var(--line)}
+/* keypad */
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px}
+.key{min-height:52px;border-radius:14px;border:1px solid var(--line);background:var(--card2);color:var(--ink);font:600 19px Inter,sans-serif;cursor:pointer;transition:transform .08s,border-color .2s}
+.key small{display:block;font-size:10px;font-weight:500;color:var(--mute)}
+.key:hover{border-color:var(--tealt)}
+.key:active{transform:scale(.94)}
+.key.end{background:var(--bad);border-color:var(--bad);color:#fff;min-height:44px;font-size:15px}
+.key.rst{background:var(--card);min-height:44px;font-size:15px}
+/* controls + twiml */
+label{display:block;font-weight:600;font-size:15px;margin:4px 0 6px}
+select{width:100%;min-height:46px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink);font:inherit;margin-bottom:14px}
+.twiml{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:14px;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mute);white-space:pre-wrap;word-break:break-word;max-height:230px;overflow:auto}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.step{font-size:12.5px;font-weight:600;border:1px solid var(--line);border-radius:99px;padding:4px 12px;color:var(--mute)}
+.step.on{background:var(--tint);color:var(--teal);border-color:var(--tealt)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 18px}
+.stat b{display:block;font-size:24px;font-weight:700;line-height:1.25;color:var(--teal)}
+.stat span{color:var(--mute);font-size:13.5px}
+.foot{text-align:center;color:var(--mute);font-size:14px;padding:30px 0 10px}
+.foot b{display:block;color:var(--teal);font-weight:600;margin-top:4px}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="chip">♻️ EcoLoop · Tier 1 · IVR Voice Intake</span>
+  <button id="th" aria-label="Toggle theme">🌓</button>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Tier 1 — Pickers with a Phone</h1>
+    <p class="sub">“Press 1 for English · हिंदी के लिए 2 दबाइए”</p>
+    <p>No smartphone, no app, no literacy barrier — a rag picker calls the EcoLoop line and reports the day’s
+    collection with keypad presses. Every step below mirrors the live TwiML endpoints
+    (<code>/api/v1/ivr/…</code>) and the official municipal rate card.</p>
+    <span class="demo">Interactive demo — simulates the real call flow</span>
+  </section>
+
+  <div class="stats">
+    <div class="stat"><b>2</b><span>Languages (English + हिंदी)</span></div>
+    <div class="stat"><b>₹28/kg</b><span>Official PET rate (middlemen pay ₹18)</span></div>
+    <div class="stat"><b>3 keys</b><span>Material → weight → confirm</span></div>
+  </div>
+
+  <div class="cols">
+    <!-- ================= PHONE ================= -->
+    <div>
+      <div class="phone">
+        <div class="pscreen">
+          <div class="who">
+            <b>📞 EcoLoop Line</b>
+            <span class="callstate" id="callstate"><i></i><span id="callstatetxt">Ringing…</span></span>
+          </div>
+          <div class="who" style="margin-bottom:0">
+            <span>Caller: <b id="callerName">Ramesh Kumar</b></span>
+            <span id="callerNum">+91 98765 43210</span>
+          </div>
+          <div class="transcript" id="transcript"></div>
+        </div>
+        <div class="pad" id="pad"></div>
+      </div>
+      <div class="box" style="margin-top:16px">
+        <label for="caller">Simulate caller</label>
+        <select id="caller">
+          <option value="registered">Ramesh Kumar — registered Tier-1 picker (+91 98765 43210)</option>
+          <option value="unknown">Unknown number — not registered (+91 90000 00009)</option>
+        </select>
+        <label for="langpref">Preferred voice (for reference)</label>
+        <select id="langpref" disabled>
+          <option>Auto — chosen by keypress 1 / 2</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ================= EXPLAINER ================= -->
+    <div>
+      <div class="box">
+        <h3>Call progress</h3>
+        <div class="steps" id="steps"></div>
+        <div class="twiml" id="twiml" style="margin-top:14px">Start the call to see live TwiML…</div>
+        <p class="hint" style="margin-top:12px">Weight entry uses keypad conventions: <b>*</b> is the decimal
+        point, <b>#</b> finishes the entry (e.g. <b>1 2 * 5 #</b> = 12.5 kg) — exactly what the
+        <code>/collection/weight</code> webhook parses.</p>
+      </div>
+
+      <div class="box">
+        <h3>What the picker gains</h3>
+        <p class="hint">The IVR estimate is anchored to the <b>official rate card</b> — the same rates paid at
+        municipal counters and used as the auction floor price on the B2B marketplace. Middlemen quotes are
+        spoken back for comparison, so the picker knows exactly what they would have lost.</p>
+        <div class="twiml" id="rates"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">EcoLoop · 2-Tier Picker Intake System · Tier 1 = voice IVR, Tier 2 = municipal direct-sale counters<br>
+  <b>Team EcoMirai — TIET Japan Hackathon</b></p>
+</main>
+
+<script>
+// ===== theme =====
+const th=document.getElementById('th');
+const setTheme=t=>{document.documentElement.dataset.theme=t;localStorage.theme=t};
+th.onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+if(localStorage.theme)setTheme(localStorage.theme);
+
+// ===== rate card (mirrors db seed: official vs middleman ₹/kg) =====
+const RATES=[
+ {g:'PET',code:'1',en:'PET plastic bottles',hi:'PET प्लास्टिक बोतलें',r:28,m:18},
+ {g:'HDPE',code:'2',en:'hard plastic HDPE',hi:'सख़्त प्लास्टिक HDPE',r:32,m:22},
+ {g:'Metal',code:'3',en:'metal',hi:'धातु',r:45,m:32},
+ {g:'Paper',code:'4',en:'paper',hi:'कागज़',r:14,m:9},
+ {g:'Cardboard',code:'5',en:'cardboard',hi:'गत्ता',r:10,m:6},
+ {g:'E-Waste',code:'6',en:'electronic waste',hi:'इलेक्ट्रॉनिक कचरा',r:65,m:40},
+ {g:'LDPE',code:'7',en:'soft plastic LDPE',hi:'नरम प्लास्टिक LDPE',r:20,m:12},
+ {g:'PP',code:'8',en:'PP plastic',hi:'PP प्लास्टिक',r:30,m:20},
+];
+const fmt=n=>'₹'+n.toLocaleString('en-IN');
+const money=(n,l)=>l==='hi'?n.toLocaleString('en-IN')+' रुपये':n.toLocaleString('en-IN')+' rupees';
+
+// ===== prompt library (mirrors src/services/ivrPrompts.js) =====
+const P={
+ en:{
+  menu:'Main menu. Press 1 to report your collection. Press 2 for today\u2019s rates. Press 3 for your earnings. Press 0 to repeat this menu.',
+  materialMenu:'Choose the material you collected. '+RATES.map(x=>`Press ${x.code} for ${x.en}.`).join(' '),
+  weightPrompt:'Now enter the weight in kilograms using the number keys, then press the hash key. For example, for twelve and a half kilos, press 1, 2, star, 5, hash.',
+  weightInvalid:'We could not understand the weight. Please enter the weight in kilograms, then press the hash key.',
+  notRegistered:'This mobile number is not registered with EcoLoop. Please visit your nearest municipal collection centre to register. Goodbye.',
+  ratesIntro:'Today\u2019s official EcoLoop rates, per kilo.',
+  ratesLine:x=>`${x.en}: ${money(x.r,'en')}. Middlemen pay only ${money(x.m,'en')}.`,
+  earnings:'Your total EcoLoop earnings are 856 rupees, from 2 payments.',
+  summary:(w,x,amt)=>`You entered ${w} kilos of ${x.en}. Official rate, ${money(x.r,'en')} per kilo. Estimated payment, ${money(amt,'en')}. Press 1 to confirm. Press 2 to enter again.`,
+  confirmed:(amt,ref)=>`Confirmed. Your collection is listed on the EcoLoop marketplace, reference ${ref}. Estimated payment, ${money(amt,'en')}. Recyclers will now bid, and your payment will be sent to your UPI. Thank you for keeping our city clean.`,
+ },
+ hi:{
+  menu:'मुख्य मेनू। अपना संग्रह दर्ज करने के लिए 1 दबाइए। आज के दाम जानने के लिए 2 दबाइए। अपनी कमाई जानने के लिए 3 दबाइए। मेनू दोहराने के लिए 0 दबाइए।',
+  materialMenu:'अपनी सामग्री चुनिए। '+RATES.map(x=>`${x.hi} के लिए ${x.code} दबाइए।`).join(' '),
+  weightPrompt:'अब किलोग्राम में वज़न नंबर कुंजियों से डालिए, फिर हैश दबाइए। उदाहरण के लिए, बारह और आधा किलो के लिए 1, 2, स्टार, 5, हैश दबाइए।',
+  weightInvalid:'वज़न समझ नहीं आया। कृपया किलोग्राम में वज़न डालिए, फिर हैश दबाइए।',
+  notRegistered:'यह मोबाइल नंबर EcoLoop में पंजीकृत नहीं है। कृपया पंजीकरण के लिए अपने नज़दीकी नगरपालिका केंद्र पर जाएँ। धन्यवाद।',
+  ratesIntro:'आज के आधिकारिक EcoLoop दाम, प्रति किलो।',
+  ratesLine:x=>`${x.hi}: ${money(x.r,'hi')}। बिचौलिया सिर्फ़ ${money(x.m,'hi')} देता है।`,
+  earnings:'आपकी कुल EcoLoop कमाई 856 रुपये है, 2 भुगतानों से।',
+  summary:(w,x,amt)=>`आपने ${x.hi} के ${w} किलो दर्ज किए। आधिकारिक दर, ${money(x.r,'hi')} प्रति किलो। अनुमानित भुगतान, ${money(amt,'hi')}। पुष्टि के लिए 1 दबाइए। दोबारा डालने के लिए 2 दबाइए।`,
+  confirmed:(amt,ref)=>`पुष्टि हो गई। आपका संग्रह EcoLoop मार्केटप्लेस पर दर्ज हो गया है, संदर्भ ${ref}। अनुमानित भुगतान, ${money(amt,'hi')}। रीसायकलर अब बोली लगाएँगे और भुगतान आपके UPI पर भेजा जाएगा। हमारा शहर साफ़ रखने के लिए धन्यवाद।`,
+ }
+};
+
+// ===== call state machine (mirrors ivr_sessions.state) =====
+let state='IDLE', lang=null, mat=null, weightBuf='', registered=true;
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const byCode=c=>RATES.find(x=>x.code===String(c));
+
+function bubble(text,who){const d=document.createElement('div');d.className='bub '+who;d.textContent=text;$('transcript').appendChild(d);$('transcript').scrollTop=1e9}
+function sys(text){bubble('⟲ '+text,'sys')}
+function ivr(text){bubble('🔈 '+text,'ivr')}
+function picker(text){bubble(text,'picker')}
+function twiml(xml){$('twiml').textContent=xml}
+
+const STEPS=['Language','Menu','Material','Weight','Confirm','Listed'];
+function drawSteps(){
+  const idx={IDLE:-1,LANGUAGE_SELECT:0,MAIN_MENU:1,COLLECT_MATERIAL:2,COLLECT_WEIGHT:3,CONFIRM:4,DONE:5}[state];
+  $('steps').innerHTML=STEPS.map((s,i)=>`<span class="step${i<=idx?' on':''}">${i+1}. ${s}</span>`).join('');
+}
+function setState(s,label){state=s;drawSteps();$('callstatetxt').textContent=label}
+
+const say=(t,l)=>`<Say language="${l==='hi'?'hi-IN':'en-IN'}">${esc(t)}</Say>`;
+const gather=(a,body)=>`<Gather action="${a}" method="POST" numDigits="1">${body||''}</Gather>`;
+const doc=(...v)=>`<?xml version="1.0" encoding="UTF-8"?><Response>${v.join('')}</Response>`;
+
+// ===== flow =====
+function startCall(){
+  $('transcript').innerHTML='';weightBuf='';mat=null;lang=null;registered=$('caller').value==='registered';
+  $('callerName').textContent=registered?'Ramesh Kumar':'Unknown caller';
+  $('callerNum').textContent=registered?'+91 98765 43210':'+91 90000 00009';
+  setState('LANGUAGE_SELECT','On call — choose language');
+  ivr('Thank you for calling EcoLoop. For English, press 1.');
+  ivr('हिंदी के लिए 2 दबाइए।');
+  twiml(doc(say('Thank you for calling EcoLoop. For English, press 1.','en'),say('हिंदी के लिए 2 दबाइए।','hi'),
+    gather('/api/v1/ivr/language')));
+  sys('ivr_sessions row created (call_sid CA…)');
+}
+
+function menuPrompt(){
+  const p=P[lang];
+  ivr(p.menu);
+  twiml(doc(say(p.menu,lang),gather('/api/v1/ivr/menu')));
+  setState('MAIN_MENU','Main menu');
+}
+
+function onLanguage(d){
+  if(d==='1'){lang='en';picker('1 (English)')}
+  else if(d==='2'){lang='hi';picker('2 (हिंदी)')}
+  else{picker(d);ivr('Sorry, that key is not valid. For English, press 1.');ivr('क्षमा करें। हिंदी के लिए 2 दबाइए।');return}
+  sys('language='+lang+' · session updated');menuPrompt();
+}
+
+function onMenu(d){
+  const p=P[lang];picker(d);
+  if(d==='1'){
+    if(!registered){ivr(p.notRegistered);twiml(doc(say(p.notRegistered,lang),'<Hangup/>'));setState('DONE','Ended — unregistered');return}
+    ivr(p.materialMenu);
+    twiml(doc(say(p.materialMenu,lang),gather('/api/v1/ivr/collection/material')));
+    setState('COLLECT_MATERIAL','Reporting collection');
+  }else if(d==='2'){
+    ivr(p.ratesIntro);RATES.forEach(x=>ivr(p.ratesLine(x)));
+    twiml(doc(say(p.ratesIntro,lang),...RATES.map(x=>say(p.ratesLine(x),lang)),gather('/api/v1/ivr/menu')));
+    sys('rates read from material_rates');
+  }else if(d==='3'){
+    if(!registered){ivr(p.notRegistered);twiml(doc(say(p.notRegistered,lang),'<Hangup/>'));setState('DONE','Ended — unregistered');return}
+    ivr(p.earnings);sys('payouts + direct_sales summed');
+    twiml(doc(say(p.earnings,lang),gather('/api/v1/ivr/menu')));
+  }else{
+    sys('menu repeated');menuPrompt();
+  }
+}
+
+function onMaterial(d){
+  const p=P[lang];picker(d);
+  const x=byCode(d);
+  if(!x){ivr(p.materialMenu);return}
+  mat=x;sys('selected_material='+x.g);
+  ivr(p.weightPrompt);
+  twiml(doc(say(p.weightPrompt,lang),`<Gather action="/api/v1/ivr/collection/weight" method="POST" finishOnKey="#"></Gather>`));
+  setState('COLLECT_WEIGHT','Enter weight (kg)');
+}
+
+function onWeightKey(k){
+  const p=P[lang];
+  if(k==='#'){
+    picker(weightBuf+' #');
+    const raw=weightBuf.replace('*','.');const w=Number(raw);
+    if(!raw||!(w>0)||w>5000){weightBuf='';ivr(p.weightInvalid);return}
+    const amt=Math.round(w*mat.r*100)/100;
+    sys(`entered_weight_kg=${w} · rate ${fmt(mat.r)}/kg → estimate ${fmt(amt)}`);
+    ivr(p.summary(w,mat,amt));
+    twiml(doc(say(p.summary(w,mat,amt),lang),gather('/api/v1/ivr/collection/confirm')));
+    setState('CONFIRM','Confirm listing');
+  }else{weightBuf+=k;picker(weightBuf)}
+}
+
+function onConfirm(d){
+  const p=P[lang];picker(d);
+  if(d==='1'){
+    const w=Number(weightBuf.replace('*','.'));const amt=Math.round(w*mat.r*100)/100;
+    const ref='A1B2C3D4';
+    ivr(p.confirmed(amt,ref));
+    twiml(doc(say(p.confirmed(amt,ref),lang),'<Redirect method="POST">/api/v1/ivr/menu</Redirect>'));
+    sys(`scrap_listings INSERT — ${mat.g}, ${w} kg, floor ${fmt(amt)} (status OPEN)`);
+    setState('DONE','Collection listed ✔');
+  }else if(d==='2'){
+    sys('re-enter — session reset');
+    ivr(p.materialMenu);setState('COLLECT_MATERIAL','Re-entering material');
+  }
+}
+
+// ===== keypad =====
+const SUB={'1':'','2':'ABC','3':'DEF','4':'GHI','5':'JKL','6':'MNO','7':'PQRS','8':'TUV','9':'WXYZ','0':'+','*':'decimal','#':'finish'};
+const pad=$('pad');
+['1','2','3','4','5','6','7','8','9','*','0','#'].forEach(k=>{
+  const b=document.createElement('button');b.className='key';b.innerHTML=`${k==='*'?'✱':k==='#'?'#':k}<small>${{'*':'· decimal','#':'· finish'}[k]||SUB[k]}</small>`;
+  b.onclick=()=>press(k);pad.appendChild(b);
+});
+const end=document.createElement('button');end.className='key end';end.textContent='End call';end.onclick=()=>{setState('IDLE','Call ended');sys('call ended')};
+const rst=document.createElement('button');rst.className='key rst';rst.textContent='New call';rst.onclick=startCall;
+pad.appendChild(end);pad.appendChild(rst);
+
+function press(k){
+  if(state==='IDLE'){sys('press “New call” first');return}
+  if(state==='LANGUAGE_SELECT'&&/[0-9]/.test(k))return onLanguage(k);
+  if(state==='MAIN_MENU'&&/[0-9]/.test(k))return onMenu(k);
+  if(state==='COLLECT_MATERIAL'&&/[1-8]/.test(k))return onMaterial(k);
+  if(state==='COLLECT_WEIGHT'&&/[0-9*#]/.test(k))return onWeightKey(k);
+  if(state==='CONFIRM'&&/[12]/.test(k))return onConfirm(k);
+}
+
+// ===== static rate table =====
+$('rates').textContent=RATES.map(x=>`${x.g.padEnd(9)} official ${fmt(x.r)}/kg · middleman ${fmt(x.m)}/kg · uplift +${fmt(x.r-x.m)}/kg (+${Math.round((x.r-x.m)/x.m*100)}%)`).join('\n');
+
+drawSteps();
+sys('simulator ready — press “New call”');
+</script>
+</body>
+</html>

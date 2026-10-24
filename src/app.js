@@ -11,6 +11,8 @@ import listingRoutes from './routes/listingRoutes.js';
 import eprRoutes from './routes/eprRoutes.js';
 import payoutRoutes from './routes/payoutRoutes.js';
 import depositRoutes from './routes/depositRoutes.js';
+import ivrRoutes from './routes/ivrRoutes.js';
+import municipalRoutes from './routes/municipalRoutes.js';
 import { pingDatabase } from './config/db.js';
 import { errorHandler, AppError } from './middleware/errorHandler.js';
 
@@ -107,6 +109,8 @@ app.get('/', (req, res, next) => {
         epr: '/api/v1/epr',
         payouts: '/api/v1/payouts',
         deposits: '/api/v1/deposits',
+        ivr: '/api/v1/ivr (Tier-1 phone intake, TwiML)',
+        municipal: '/api/v1/municipal (Tier-2 direct-sale counters)',
       },
     },
   });
@@ -121,6 +125,8 @@ app.use('/api/v1/listings', listingRoutes);
 app.use('/api/v1/epr', eprRoutes);
 app.use('/api/v1/payouts', payoutRoutes);
 app.use('/api/v1/deposits', depositRoutes);
+app.use('/api/v1/ivr', ivrRoutes);
+app.use('/api/v1/municipal', municipalRoutes);
 
 // SPA client-side fallback: serve index.html for non-API GET requests
 app.get('*', (req, res, next) => {

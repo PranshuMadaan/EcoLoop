@@ -5,7 +5,8 @@
 -- ============================================================================
 
 -- Clear existing data (in reverse dependency order) for clean idempotent seeding
-TRUNCATE TABLE deposits, payouts, epr_tokens, bids, scrap_listings, users CASCADE;
+TRUNCATE TABLE deposits, epr_tokens, bids, scrap_listings, payouts, ivr_sessions, direct_sales,
+           picker_profiles, municipal_centers, material_rates, users CASCADE;
 
 -- ----------------------------------------------------------------------------
 -- 1. Seed Users: Indian Municipalities (ULBs/DWCCs), Pickers & CPCB Recyclers
@@ -131,6 +132,31 @@ VALUES
         'ulb.swm.command@mcd',
         'VERIFIED',
         NOW() - INTERVAL '45 days'
+    ),
+    -- Tier 2 Offline Picker 1: Bhagwan Das (no phone — synthetic OFF- identifier,
+    -- identified at municipal counters via physical QR card code)
+    (
+        '11111111-1111-1111-1111-111111111103',
+        'Picker',
+        'OFF-70000000101',
+        '$2b$10$1tpGzrCoVXLw8z.dgUteYuDVNpbaqj3C0s2ZJHKXQFqYhuGqtqA7.',
+        'Safai Sena Dabri Route Collective',
+        'CPCB/SHG/2023/DEL-042',
+        NULL,
+        'VERIFIED',
+        NOW() - INTERVAL '5 days'
+    ),
+    -- Tier 2 Offline Picker 2: Phoolwati Devi (no phone — paid via shared family UPI)
+    (
+        '11111111-1111-1111-1111-111111111104',
+        'Picker',
+        'OFF-70000000102',
+        '$2b$10$1tpGzrCoVXLw8z.dgUteYuDVNpbaqj3C0s2ZJHKXQFqYhuGqtqA7.',
+        'Safai Sena Dabri Route Collective',
+        'CPCB/SHG/2023/DEL-043',
+        'phoolwati.family@ybl',
+        'VERIFIED',
+        NOW() - INTERVAL '4 days'
     );
 
 -- ----------------------------------------------------------------------------
@@ -297,4 +323,137 @@ VALUES
         9.500, -- 9,500 kg = 9.500 Metric Tonnes
         'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
         NOW() - INTERVAL '14 hours'
+    );
+
+-- ----------------------------------------------------------------------------
+-- 5. Seed Picker Profiles (2-Tier intake registry)
+-- ----------------------------------------------------------------------------
+INSERT INTO picker_profiles (profile_id, user_id, tier, language_pref, card_code, display_name, home_ward, route_notes, registered_by, registered_at)
+VALUES
+    -- Tier 1: Ramesh calls the IVR line from his phone (prefers Hindi voice menus)
+    (
+        '88888888-8888-8888-8888-888888888801',
+        '11111111-1111-1111-1111-111111111101',
+        'IVR',
+        'hi',
+        NULL,
+        'Ramesh Kumar',
+        'Ward 150 (Bengaluru)',
+        NULL,
+        '22222222-2222-2222-2222-222222222202',
+        NOW() - INTERVAL '9 days'
+    ),
+    -- Tier 1: Sunita calls the IVR line from her phone (English voice menus)
+    (
+        '88888888-8888-8888-8888-888888888802',
+        '11111111-1111-1111-1111-111111111102',
+        'IVR',
+        'en',
+        NULL,
+        'Sunita Devi',
+        'Ward 134 (Delhi)',
+        NULL,
+        '22222222-2222-2222-2222-222222222201',
+        NOW() - INTERVAL '7 days'
+    ),
+    -- Tier 2: Bhagwan Das has no phone — scans/reads his physical card at the counter,
+    -- keeps his normal Dabri route, now sells direct to the MCD center
+    (
+        '88888888-8888-8888-8888-888888888803',
+        '11111111-1111-1111-1111-111111111103',
+        'OFFLINE',
+        'hi',
+        'ECO-4F2A91',
+        'Bhagwan Das',
+        'Ward 134 (Dabri, Delhi)',
+        'Dabri mor → Dwarka Sector 6 market line → MCD MRF counter (morning shift)',
+        '22222222-2222-2222-2222-222222222201',
+        NOW() - INTERVAL '5 days'
+    ),
+    -- Tier 2: Phoolwati Devi has no phone — paid to a shared family UPI VPA
+    (
+        '88888888-8888-8888-8888-888888888804',
+        '11111111-1111-1111-1111-111111111104',
+        'OFFLINE',
+        'hi',
+        'ECO-9D5B22',
+        'Phoolwati Devi',
+        'Ward 134 (Dabri, Delhi)',
+        'Dwarka Sector 10 pockets → MCD MRF counter (afternoon shift)',
+        '22222222-2222-2222-2222-222222222201',
+        NOW() - INTERVAL '4 days'
+    );
+
+-- ----------------------------------------------------------------------------
+-- 6. Seed Official Material Rate Card (transparent rates vs middlemen quotes)
+-- ----------------------------------------------------------------------------
+INSERT INTO material_rates (rate_id, material_grade, rate_per_kg, middleman_rate_per_kg, effective_from)
+VALUES
+    ('99999999-9999-9999-9999-999999999901', 'PET',        28.00, 18.00, NOW() - INTERVAL '2 days'),
+    ('99999999-9999-9999-9999-999999999902', 'HDPE',       32.00, 22.00, NOW() - INTERVAL '2 days'),
+    ('99999999-9999-9999-9999-999999999903', 'LDPE',       20.00, 12.00, NOW() - INTERVAL '2 days'),
+    ('99999999-9999-9999-9999-999999999904', 'PP',         30.00, 20.00, NOW() - INTERVAL '2 days'),
+    ('99999999-9999-9999-9999-999999999905', 'E-Waste',    65.00, 40.00, NOW() - INTERVAL '2 days'),
+    ('99999999-9999-9999-9999-999999999906', 'Paper',      14.00,  9.00, NOW() - INTERVAL '2 days'),
+    ('99999999-9999-9999-9999-999999999907', 'Cardboard',  10.00,  6.00, NOW() - INTERVAL '2 days'),
+    ('99999999-9999-9999-9999-999999999908', 'Metal',      45.00, 32.00, NOW() - INTERVAL '2 days');
+
+-- ----------------------------------------------------------------------------
+-- 7. Seed Municipal Collection Centers (Tier 2 direct-sale counters)
+-- ----------------------------------------------------------------------------
+INSERT INTO municipal_centers (center_id, center_name, ward, address, latitude, longitude, managed_by, is_active, created_at)
+VALUES
+    (
+        '77777777-7777-7777-7777-777777777701',
+        'MCD Material Recovery Facility — Direct Sale Counter',
+        'Ward 39 (Dwarka, Delhi)',
+        'MCD MRF, Sector 14 Dwarka, New Delhi 110078',
+        28.5921000,
+        77.0460000,
+        '22222222-2222-2222-2222-222222222201',
+        TRUE,
+        NOW() - INTERVAL '6 days'
+    ),
+    (
+        '77777777-7777-7777-7777-777777777702',
+        'BBMP Dry Waste Collection Center — Direct Sale Counter',
+        'Ward 150 (Bengaluru)',
+        'BBMP DWCC, Ward 150, Bengaluru 560068',
+        12.9352000,
+        77.6245000,
+        '22222222-2222-2222-2222-222222222202',
+        TRUE,
+        NOW() - INTERVAL '6 days'
+    );
+
+-- ----------------------------------------------------------------------------
+-- 8. Seed Direct Sales Ledger (Tier 2 walk-in sales replacing middlemen sales)
+-- ----------------------------------------------------------------------------
+INSERT INTO direct_sales (sale_id, center_id, picker_user_id, material_grade, weight_kg, rate_per_kg, middleman_rate_per_kg, gross_amount, middleman_uplift, payment_mode, payment_status, gateway_transaction_id, recorded_by, created_at)
+VALUES
+    (
+        'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaa01',
+        '77777777-7777-7777-7777-777777777701',
+        '11111111-1111-1111-1111-111111111103',
+        'PET', 12.50, 28.00, 18.00,
+        350.00,  -- 12.5 kg x ₹28 official rate
+        125.00,  -- middleman would have paid only ₹225 → ₹125 extra earned
+        'CASH',
+        'CASH_DISPENSED',
+        NULL,
+        '22222222-2222-2222-2222-222222222201',
+        NOW() - INTERVAL '1 day'
+    ),
+    (
+        'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaa02',
+        '77777777-7777-7777-7777-777777777701',
+        '11111111-1111-1111-1111-111111111104',
+        'HDPE', 8.00, 32.00, 22.00,
+        256.00,  -- 8 kg x ₹32 official rate
+        80.00,   -- middleman would have paid only ₹176 → ₹80 extra earned
+        'UPI',
+        'SUCCESS',
+        'UPI-TXN-SEED-8F2K-DIRECT-SALE',
+        '22222222-2222-2222-2222-222222222201',
+        NOW() - INTERVAL '6 hours'
     );
