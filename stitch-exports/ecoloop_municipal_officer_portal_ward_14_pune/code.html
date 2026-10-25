@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoLoop — Ward 14 Shivajinagar | PMC Nodal Officer Portal</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Inter & JetBrains Mono Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-container": "#00662a",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#93e0a2",
+            "primary-fixed": "#a6f4b5",
+            "on-secondary-container": "#663500",
+            "tertiary-fixed": "#7ffc97",
+            "on-background": "#1f1b17",
+            "inverse-surface": "#342f2b",
+            "on-primary": "#ffffff",
+            "inverse-on-surface": "#f9efe8",
+            "outline-variant": "#bfc9bd",
+            "background": "#fff8f5",
+            "outline": "#707a6f",
+            "on-tertiary-fixed": "#002109",
+            "on-tertiary-fixed-variant": "#005320",
+            "primary-fixed-dim": "#8bd79b",
+            "on-surface": "#1f1b17",
+            "surface-variant": "#eae1da",
+            "on-surface-variant": "#404940",
+            "surface-container-high": "#f0e6e0",
+            "on-primary-fixed-variant": "#005226",
+            "on-secondary-fixed-variant": "#6e3900",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "secondary-container": "#fe932c",
+            "surface-dim": "#e2d8d2",
+            "tertiary-fixed-dim": "#62df7d",
+            "surface-container-lowest": "#ffffff",
+            "primary-container": "#166534",
+            "surface-tint": "#1f6c3a",
+            "on-tertiary": "#ffffff",
+            "tertiary": "#004b1d",
+            "on-secondary-fixed": "#2f1500",
+            "inverse-primary": "#8bd79b",
+            "secondary-fixed-dim": "#ffb77d",
+            "on-secondary": "#ffffff",
+            "surface": "#fff8f5",
+            "surface-bright": "#fff8f5",
+            "on-primary-fixed": "#00210b",
+            "on-error": "#ffffff",
+            "primary": "#004c22",
+            "surface-container-highest": "#eae1da",
+            "surface-container": "#f6ece6",
+            "surface-container-low": "#fcf2eb",
+            "on-tertiary-container": "#6ae784",
+            "secondary": "#904d00",
+            "secondary-fixed": "#ffdcc3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-lg": "1.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin": "1rem",
+            "gutter": "1rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.75rem",
+            "space-xs": "0.25rem",
+            "margin-desktop": "2rem"
+          },
+          "fontFamily": {
+            "headline-xl": ["Inter"],
+            "data-tabular": ["Inter"],
+            "label-caps": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "code-hash": ["JetBrains Mono"],
+            "data-metric": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-lg": ["Inter"]
+          },
+          "fontSize": {
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 19px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    }
+    .tabular-numbers {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-full flex selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- ========================================================================= -->
+<!-- 1. LEFT SIDEBAR (240px wide, sticky/fixed h-screen)                       -->
+<!-- ========================================================================= -->
+<aside class="w-60 bg-surface-container-lowest border-r border-outline-variant/40 h-screen sticky top-0 flex flex-col justify-between z-30 shrink-0">
+<div class="p-space-lg flex flex-col gap-6">
+<!-- EcoLoop Brand Logo & Civic Badge -->
+<div>
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div>
+<span class="font-headline-md text-headline-sm font-bold tracking-tight text-primary leading-none block">EcoLoop</span>
+<span class="font-label-caps text-[9px] uppercase tracking-wider text-outline block mt-0.5 font-semibold">Civic Waste OS</span>
+</div>
+</div>
+<!-- Authority Badge -->
+<div class="mt-4 px-2 py-1.5 bg-surface-container rounded border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container inline-block"></span>
+<span class="font-label-caps text-[10px] uppercase font-semibold text-on-surface-variant">PMC Officer Portal</span>
+</div>
+<span class="text-[9px] font-mono text-outline font-bold">W-14</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1">
+<!-- Overview (Active State) -->
+<a class="flex items-center gap-3 bg-surface-container text-primary font-headline-sm text-body-md rounded-lg px-3 py-2 border-l-4 border-primary transition-colors" href="#overview">
+<span class="material-symbols-outlined text-primary fill-icon">dashboard</span>
+<span class="font-medium text-body-md">Overview</span>
+</a>
+<!-- Collection Routes -->
+<a class="flex items-center gap-3 text-on-surface-variant font-medium text-body-md rounded-lg px-3 py-2 hover:bg-surface-container hover:text-on-surface transition-colors" href="#routes">
+<span class="material-symbols-outlined text-on-surface-variant">alt_route</span>
+<span class="font-medium text-body-md">Collection Routes</span>
+</a>
+<!-- Direct Sales -->
+<a class="flex items-center gap-3 text-on-surface-variant font-medium text-body-md rounded-lg px-3 py-2 hover:bg-surface-container hover:text-on-surface transition-colors" href="#sales">
+<span class="material-symbols-outlined text-on-surface-variant">storefront</span>
+<span class="font-medium text-body-md">Direct Sales</span>
+</a>
+<!-- Worker Ledger -->
+<a class="flex items-center gap-3 text-on-surface-variant font-medium text-body-md rounded-lg px-3 py-2 hover:bg-surface-container hover:text-on-surface transition-colors" href="#ledger">
+<span class="material-symbols-outlined text-on-surface-variant">account_balance_wallet</span>
+<span class="font-medium text-body-md">Worker Ledger</span>
+</a>
+<!-- Rate Card -->
+<a class="flex items-center gap-3 text-on-surface-variant font-medium text-body-md rounded-lg px-3 py-2 hover:bg-surface-container hover:text-on-surface transition-colors" href="#rate-card">
+<span class="material-symbols-outlined text-on-surface-variant">price_change</span>
+<span class="font-medium text-body-md">Rate Card</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 text-on-surface-variant font-medium text-body-md rounded-lg px-3 py-2 hover:bg-surface-container hover:text-on-surface transition-colors" href="#settings">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+<span class="font-medium text-body-md">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Officer Profile Chip -->
+<div class="p-3 border-t border-outline-variant/30 bg-surface-container-lowest">
+<div class="flex items-center gap-2.5 p-2 rounded-lg bg-surface hover:bg-surface-container border border-outline-variant/30 transition-colors">
+<div class="relative shrink-0">
+<div class="w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-semibold text-xs border border-primary-container">
+            SD
+          </div>
+<span class="w-2.5 h-2.5 bg-tertiary-fixed rounded-full ring-2 ring-white absolute -bottom-0.5 -right-0.5" title="On Duty / Active"></span>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-sm text-body-sm font-semibold text-on-surface truncate">Dr. S. Deshmukh</h4>
+</div>
+<p class="font-body-sm text-[11px] text-on-surface-variant truncate">Ward 14 · Nodal Officer</p>
+</div>
+</div>
+<div class="mt-2 text-center">
+<span class="font-label-caps text-[9px] uppercase tracking-wider text-outline block">PMC Pune Civic Portal v4.2</span>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- 2. MAIN CONTENT AREA (Stone/Cream warm background, generous padding)      -->
+<!-- ========================================================================= -->
+<main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+<!-- Top Utility & Header -->
+<header class="bg-surface-container-lowest border-b border-outline-variant/30 px-margin-desktop py-3.5 sticky top-0 z-20 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Breadcrumb & Page Title -->
+<div>
+<nav class="flex items-center gap-1.5 font-label-caps text-[11px] uppercase tracking-wider text-outline mb-1">
+<span>PMC Civic Administration</span>
+<span class="text-outline-variant">/</span>
+<span>Ward 14 Shivajinagar</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-bold">Daily Operations</span>
+</nav>
+<div class="flex items-center gap-2.5">
+<h1 class="font-headline-lg text-headline-md font-bold text-on-surface tracking-tight">Overview — Ward 14, Shivajinagar</h1>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-tertiary-fixed/30 text-tertiary border border-tertiary-fixed">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Live Telemetry
+          </span>
+</div>
+</div>
+<!-- Right Side Controls -->
+<div class="flex items-center gap-3 self-start md:self-auto">
+<!-- Date Pill -->
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-surface rounded-lg border border-outline-variant/40 text-on-surface-variant text-body-sm font-medium">
+<span class="material-symbols-outlined text-[16px] text-outline">calendar_today</span>
+<span>Sat, 25 Oct 2026</span>
+</div>
+<!-- Node Status Beacon -->
+<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-200 text-emerald-900 text-body-sm">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+</span>
+<span class="text-[12px] font-medium font-body-sm">MRF Node #04 Operational</span>
+</div>
+<!-- Primary CTA Button -->
+<button class="flex items-center gap-2 bg-primary-container text-on-primary hover:bg-primary px-4 py-2 rounded-lg text-body-sm font-medium transition-colors shadow-sm active:scale-[0.98]">
+<span class="material-symbols-outlined text-lg">alt_route</span>
+<span>Plan today's routes</span>
+</button>
+</div>
+</header>
+<!-- Content Workspace Canvas -->
+<div class="p-margin-desktop flex flex-col gap-6">
+<!-- ===================================================================== -->
+<!-- 4 Stat Summary Cards                                                  -->
+<!-- ===================================================================== -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Stat Card 1: Tonnage Today -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-outline">Tonnage today</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">scale</span>
+</div>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-data-metric text-data-metric font-bold text-on-surface tabular-numbers">8.2 MT</span>
+<span class="font-body-sm text-body-sm text-outline">/ 10.0 MT</span>
+</div>
+<div class="mt-3 flex items-center justify-between text-body-sm">
+<div class="w-full bg-surface-container rounded-full h-1.5 mr-2 overflow-hidden">
+<div class="bg-primary-container h-1.5 rounded-full" style="width: 82%"></div>
+</div>
+<span class="text-[11px] font-semibold text-primary-container whitespace-nowrap">+14% vs y'day</span>
+</div>
+</div>
+<!-- Stat Card 2: Active Routes -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-outline">Active routes</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-data-metric text-data-metric font-bold text-on-surface tabular-numbers">4</span>
+<span class="font-body-sm text-body-sm text-outline">vehicles dispatched</span>
+</div>
+<div class="mt-3 flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span> 3 in progress
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> 1 completed
+            </span>
+</div>
+</div>
+<!-- Stat Card 3: Counter Sales -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-outline">Counter sales</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-data-metric text-data-metric font-bold text-on-surface tabular-numbers">₹18,450</span>
+<span class="font-body-sm text-body-sm text-outline">gross value</span>
+</div>
+<div class="mt-3 flex items-center justify-between text-body-sm text-on-surface-variant">
+<span>Collected across <strong class="text-on-surface font-semibold">24</strong> weighments</span>
+<span class="text-[11px] text-tertiary-container font-medium">Auto-receipt</span>
+</div>
+</div>
+<!-- Stat Card 4: Workers Paid -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-outline">Workers paid this week</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">badge</span>
+</div>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-data-metric text-data-metric font-bold text-on-surface tabular-numbers">32</span>
+<span class="font-body-sm text-body-sm text-outline">waste pickers</span>
+</div>
+<div class="mt-3 flex items-center justify-between text-body-sm">
+<span class="font-medium text-on-surface tabular-numbers">₹46,200 distributed</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary">
+<span class="material-symbols-outlined text-xs">verified</span> 100% UPI verified
+            </span>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- Two-Panel Section (Grid 12 cols: 6 & 6)                              -->
+<!-- ===================================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Left Panel: Live Collection Routes (Col 6) -->
+<div class="lg:col-span-6 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col">
+<!-- Card Header -->
+<div class="p-space-lg border-b border-outline-variant/30 flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Live collection routes</h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-surface-container text-on-surface-variant">Telemetry v2</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">Ward 14 East &amp; West · Automatic Geofence Tracking</p>
+</div>
+<button class="p-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container text-on-surface-variant transition-colors" title="Refresh Telemetry">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+</div>
+<!-- Stylized Map Canvas Placeholder (Neutral beige-stone canvas with cream road paths) -->
+<div class="relative w-full h-[280px] bg-[#f5f1eb] overflow-hidden border-b border-outline-variant/30">
+<!-- Road Vector Grid -->
+<svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="60" id="grid-pattern" patternunits="userSpaceOnUse" width="60">
+<path d="M 60 0 L 0 0 0 60" fill="none" stroke="#ebe4d8" stroke-width="1.2"></path>
+</pattern>
+</defs>
+<rect fill="url(#grid-pattern)" height="100%" width="100%"></rect>
+<!-- Major Arterial Roads of Shivajinagar Simulation -->
+<!-- FC Road axis -->
+<path d="M 30 260 L 180 180 L 320 120 L 480 70 L 600 30" fill="none" stroke="#e8ded0" stroke-linecap="round" stroke-width="16"></path>
+<path d="M 30 260 L 180 180 L 320 120 L 480 70 L 600 30" fill="none" stroke="#fffdfa" stroke-linecap="round" stroke-width="8"></path>
+<!-- JM Road Cross axis -->
+<path d="M 80 30 L 210 120 L 340 200 L 520 280" fill="none" stroke="#e8ded0" stroke-linecap="round" stroke-width="14"></path>
+<path d="M 80 30 L 210 120 L 340 200 L 520 280" fill="none" stroke="#fffdfa" stroke-linecap="round" stroke-width="6"></path>
+<!-- Mutha River Canal line -->
+<path d="M 0 90 Q 200 60 400 40 T 700 10" fill="none" stroke="#d5e2d5" stroke-linecap="round" stroke-width="8"></path>
+<!-- Route A (Green Polyline - Active 82%) -->
+<path d="M 60 240 L 170 175 L 260 145 L 340 105 L 420 85" fill="none" stroke="#166534" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.5"></path>
+<circle cx="60" cy="240" fill="#166534" r="4" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="170" cy="175" fill="#166534" r="4" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="260" cy="145" fill="#166534" r="4" stroke="#ffffff" stroke-width="2"></circle>
+<!-- Route B (Amber Polyline - Active 45%) -->
+<path d="M 120 55 L 205 115 L 280 160 L 320 190" fill="none" stroke="#d97706" stroke-dasharray="6 4" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<circle cx="120" cy="55" fill="#d97706" r="4" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="205" cy="115" fill="#d97706" r="4" stroke="#ffffff" stroke-width="2"></circle>
+<!-- Route C (Neutral Slate Polyline - Standby 14:00) -->
+<path d="M 350 205 L 440 240 L 520 270" fill="none" stroke="#94a3b8" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<!-- Map Placemarks & Vehicle Badges -->
+<!-- Truck A Marker -->
+<div class="absolute top-[70px] left-[405px] transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="relative">
+<span class="animate-ping absolute -inset-1 rounded-full bg-emerald-400 opacity-75"></span>
+<div class="relative bg-primary-container text-white p-1 rounded-full shadow-md flex items-center justify-center ring-2 ring-white">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span>
+</div>
+</div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap bg-on-surface text-surface text-[10px] py-0.5 px-2 rounded shadow font-mono">
+                MH-12-EQ-8842 (82%)
+              </div>
+</div>
+<!-- Truck B Marker -->
+<div class="absolute top-[175px] left-[305px] transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="relative bg-amber-600 text-white p-1 rounded-full shadow-md flex items-center justify-center ring-2 ring-white">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span>
+</div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap bg-amber-900 text-white text-[10px] py-0.5 px-2 rounded shadow font-mono">
+                MH-12-TR-4019 (45%)
+              </div>
+</div>
+<!-- Central MRF Depot Flag -->
+<div class="absolute top-[130px] left-[245px] transform -translate-x-1/2 -translate-y-1/2">
+<div class="bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1 border border-white">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span> MRF-04 DEPO
+              </div>
+</div>
+<!-- Static Map Controls -->
+<div class="absolute bottom-2.5 right-2.5 bg-surface-container-lowest/90 backdrop-blur-sm rounded-md border border-outline-variant/40 shadow-sm flex flex-col">
+<button class="p-1.5 hover:bg-surface-container text-outline text-xs border-b border-outline-variant/30">+</button>
+<button class="p-1.5 hover:bg-surface-container text-outline text-xs">-</button>
+</div>
+<div class="absolute bottom-2.5 left-2.5 bg-surface-container-lowest/90 px-2 py-1 rounded text-[10px] font-mono text-outline border border-outline-variant/30">
+              Pune Ward 14 · Shivajinagar Central
+            </div>
+</div>
+<!-- Route Status Legend Bar -->
+<div class="p-3 bg-surface-container-lowest flex flex-col gap-2">
+<!-- Route A Item -->
+<div class="flex items-center justify-between text-body-sm py-1 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container shrink-0"></span>
+<div>
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Route A · MH-12-EQ-8842</span>
+<span class="text-outline text-body-sm font-normal"> · Ramesh Kale</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-mono text-body-sm text-on-surface font-semibold tabular-numbers">82% done</span>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">On Track · ETA 13:15</span>
+</div>
+</div>
+<!-- Route B Item -->
+<div class="flex items-center justify-between text-body-sm py-1 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+<div>
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Route B · MH-12-TR-4019</span>
+<span class="text-outline text-body-sm font-normal"> · Sunil Patil</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-mono text-body-sm text-on-surface font-semibold tabular-numbers">45% done</span>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200">Delayed 8m</span>
+</div>
+</div>
+<!-- Route C Item -->
+<div class="flex items-center justify-between text-body-sm py-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-slate-400 shrink-0"></span>
+<div>
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Route C · MH-12-EQ-1120</span>
+<span class="text-outline text-body-sm font-normal"> · Unassigned</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-mono text-body-sm text-outline font-medium">0%</span>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-surface-container text-on-surface-variant">Scheduled 14:00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Today's Counter Sales (Col 6) -->
+<div class="lg:col-span-6 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col">
+<!-- Card Header -->
+<div class="p-space-lg border-b border-outline-variant/30 flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Today's counter sales</h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-emerald-50 text-emerald-800 border border-emerald-200">Live Weighbridge</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">Direct weighbridge dry waste inward · Ward 14 MRF</p>
+</div>
+<button class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container text-body-sm text-on-surface-variant font-medium transition-colors">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Export CSV</span>
+</button>
+</div>
+<!-- Compact Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left text-body-sm">
+<thead class="bg-surface border-b border-outline-variant/30 text-[11px] font-label-caps uppercase text-outline tracking-wider">
+<tr>
+<th class="py-2.5 px-3">Time</th>
+<th class="py-2.5 px-3">Worker</th>
+<th class="py-2.5 px-3">Material</th>
+<th class="py-2.5 px-3 text-right">Weight</th>
+<th class="py-2.5 px-3 text-right">Paid</th>
+<th class="py-2.5 px-2 text-center">Mode</th>
+<th class="py-2.5 px-3 text-right">Middleman Uplift</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 font-normal">
+<!-- Row 1 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-2.5 px-3 font-mono text-[11px] text-outline tabular-numbers">10:12</td>
+<td class="py-2.5 px-3 font-medium text-on-surface whitespace-nowrap">Bhagwan Das</td>
+<td class="py-2.5 px-3">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] bg-sky-50 text-sky-800 border border-sky-200">PET Clear</span>
+</td>
+<td class="py-2.5 px-3 text-right font-mono text-body-sm tabular-numbers">12.5 kg</td>
+<td class="py-2.5 px-3 text-right font-semibold text-on-surface tabular-numbers">₹350</td>
+<td class="py-2.5 px-2 text-center">
+<span class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-stone-100 text-stone-700">Cash</span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 tabular-numbers">
+                      +₹125
+                    </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-2.5 px-3 font-mono text-[11px] text-outline tabular-numbers">09:45</td>
+<td class="py-2.5 px-3 font-medium text-on-surface whitespace-nowrap">Sunita Shinde</td>
+<td class="py-2.5 px-3">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] bg-amber-50 text-amber-800 border border-amber-200">HDPE Drums</span>
+</td>
+<td class="py-2.5 px-3 text-right font-mono text-body-sm tabular-numbers">24.0 kg</td>
+<td class="py-2.5 px-3 text-right font-semibold text-on-surface tabular-numbers">₹816</td>
+<td class="py-2.5 px-2 text-center">
+<span class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-emerald-50 text-emerald-700">UPI</span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 tabular-numbers">
+                      +₹288
+                    </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-2.5 px-3 font-mono text-[11px] text-outline tabular-numbers">09:18</td>
+<td class="py-2.5 px-3 font-medium text-on-surface whitespace-nowrap">Ramesh Pawar</td>
+<td class="py-2.5 px-3">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] bg-amber-100/70 text-amber-900 border border-amber-300">Cardboard OCC</span>
+</td>
+<td class="py-2.5 px-3 text-right font-mono text-body-sm tabular-numbers">45.0 kg</td>
+<td class="py-2.5 px-3 text-right font-semibold text-on-surface tabular-numbers">₹540</td>
+<td class="py-2.5 px-2 text-center">
+<span class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-stone-100 text-stone-700">Cash</span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 tabular-numbers">
+                      +₹180
+                    </span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-2.5 px-3 font-mono text-[11px] text-outline tabular-numbers">08:50</td>
+<td class="py-2.5 px-3 font-medium text-on-surface whitespace-nowrap">Anandi Bai</td>
+<td class="py-2.5 px-3">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] bg-indigo-50 text-indigo-800 border border-indigo-200">Mixed Hard Plastic</span>
+</td>
+<td class="py-2.5 px-3 text-right font-mono text-body-sm tabular-numbers">18.2 kg</td>
+<td class="py-2.5 px-3 text-right font-semibold text-on-surface tabular-numbers">₹491</td>
+<td class="py-2.5 px-2 text-center">
+<span class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-emerald-50 text-emerald-700">UPI</span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 tabular-numbers">
+                      +₹164
+                    </span>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-2.5 px-3 font-mono text-[11px] text-outline tabular-numbers">08:15</td>
+<td class="py-2.5 px-3 font-medium text-on-surface whitespace-nowrap">Mohan Jadhav</td>
+<td class="py-2.5 px-3">
+<span class="inline-block px-1.5 py-0.5 rounded text-[11px] bg-teal-50 text-teal-800 border border-teal-200">Aluminium Cans</span>
+</td>
+<td class="py-2.5 px-3 text-right font-mono text-body-sm tabular-numbers">8.5 kg</td>
+<td class="py-2.5 px-3 text-right font-semibold text-on-surface tabular-numbers">₹765</td>
+<td class="py-2.5 px-2 text-center">
+<span class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-emerald-50 text-emerald-700">UPI</span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 tabular-numbers">
+                      +₹255
+                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Summary Footer Row -->
+<div class="mt-auto p-3.5 bg-surface border-t border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-lg">currency_rupee_circle</span>
+<span class="text-body-sm font-semibold text-on-surface">
+                Today's Middleman Savings Returned to Pickers: <span class="text-primary-container font-bold tabular-numbers">+₹1,012</span>
+</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100/60 text-emerald-900 border border-emerald-300">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Fair Price Protocol
+            </span>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- Bottom Full-Width Section: Worker Ledger Balances                     -->
+<!-- ===================================================================== -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+<!-- Card Header -->
+<div class="p-space-lg border-b border-outline-variant/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Worker ledger balances</h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-surface-container text-on-surface-variant font-mono">Ward 14 Pool</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">Accrued earnings, statutory welfare reserve &amp; net pending payout</p>
+</div>
+<!-- Controls: Search & Primary Action -->
+<div class="flex items-center gap-3">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 bg-surface text-body-sm rounded-lg border border-outline-variant/40 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-outline" placeholder="Search by Worker ID or name..." type="text"/>
+</div>
+<button class="flex items-center gap-1.5 bg-primary-container text-on-primary hover:bg-primary px-3.5 py-1.5 rounded-lg text-body-sm font-medium transition-colors whitespace-nowrap shadow-sm active:scale-[0.98]">
+<span class="material-symbols-outlined text-base">send</span>
+<span>Pay all owed (₹24,850)</span>
+</button>
+</div>
+</div>
+<!-- Institutional Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left text-body-sm">
+<thead class="bg-surface border-b border-outline-variant/30 text-[11px] font-label-caps uppercase text-outline tracking-wider">
+<tr>
+<th class="py-3 px-4">Worker ID</th>
+<th class="py-3 px-4">Name</th>
+<th class="py-3 px-3">Ward</th>
+<th class="py-3 px-4 text-right">Lifetime kg</th>
+<th class="py-3 px-4 text-right">Lifetime paid</th>
+<th class="py-3 px-4 text-right">Uplift delivered</th>
+<th class="py-3 px-4 text-right">Unpaid balance</th>
+<th class="py-3 px-4 text-center">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 font-normal">
+<!-- Worker 1 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-3 px-4 font-mono text-[12px] font-semibold text-primary">ECO-4F2A91</td>
+<td class="py-3 px-4 font-medium text-on-surface">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-outline">BD</span>
+<span>Bhagwan Das</span>
+</div>
+</td>
+<td class="py-3 px-3 text-outline">Ward 14-A</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">1,420 kg</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">₹38,400</td>
+<td class="py-3 px-4 text-right">
+<span class="text-primary-container font-semibold font-mono text-[12px] tabular-numbers">+₹12,850</span>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="font-bold text-amber-900 font-mono text-body-sm tabular-numbers">₹1,250</span>
+<span class="text-[10px] block text-outline font-normal">pending</span>
+</td>
+<td class="py-3 px-4 text-center">
+<button class="px-2.5 py-1 text-xs font-medium rounded border border-primary text-primary hover:bg-primary-container hover:text-white transition-colors">
+                    Settle UPI
+                  </button>
+</td>
+</tr>
+<!-- Worker 2 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-3 px-4 font-mono text-[12px] font-semibold text-primary">ECO-8B1C33</td>
+<td class="py-3 px-4 font-medium text-on-surface">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-outline">SS</span>
+<span>Sunita Shinde</span>
+</div>
+</td>
+<td class="py-3 px-3 text-outline">Ward 14-C</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">2,890 kg</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">₹79,200</td>
+<td class="py-3 px-4 text-right">
+<span class="text-primary-container font-semibold font-mono text-[12px] tabular-numbers">+₹26,100</span>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="font-bold text-amber-900 font-mono text-body-sm tabular-numbers">₹3,400</span>
+<span class="text-[10px] block text-outline font-normal">pending</span>
+</td>
+<td class="py-3 px-4 text-center">
+<button class="px-2.5 py-1 text-xs font-medium rounded border border-primary text-primary hover:bg-primary-container hover:text-white transition-colors">
+                    Settle UPI
+                  </button>
+</td>
+</tr>
+<!-- Worker 3 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-3 px-4 font-mono text-[12px] font-semibold text-primary">ECO-3D9E72</td>
+<td class="py-3 px-4 font-medium text-on-surface">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-outline">RP</span>
+<span>Ramesh Pawar</span>
+</div>
+</td>
+<td class="py-3 px-3 text-outline">Ward 14-B</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">980 kg</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">₹24,500</td>
+<td class="py-3 px-4 text-right">
+<span class="text-primary-container font-semibold font-mono text-[12px] tabular-numbers">+₹8,200</span>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="inline-flex items-center gap-1 text-emerald-800 font-semibold font-mono text-[12px] tabular-numbers">
+                    ₹0 <span class="text-[10px] text-emerald-600 font-normal">(Paid)</span>
+</span>
+</td>
+<td class="py-3 px-4 text-center">
+<button class="px-2.5 py-1 text-xs font-medium rounded border border-outline-variant text-outline hover:bg-surface-container text-on-surface-variant transition-colors">
+                    View Ledger
+                  </button>
+</td>
+</tr>
+<!-- Worker 4 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-3 px-4 font-mono text-[12px] font-semibold text-primary">ECO-6A4F19</td>
+<td class="py-3 px-4 font-medium text-on-surface">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-outline">AB</span>
+<span>Anandi Bai</span>
+</div>
+</td>
+<td class="py-3 px-3 text-outline">Ward 14-A</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">3,150 kg</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">₹86,100</td>
+<td class="py-3 px-4 text-right">
+<span class="text-primary-container font-semibold font-mono text-[12px] tabular-numbers">+₹29,450</span>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="font-bold text-amber-900 font-mono text-body-sm tabular-numbers">₹4,100</span>
+<span class="text-[10px] block text-outline font-normal">pending</span>
+</td>
+<td class="py-3 px-4 text-center">
+<button class="px-2.5 py-1 text-xs font-medium rounded border border-primary text-primary hover:bg-primary-container hover:text-white transition-colors">
+                    Settle UPI
+                  </button>
+</td>
+</tr>
+<!-- Worker 5 -->
+<tr class="hover:bg-surface/60 transition-colors">
+<td class="py-3 px-4 font-mono text-[12px] font-semibold text-primary">ECO-1F7D84</td>
+<td class="py-3 px-4 font-medium text-on-surface">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-[10px] font-bold text-outline">MJ</span>
+<span>Mohan Jadhav</span>
+</div>
+</td>
+<td class="py-3 px-3 text-outline">Ward 14-D</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">1,760 kg</td>
+<td class="py-3 px-4 text-right font-mono text-body-sm tabular-numbers">₹49,800</td>
+<td class="py-3 px-4 text-right">
+<span class="text-primary-container font-semibold font-mono text-[12px] tabular-numbers">+₹16,900</span>
+</td>
+<td class="py-3 px-4 text-right">
+<span class="font-bold text-amber-900 font-mono text-body-sm tabular-numbers">₹2,150</span>
+<span class="text-[10px] block text-outline font-normal">pending</span>
+</td>
+<td class="py-3 px-4 text-center">
+<button class="px-2.5 py-1 text-xs font-medium rounded border border-primary text-primary hover:bg-primary-container hover:text-white transition-colors">
+                    Settle UPI
+                  </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Audit Stamp & Compliance Footer -->
+<div class="p-3.5 bg-surface border-t border-outline-variant/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-body-sm">
+<div class="flex items-center gap-2 text-outline">
+<span class="material-symbols-outlined text-[18px] text-primary">verified_user</span>
+<span class="text-[12px]">
+              CPCB Municipal Escrow Verified · T+0 Penny-drop Protocol · PMC Swachh Survekshan Compliant
+            </span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-outline">Showing 5 of 32 verified pickers</span>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-container border border-outline-variant/40 text-xs text-outline disabled:opacity-50" disabled="">Previous</button>
+<button class="px-2 py-1 rounded bg-surface-container-lowest border border-outline-variant/40 text-xs font-medium text-on-surface hover:bg-surface-container">Next</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Institutional Footer Anchor -->
+<footer class="mt-auto w-full py-4 px-margin-desktop bg-surface-container-lowest border-t border-outline-variant/30 flex flex-col md:flex-row items-center justify-between gap-4 text-body-sm text-outline">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-on-surface">EcoLoop Enterprise Systems</span>
+<span>— Pune Municipal Corporation (PMC Ward 14)</span>
+</div>
+<div class="flex items-center gap-4 text-xs">
+<a class="hover:text-primary transition-colors" href="#compliance">CPCB Portal Sync</a>
+<span>·</span>
+<a class="hover:text-primary transition-colors" href="#audit">Audit Trail</a>
+<span>·</span>
+<a class="hover:text-primary transition-colors" href="#support">Nodal Support</a>
+<span>·</span>
+<span class="text-[11px] font-mono text-outline-variant">SESSION ID: PMC-W14-8842-LIVE</span>
+</div>
+</footer>
+</main>
+</body></html>

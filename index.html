@@ -1,869 +1,586 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EcoLoop | Smart City Civic SaaS & Circular B2B — Team EcoMirai</title>
-  <meta name="description" content="EcoLoop: Smart City Solid Waste Logistics, B2B Scrap Trading & Informal Green Technician Dignity Ledger. Built by Team EcoMirai for Thapar Japan Hackathon (Mitsui & Co. Track).">
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoLoop — Municipal Solid Waste Platform | Pune Municipal Corporation</title>
+<!-- Typography & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS & Theme Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
     tailwind.config = {
-      darkMode: 'class',
+      darkMode: "class",
       theme: {
         extend: {
-          colors: {
-            forest: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              200: '#a7f3d0',
-              300: '#6ee7b7',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
-              950: '#022c22',
-            },
-            slateCustom: {
-              700: '#334155',
-              800: '#1e293b',
-              900: '#0f172a',
-              950: '#0b0f19',
-            },
-            civic: {
-              teal: '#0d9488',
-              amber: '#f59e0b',
-              indigo: '#6366f1',
-              rose: '#f43f5e',
-            }
+          "colors": {
+            "on-background": "#1f1b17",
+            "on-primary-container": "#93e0a2",
+            "tertiary": "#004b1d",
+            "surface-container-low": "#fcf2eb",
+            "error-container": "#ffdad6",
+            "error": "#ba1a1a",
+            "on-secondary": "#ffffff",
+            "surface": "#fff8f5",
+            "surface-variant": "#eae1da",
+            "surface-container": "#f6ece6",
+            "secondary-container": "#fe932c",
+            "surface-container-highest": "#eae1da",
+            "on-error-container": "#93000a",
+            "outline-variant": "#bfc9bd",
+            "on-primary-fixed": "#00210b",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#f9efe8",
+            "secondary-fixed": "#ffdcc3",
+            "on-secondary-fixed": "#2f1500",
+            "surface-tint": "#1f6c3a",
+            "surface-bright": "#fff8f5",
+            "surface-dim": "#e2d8d2",
+            "primary-fixed": "#a6f4b5",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#00662a",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed-variant": "#6e3900",
+            "on-tertiary": "#ffffff",
+            "primary": "#004c22",
+            "tertiary-fixed": "#7ffc97",
+            "secondary": "#904d00",
+            "background": "#fff8f5",
+            "on-tertiary-container": "#6ae784",
+            "surface-container-high": "#f0e6e0",
+            "outline": "#707a6f",
+            "primary-fixed-dim": "#8bd79b",
+            "on-surface": "#1f1b17",
+            "on-secondary-container": "#663500",
+            "on-tertiary-fixed": "#002109",
+            "inverse-surface": "#342f2b",
+            "on-primary-fixed-variant": "#005226",
+            "primary-container": "#166534",
+            "on-tertiary-fixed-variant": "#005320",
+            "secondary-fixed-dim": "#ffb77d",
+            "on-surface-variant": "#404940",
+            "inverse-primary": "#8bd79b",
+            "tertiary-fixed-dim": "#62df7d"
           },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
           },
-          keyframes: {
-            ticker: {
-              '0%': { transform: 'translateX(0%)' },
-              '100%': { transform: 'translateX(-50%)' }
-            },
-            pulseRing: {
-              '0%': { transform: 'scale(0.8)', opacity: 0.8 },
-              '100%': { transform: 'scale(2.2)', opacity: 0 }
-            },
-            floatSlow: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-8px)' }
-            }
+          "spacing": {
+            "margin-desktop": "2rem",
+            "space-xs": "0.25rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem",
+            "gutter": "1rem",
+            "gutter-desktop": "1.5rem",
+            "space-lg": "1.25rem",
+            "space-xl": "1.75rem"
           },
-          animation: {
-            'marquee': 'ticker 28s linear infinite',
-            'pulse-ring': 'pulseRing 2.4s cubic-bezier(0.2, 0, 0.4, 1) infinite',
-            'float-slow': 'floatSlow 4s ease-in-out infinite'
+          "fontFamily": {
+            "serif-display": ["Fraunces", "serif"],
+            "data-tabular": ["Inter", "sans-serif"],
+            "data-metric": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "headline-xl": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "label-caps": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "code-hash": ["JetBrains Mono", "monospace"]
+          },
+          "fontSize": {
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }]
           }
         }
       }
     }
   </script>
-
-  <style>
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-    .dark-scroll::-webkit-scrollbar-track { background: #0f172a; }
-    .dark-scroll::-webkit-scrollbar-thumb { background: #334155; }
-    .bg-grid-dots {
-      background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-      background-size: 20px 20px;
+<style>
+    /* Civic Topographic Map Texture (Light 3-4% Opacity) */
+    .bg-topographic {
+      background-image: radial-gradient(#166534 0.75px, transparent 0.75px), 
+                        radial-gradient(#166534 0.75px, #fbf9f5 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
     }
-    .bg-dark-grid {
-      background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
+    .contour-lines {
+      background-image: url("data:image/svg+xml,%3Csvg width='800' height='800' viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23004c22' stroke-width='0.75' opacity='0.04'%3E%3Cpath d='M0,100 C150,150 250,50 400,120 C550,190 650,110 800,160'/%3E%3Cpath d='M0,220 C180,260 280,180 430,240 C580,300 680,210 800,270'/%3E%3Cpath d='M0,350 C120,400 320,320 480,390 C640,460 700,340 800,410'/%3E%3Cpath d='M0,490 C220,530 310,440 510,510 C710,580 720,470 800,530'/%3E%3Cpath d='M0,630 C160,690 340,610 520,670 C700,730 730,620 800,680'/%3E%3Cpath d='M0,760 C190,810 370,720 540,790 C710,860 750,750 800,810'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 34s linear infinite;
+    }
+    .ticker-track:hover {
+      animation-play-state: paused;
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white relative">
-
-  <!-- ============================================================== -->
-  <!-- HIGH-IMPACT CINEMATIC SPLASH SCREEN OVERLAY                   -->
-  <!-- ============================================================== -->
-  <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-6 text-white transition-opacity duration-700 ease-in-out select-none">
-    
-    <!-- Ambient Background Lighting -->
-    <div class="absolute inset-0 bg-dark-grid opacity-30"></div>
-    <div class="absolute top-1/4 left-1/3 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute bottom-1/4 right-1/3 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="relative z-10 max-w-lg w-full text-center space-y-6">
-      
-      <!-- Pulsing Leaf Emblem with Multi-ring Radials -->
-      <div class="relative flex items-center justify-center w-24 h-24 mx-auto animate-float-slow">
-        <!-- Outer Glowing Ring -->
-        <div class="absolute inset-0 rounded-full bg-emerald-500/20 animate-pulse-ring"></div>
-        <div class="absolute inset-2 rounded-full border border-emerald-400/40 animate-ping"></div>
-        
-        <!-- Central Emblem Card -->
-        <div class="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-900 flex items-center justify-center text-white shadow-2xl shadow-emerald-500/30 border border-emerald-400/50">
-          <svg class="w-10 h-10 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-        </div>
-      </div>
-
-      <!-- Brand Typography Progression -->
-      <div class="space-y-2">
-        <div class="flex items-center justify-center gap-2">
-          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 tracking-wider uppercase">
-            Platform Online v1.0.4
-          </span>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-mono text-indigo-300 bg-indigo-950 border border-indigo-800">
-            MITSUI-PS-01
-          </span>
-        </div>
-        
-        <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-white flex items-center justify-center gap-1">
-          Eco<span class="text-emerald-400">Loop</span>
-        </h1>
-        
-        <div class="text-xs sm:text-sm text-slate-300 font-mono tracking-wide flex items-center justify-center gap-1.5">
-          <span>Engineered by</span>
-          <strong class="text-white font-bold bg-white/10 px-2 py-0.5 rounded">Team EcoMirai</strong>
-          <span class="text-slate-500">•</span>
-          <span class="text-emerald-400">Thapar Japan Hackathon</span>
-        </div>
-      </div>
-
-      <!-- Telemetry Sequence Ticker -->
-      <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-2 font-mono text-left">
-        <div class="flex items-center justify-between text-[11px]">
-          <span id="splash-status-text" class="text-emerald-400 font-semibold flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            Syncing Ward 14 Pune Mesh Nodes...
-          </span>
-          <span id="splash-progress-num" class="text-slate-400 font-bold">34%</span>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-          <div id="splash-progress-bar" class="bg-gradient-to-r from-emerald-500 via-teal-400 to-indigo-500 h-full w-[34%] transition-all duration-300 rounded-full"></div>
-        </div>
-
-        <div class="text-[10px] text-slate-500 flex justify-between">
-          <span>OR-Tools CVRP • PostGIS • Redis 7.2</span>
-          <span>Pune PMC Zone 14</span>
-        </div>
-      </div>
-
-      <!-- Enter / Skip Button -->
-      <div>
-        <button onclick="dismissSplash()" class="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold text-xs tracking-wider uppercase transition-all shadow-lg shadow-emerald-900/40 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 group">
-          <span>Enter EcoLoop Command Center</span>
-          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ============================================================== -->
-  <!-- 1. TOP GLOBAL NAVIGATION & THREE REDIRECTS                     -->
-  <!-- ============================================================== -->
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
-    <div class="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-3">
-        
-        <!-- Left: Brand Logo & Team EcoMirai Identity -->
-        <div class="flex items-center gap-3.5 shrink-0">
-          <a href="index.html" class="flex items-center gap-3 group">
-            <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-900 text-white shadow-md shadow-emerald-900/20 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-white ring-1 ring-emerald-500"></span>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="font-black text-xl tracking-tight text-slate-900 flex items-center">
-                  Eco<span class="text-emerald-600">Loop</span>
-                </span>
-                <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  v1.0.4
-                </span>
-                <span class="hidden xl:inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 items-center gap-1">
-                  Team EcoMirai
-                </span>
-              </div>
-              <p class="text-[11px] text-slate-500 font-medium tracking-tight">
-                Thapar Japan Hackathon <span class="text-slate-300">|</span> Mitsui &amp; Co. Track
-              </p>
-            </div>
-          </a>
-        </div>
-
-        <!-- Center: Scope & Replay Intro Button -->
-        <div class="hidden lg:flex items-center gap-3">
-          <div class="flex items-center gap-2 bg-slate-100 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 border border-slate-200">
-            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            </svg>
-            <span>Ward 14 (Shivajinagar / Ghole Rd, Pune)</span>
-          </div>
-
-          <button onclick="replaySplash()" class="text-[11px] font-mono text-slate-500 hover:text-slate-900 bg-white hover:bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 transition-colors flex items-center gap-1 shadow-2xs">
-            <svg class="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Replay Splash Intro</span>
-          </button>
-        </div>
-
-        <!-- Right: THREE PROMINENT FEATURE REDIRECT BUTTONS -->
-        <div class="flex items-center gap-2">
-          
-          <!-- Redirect 1: Spatial Route Optimizer -->
-          <a href="route-optimizer.html" class="px-3 sm:px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-bold text-xs transition-all flex items-center gap-1.5 shadow-2xs hover:scale-105 active:scale-95 group">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="hidden sm:inline">1.</span>
-            <span>Route Optimizer</span>
-            <svg class="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-
-          <!-- Redirect 2: B2B Digital Marketplace -->
-          <a href="marketplace.html" class="px-3 sm:px-3.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-900 font-bold text-xs transition-all flex items-center gap-1.5 shadow-2xs hover:scale-105 active:scale-95 group">
-            <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-            <span class="hidden sm:inline">2.</span>
-            <span>B2B Marketplace</span>
-            <svg class="w-3.5 h-3.5 text-teal-600 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-
-          <!-- Redirect 3: Informal Worker Ledger -->
-          <a href="worker-ledger.html" class="px-3 sm:px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-900 font-bold text-xs transition-all flex items-center gap-1.5 shadow-2xs hover:scale-105 active:scale-95 group">
-            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-            <span class="hidden sm:inline">3.</span>
-            <span>Green Tech Ledger</span>
-            <svg class="w-3.5 h-3.5 text-indigo-600 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-
-          <!-- Redirect 4: Citizen Green Portal -->
-          <a href="user.html" class="px-3 sm:px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-md hover:scale-105 active:scale-95 group">
-            <span class="w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span>
-            <span>Citizen Portal</span>
-            <svg class="w-3.5 h-3.5 text-white group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-
-          <!-- Redirect 5: Login Portal & DBMS -->
-          <a href="login.html" class="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1 shadow-2xs hover:scale-105 active:scale-95 group" title="Login / Switch Officer or Neon DBMS">
-            <span>🔐</span>
-            <span class="hidden md:inline">Sign In / DBMS</span>
-          </a>
-
-        </div>
-
-      </div>
-    </div>
-  </header>
-
-  <!-- Live Wholesale Mandi Ticker across Top -->
-  <div class="bg-slate-900 text-slate-300 text-xs py-1.5 border-b border-slate-800 overflow-hidden select-none">
-    <div class="flex items-center">
-      <div class="px-3 bg-emerald-600 text-white font-mono font-bold uppercase text-[10px] tracking-wider shrink-0 flex items-center gap-1 z-10 shadow-sm">
-        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-        DWCC Mandi Spot Index
-      </div>
-      <div class="relative w-full overflow-hidden">
-        <div class="whitespace-nowrap inline-block animate-marquee font-mono text-[11px]">
-          <span class="mx-4 text-emerald-400 font-semibold">PET Bottles (Clear/Blue): ₹28.50/kg <span class="text-emerald-500">▲ +₹1.20</span></span>
-          <span class="text-slate-600">|</span>
-          <span class="mx-4 text-emerald-400 font-semibold">HDPE Rigid (Flakes): ₹34.00/kg <span class="text-emerald-500">▲ +₹0.80</span></span>
-          <span class="text-slate-600">|</span>
-          <span class="mx-4 text-amber-300 font-semibold">E-Waste Multi-Layer PCB: ₹450.00/kg <span class="text-emerald-500">▲ +₹15.00</span></span>
-          <span class="text-slate-600">|</span>
-          <span class="mx-4 text-slate-300 font-semibold">Old Corrugated Cardboard (OCC): ₹12.00/kg <span class="text-slate-400">■ 0.00</span></span>
-          <span class="text-slate-600">|</span>
-          <span class="mx-4 text-indigo-300 font-semibold">CPCB EPR Credit Token (Cat-I): ₹2,150.00/MT <span class="text-indigo-400">▲ +₹45.00</span></span>
-          <span class="text-slate-600">|</span>
-          <span class="mx-4 text-emerald-400 font-semibold">Aluminium Beverage Cans (Baled): ₹105.00/kg</span>
-        </div>
-      </div>
-      <div class="px-3 text-slate-400 text-[10px] font-mono hidden md:flex items-center gap-1.5 shrink-0 bg-slate-900 border-l border-slate-800">
-        <span id="live-clock">14:35:00 IST</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================================== -->
-  <!-- MAIN DASHBOARD CONTENT & STRUCTURED SECTIONS                   -->
-  <!-- ============================================================== -->
-  <main class="flex-1 max-w-[1680px] w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-12">
-    
-    <!-- ============================================================ -->
-    <!-- SECTION 1: HERO & CIVIC COMMAND BANNER                       -->
-    <!-- ============================================================ -->
-    <section class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-2xl overflow-hidden">
-      <!-- Glows -->
-      <div class="absolute -right-20 -top-20 w-[30rem] h-[30rem] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -left-20 -bottom-20 w-[30rem] h-[30rem] bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="relative z-10 grid grid-cols-1 xl:grid-cols-12 gap-8 items-center">
-        
-        <!-- Left: Mission Statement & Direct Action Hub (8 Cols) -->
-        <div class="xl:col-span-8 space-y-5">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              PUNE SMART CITY CIVIC COMMAND
+<body class="bg-[#FBF9F5] text-on-surface font-body-md antialiased selection:bg-primary selection:text-white relative min-h-screen">
+<!-- Structural Elevation Background Container -->
+<div class="fixed inset-0 pointer-events-none contour-lines z-0"></div>
+<!-- 1. STICKY HEADER NAVIGATION -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest/95 backdrop-blur-sm border-b border-outline-variant/50">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<!-- Brand Logo -->
+<a class="flex items-center gap-2 group" href="#">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-white flex items-center justify-center transition-transform group-hover:scale-95 duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="compost">compost</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-headline-sm tracking-tight text-primary">EcoLoop</span>
+<span class="font-label-caps text-[9px] uppercase tracking-wider text-outline -mt-1 font-semibold">PMC Circular Registry</span>
+</div>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="route-optimizer.html">Route Optimizer</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="marketplace.html">Marketplace</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="worker-ledger.html">Worker Ledger</a>
+<a class="font-body-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="user.html">Citizen Portal</a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-3">
+<a href="login.html" class="px-3.5 py-1.5 text-body-md font-medium text-on-surface hover:bg-stone-100 rounded-md border border-outline-variant/60 transition-colors inline-flex items-center">
+          Sign in
+        </a>
+<button class="flex items-center gap-1.5 px-4 py-2 bg-primary-container text-white text-body-md font-medium rounded-md hover:bg-tertiary transition-colors shadow-sm">
+<span>Open Command Center</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="north_east">north_east</span>
+</button>
+</div>
+</div>
+<!-- Live Announcement Strip Directly Below Nav -->
+<div class="bg-[#F0FDF4] border-t border-b border-[#BBF7D0]/60 px-4 py-1.5">
+<div class="max-w-[1440px] mx-auto flex items-center justify-between font-code-hash text-[11px] text-primary">
+<div class="flex items-center gap-2.5">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+</span>
+<span class="font-medium">Live in Pune Municipal Corporation, Ward 14 — Shivajinagar</span>
+</div>
+<div class="hidden sm:flex items-center gap-4 text-outline text-[11px]">
+<span>MRF Node #04 Operational</span>
+<span class="text-outline-variant">•</span>
+<span>Weighbridge Latency: 1.2s</span>
+</div>
+</div>
+</div>
+</header>
+<main class="relative z-10">
+<!-- 2. HERO SECTION -->
+<section class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+<!-- Left Hero Narrative (7 cols) -->
+<div class="lg:col-span-7 flex flex-col items-start pr-0 lg:pr-6">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-stone-100 border border-stone-200 mb-6">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-label-caps text-[11px] uppercase tracking-wider text-outline font-semibold">
+              MUNICIPAL SOLID WASTE PLATFORM
             </span>
-            <span class="text-xs font-mono text-slate-300 bg-white/10 px-3 py-1 rounded-full border border-white/15">
-              Ward 14 (Shivajinagar / Ghole Rd)
-            </span>
-            <span class="text-xs font-bold text-indigo-300 bg-indigo-950/80 px-3 py-1 rounded-full border border-indigo-800">
-              Team EcoMirai • Mitsui &amp; Co. Track
-            </span>
-          </div>
-
-          <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-[1.15]">
-            Tokyo Precision meets <br class="hidden sm:inline">
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-300">
-              Indian Civic Infrastructure.
-            </span>
-          </h2>
-
-          <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-            EcoLoop solves the urban solid waste breakdown in Indian municipal wards through mathematical routing heuristics, transparent industrial scrap tenders with statutory CPCB EPR minting, and dignity-first financial inclusion for informal waste pickers.
+</div>
+<h1 class="font-serif-display text-4xl sm:text-5xl lg:text-[58px] leading-[1.08] tracking-tight text-on-surface font-semibold mb-6">
+            The ward’s waste, <span class="italic font-normal text-primary">priced and routed</span> honestly.
+          </h1>
+<p class="font-body-lg text-stone-600 text-[17px] sm:text-[19px] leading-relaxed max-w-2xl mb-8">
+            EcoLoop connects informal waste pickers, municipal counters and CPCB-registered recyclers on one rate card — no middlemen.
           </p>
-
-          <!-- 3 Quick Access Gateway Cards -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-            <a href="route-optimizer.html" class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-400/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Engine 01</div>
-                <div class="text-sm font-bold text-white group-hover:text-emerald-300 mt-1 flex items-center justify-between">
-                  <span>Route Optimizer</span>
-                  <span class="text-emerald-400 group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-                <div class="text-[11px] text-slate-400 mt-1">OR-Tools CVRP Solver</div>
-              </div>
-              <div class="text-[10px] font-mono text-emerald-300 mt-2 font-bold">-28.4% Distance</div>
-            </a>
-
-            <a href="marketplace.html" class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-teal-400/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div class="text-[10px] font-mono text-teal-400 uppercase tracking-wider">Engine 02</div>
-                <div class="text-sm font-bold text-white group-hover:text-teal-300 mt-1 flex items-center justify-between">
-                  <span>B2B Marketplace</span>
-                  <span class="text-teal-400 group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-                <div class="text-[11px] text-slate-400 mt-1">DWCC Live Auction Floor</div>
-              </div>
-              <div class="text-[10px] font-mono text-teal-300 mt-2 font-bold">CPCB EPR Minted</div>
-            </a>
-
-            <a href="worker-ledger.html" class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-400/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div class="text-[10px] font-mono text-indigo-400 uppercase tracking-wider">Engine 03</div>
-                <div class="text-sm font-bold text-white group-hover:text-indigo-300 mt-1 flex items-center justify-between">
-                  <span>Worker Ledger</span>
-                  <span class="text-indigo-400 group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-                <div class="text-[11px] text-slate-400 mt-1">BLE Scale + Instant UPI</div>
-              </div>
-              <div class="text-[10px] font-mono text-indigo-300 mt-2 font-bold">+142% Worker Pay</div>
-            </a>
-          </div>
+<!-- Primary & Secondary CTAs -->
+<div class="flex flex-wrap items-center gap-3.5 mb-10">
+<a class="inline-flex items-center gap-2 px-6 py-3 bg-primary-container text-white font-medium text-body-md rounded-md hover:bg-tertiary transition-all shadow-sm" href="marketplace.html">
+<span>Enter Command Center</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3 bg-white text-on-surface border border-stone-300 font-medium text-body-md rounded-md hover:bg-stone-50 transition-colors shadow-sm" href="#engines">
+<span>See how it works</span>
+<span class="material-symbols-outlined text-[18px] text-stone-500" data-icon="play_circle">play_circle</span>
+</a>
+</div>
+<!-- Micro-Trust Telemetry -->
+<div class="w-full pt-6 border-t border-stone-200 flex flex-wrap items-center gap-y-2 gap-x-6 text-stone-500 font-code-hash text-[12px]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-700 text-[16px]" data-icon="verified">verified</span>
+<span>CPCB EPR Portal Integrated</span>
+</div>
+<span class="hidden sm:inline text-stone-300">|</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-700 text-[16px]" data-icon="security">security</span>
+<span>PMC Swachh Bharat Cell Verified</span>
+</div>
+</div>
+</div>
+<!-- Right Side: Circular Economy Diagram Card (5 cols) -->
+<div class="lg:col-span-5">
+<div class="bg-white rounded-xl border border-stone-200/80 p-6 sm:p-7 shadow-[0_4px_16px_rgba(0,0,0,0.04)] relative overflow-hidden">
+<div class="flex items-center justify-between pb-4 border-b border-stone-100 mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="sync">sync</span>
+<span class="font-headline-sm text-stone-900 font-semibold text-[15px]">Closed Municipal Loop</span>
+</div>
+<span class="font-code-hash text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded">
+                Ward 14 Flow
+              </span>
+</div>
+<!-- Loop Diagrammatic Stack -->
+<div class="relative space-y-3.5">
+<!-- Node 1 -->
+<div class="p-3.5 rounded-lg bg-[#FAFAF9] border border-stone-200 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md bg-stone-200 text-stone-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="forklift">forklift</span>
+</div>
+<div>
+<div class="font-headline-sm text-[13px] text-stone-900 font-semibold">Ward 14 MRF / Collection</div>
+<div class="text-[11px] text-stone-500 font-body-sm">48 informal green workers registered</div>
+</div>
+</div>
+<span class="font-code-hash text-[11px] font-semibold text-emerald-700 bg-white border border-stone-200 px-2 py-0.5 rounded">
+                  +1.2 MT/day
+                </span>
+</div>
+<!-- Connecting Stream Arrow 1 -->
+<div class="flex justify-center -my-1">
+<span class="material-symbols-outlined text-stone-400 text-[18px]" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<!-- Node 2 -->
+<div class="p-3.5 rounded-lg bg-[#FAFAF9] border border-stone-200 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="scale">scale</span>
+</div>
+<div>
+<div class="font-headline-sm text-[13px] text-stone-900 font-semibold">Municipal Weighbridge &amp; Assay</div>
+<div class="text-[11px] text-stone-500 font-body-sm">Optical tare weight · Contamination index 1.8%</div>
+</div>
+</div>
+<span class="font-code-hash text-[11px] font-semibold text-stone-600 bg-white border border-stone-200 px-2 py-0.5 rounded">
+                  RFID Locked
+                </span>
+</div>
+<!-- Connecting Stream Arrow 2 -->
+<div class="flex justify-center -my-1">
+<span class="material-symbols-outlined text-stone-400 text-[18px]" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<!-- Node 3 -->
+<div class="p-3.5 rounded-lg bg-[#FAFAF9] border border-stone-200 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<div class="font-headline-sm text-[13px] text-stone-900 font-semibold">Escrow Clearing &amp; UPI Pay</div>
+<div class="text-[11px] text-stone-500 font-body-sm">Automated settlement on gate confirmation</div>
+</div>
+</div>
+<span class="font-code-hash text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                  T+0 Payout
+                </span>
+</div>
+<!-- Connecting Stream Arrow 3 -->
+<div class="flex justify-center -my-1">
+<span class="material-symbols-outlined text-stone-400 text-[18px]" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<!-- Node 4 -->
+<div class="p-3.5 rounded-lg bg-emerald-50/70 border border-emerald-200 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-md bg-emerald-700 text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="factory">factory</span>
+</div>
+<div>
+<div class="font-headline-sm text-[13px] text-stone-900 font-semibold">CPCB Recycler / Smelter</div>
+<div class="text-[11px] text-emerald-900 font-body-sm">Certified raw pellet output &amp; EPR credit</div>
+</div>
+</div>
+<span class="font-code-hash text-[11px] font-semibold text-emerald-800 bg-white border border-emerald-200 px-2 py-0.5 rounded">
+                  EPR #PMC-94
+                </span>
+</div>
+</div>
+<!-- Bottom Circular Chip -->
+<div class="mt-5 pt-4 border-t border-stone-100 flex items-center justify-between">
+<span class="text-xs text-stone-500">Integrity Metric</span>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary text-white rounded-full text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+<span>₹0 Middleman Leakage · 100% Traceability</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. LIVE COMMODITY RATE TICKER STRIP -->
+<section class="w-full bg-[#ECFDF5] border-y border-[#A7F3D0] py-3.5 overflow-hidden">
+<div class="flex items-center max-w-[1440px] mx-auto px-4">
+<!-- Fixed Tag on Left -->
+<div class="flex-shrink-0 flex items-center gap-2 pr-6 border-r border-[#6EE7B7] mr-6">
+<span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+<span class="font-label-caps text-[11px] text-emerald-950 font-bold uppercase tracking-wider">
+            LIVE PMC GATE RATES
+          </span>
+</div>
+<!-- Animated Ticker Viewport -->
+<div class="overflow-hidden flex-1 relative">
+<div class="ticker-track flex items-center gap-12 font-code-hash text-[13px] text-emerald-900">
+<!-- Items Set 1 -->
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">PET Flakes (Clear)</span>
+<span class="font-bold text-emerald-800">₹28.50/kg</span>
+<span class="text-[10px] text-emerald-600">▲ +₹0.80</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">HDPE Blow Moulding</span>
+<span class="font-bold text-emerald-800">₹34.00/kg</span>
+<span class="text-[10px] text-stone-500">■ 0.00</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">E-Waste Multi-layer PCB</span>
+<span class="font-bold text-emerald-800">₹450.00/kg</span>
+<span class="text-[10px] text-emerald-600">▲ +₹12.50</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">OCC Corrugated Cardboard</span>
+<span class="font-bold text-emerald-800">₹12.00/kg</span>
+<span class="text-[10px] text-rose-600">▼ -₹0.30</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">CPCB EPR Certificate Token</span>
+<span class="font-bold text-emerald-800">₹2,150.00/MT</span>
+<span class="text-[10px] text-emerald-600">▲ +₹45.00</span>
+</div>
+<!-- Items Set 2 (for continuous smooth scroll) -->
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">PET Flakes (Clear)</span>
+<span class="font-bold text-emerald-800">₹28.50/kg</span>
+<span class="text-[10px] text-emerald-600">▲ +₹0.80</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">HDPE Blow Moulding</span>
+<span class="font-bold text-emerald-800">₹34.00/kg</span>
+<span class="text-[10px] text-stone-500">■ 0.00</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">E-Waste Multi-layer PCB</span>
+<span class="font-bold text-emerald-800">₹450.00/kg</span>
+<span class="text-[10px] text-emerald-600">▲ +₹12.50</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">OCC Corrugated Cardboard</span>
+<span class="font-bold text-emerald-800">₹12.00/kg</span>
+<span class="text-[10px] text-rose-600">▼ -₹0.30</span>
+</div>
+<span class="text-emerald-300">•</span>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-stone-800">CPCB EPR Certificate Token</span>
+<span class="font-bold text-emerald-800">₹2,150.00/MT</span>
+<span class="text-[10px] text-emerald-600">▲ +₹45.00</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. CIVIC IMPACT STATS BAND -->
+<section class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-14">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+<!-- Stat 1 -->
+<div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-stone-400 mb-2">
+<span class="font-label-caps text-[11px] uppercase tracking-wider text-stone-500">Metric 01</span>
+<span class="material-symbols-outlined text-[20px] text-emerald-700" data-icon="delete_sweep">delete_sweep</span>
+</div>
+<div>
+<div class="font-headline-xl text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight tabular-nums">
+              3,420 kg
+            </div>
+<div class="text-stone-500 font-body-sm mt-1">diverted this month</div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-stone-400 mb-2">
+<span class="font-label-caps text-[11px] uppercase tracking-wider text-stone-500">Metric 02</span>
+<span class="material-symbols-outlined text-[20px] text-emerald-700" data-icon="badge">badge</span>
+</div>
+<div>
+<div class="font-headline-xl text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight tabular-nums">
+              48
+            </div>
+<div class="text-stone-500 font-body-sm mt-1">green workers onboarded</div>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-stone-400 mb-2">
+<span class="font-label-caps text-[11px] uppercase tracking-wider text-stone-500">Metric 03</span>
+<span class="material-symbols-outlined text-[20px] text-emerald-700" data-icon="route">route</span>
+</div>
+<div>
+<div class="font-headline-xl text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight tabular-nums">
+              27%
+            </div>
+<div class="text-stone-500 font-body-sm mt-1">fleet distance saved</div>
+</div>
+</div>
+<!-- Stat 4 -->
+<div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-stone-400 mb-2">
+<span class="font-label-caps text-[11px] uppercase tracking-wider text-stone-500">Metric 04</span>
+<span class="material-symbols-outlined text-[20px] text-emerald-700" data-icon="payments">payments</span>
+</div>
+<div>
+<div class="font-headline-xl text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight tabular-nums">
+              ₹1.2L
+            </div>
+<div class="text-stone-500 font-body-sm mt-1">paid directly to pickers</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. "THREE ENGINES" ARCHITECTURAL SECTION -->
+<section class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-stone-200" id="engines">
+<!-- Section Header -->
+<div class="max-w-2xl mb-12">
+<div class="font-label-caps text-[11px] uppercase tracking-wider text-primary font-bold mb-2">
+          SYSTEM ARCHITECTURE
         </div>
-
-        <!-- Right: Telemetry Mesh Node HUD (4 Cols) -->
-        <div class="xl:col-span-4 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
-          <div class="flex items-center justify-between text-xs pb-3 border-b border-slate-800">
-            <span class="font-bold text-slate-200">Ward 14 Telemetry Mesh</span>
-            <span class="text-emerald-400 font-mono text-[11px] font-bold">ALL 8 NODES LIVE</span>
-          </div>
-
-          <div class="space-y-3 font-mono text-xs">
-            <div class="flex justify-between items-center">
-              <span class="text-slate-400 font-sans">Active Collection Fleet:</span>
-              <span class="font-bold text-white">4 Electric Tippers</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-slate-400 font-sans">DWCC Processing Cap:</span>
-              <span class="font-bold text-emerald-400">8.0 MT / Day</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-slate-400 font-sans">Today's Diverted Waste:</span>
-              <span class="font-bold text-white">3,420 kg (42.7%)</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-slate-400 font-sans">EPR Tokens Minted:</span>
-              <span class="font-bold text-indigo-400">12.8 MT Certified</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-slate-400 font-sans">Green Technicians:</span>
-              <span class="font-bold text-emerald-400">48 Verified (SWaCH)</span>
-            </div>
-          </div>
-
-          <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-            <span>Avg API Latency:</span>
-            <span class="text-emerald-400 font-bold">1.4ms (Redis Node)</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-
-    <!-- ============================================================== -->
-    <!-- SECTION 2: WHAT IS ECOLOOP? (ABOUT THE PLATFORM & ECO-MIRAI)   -->
-    <!-- ============================================================== -->
-    <section class="space-y-6" aria-label="About EcoLoop and EcoMirai">
-      <div class="max-w-3xl space-y-2">
-        <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-          THE ECOMIRAI ARCHITECTURE
-        </span>
-        <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-          What is EcoLoop &amp; Why Does It Matter?
-        </h3>
-        <p class="text-sm text-slate-600 leading-relaxed">
-          Indian urban local bodies (ULBs) face a severe structural breakdown: waste pickers are underpaid in cash, municipal collection tippers run suboptimal routes leading to fuel wastage, and dry waste collection centres (DWCCs) are cut off from direct industrial recycling demand.
+<h2 class="font-serif-display text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight mb-3">
+          Three engines powering municipal circularity
+        </h2>
+<p class="font-body-md text-stone-600">
+          Engineered specifically for Urban Local Bodies (ULBs) to eliminate leakage, formalize informal labor, and achieve certified CPCB audit compliance.
         </p>
-      </div>
-
-      <!-- 3-Way Circular Loop Explained -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- Pillar Description 1 -->
-        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-3 hover:border-emerald-300 transition-all">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
-          </div>
-          <h4 class="font-bold text-base text-slate-900">1. Spatial Logistics Heuristics</h4>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            By modeling Ward 14 as a metric distance graph, Google OR-Tools solves the daily CVRP for electric tippers, cutting diesel burn by 31.2% and reducing municipal transport costs from ₹850/MT to ₹600/MT.
-          </p>
-          <a href="route-optimizer.html" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-800 font-mono pt-1">
-            <span>Explore Spatial Engine</span> →
-          </a>
-        </div>
-
-        <!-- Pillar Description 2 -->
-        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-3 hover:border-teal-300 transition-all">
-          <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h4 class="font-bold text-base text-slate-900">2. B2B Scrap Disintermediation</h4>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            DWCC collection centres auction compressed bales directly to verified recyclers (e.g., Chitose GreenTech) via real-time WebSocket feeds, minting statutory CPCB Plastic EPR tokens with cryptographic SHA-256 hashes.
-          </p>
-          <a href="marketplace.html" class="inline-flex items-center gap-1 text-xs font-bold text-teal-700 hover:text-teal-800 font-mono pt-1">
-            <span>Explore B2B Trading Desk</span> →
-          </a>
-        </div>
-
-        <!-- Pillar Description 3 -->
-        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-3 hover:border-indigo-300 transition-all">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <h4 class="font-bold text-base text-slate-900">3. Informal Dignity &amp; UPI Rails</h4>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Waste pickers ("Green Technicians") like Ramesh Kale (#SW-342) audit household segregation with camera QR scans and get paid instantly via Bluetooth scale telemetry and direct NPCI UPI disbursements.
-          </p>
-          <a href="worker-ledger.html" class="inline-flex items-center gap-1 text-xs font-bold text-indigo-700 hover:text-indigo-800 font-mono pt-1">
-            <span>Explore Worker Client</span> →
-          </a>
-        </div>
-
-      </div>
-    </section>
-
-
-    <!-- ============================================================== -->
-    <!-- SECTION 3: REAL-TIME EXECUTIVE KPI METRIC GRID                 -->
-    <!-- ============================================================== -->
-    <section class="space-y-4" aria-label="Real-Time Metrics">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-xl font-bold text-slate-900 tracking-tight">Live Ward 14 Executive KPIs</h3>
-          <p class="text-xs text-slate-500">Real-time aggregated telemetry across PMC Shivajinagar / Ghole Rd</p>
-        </div>
-        <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-          Telemetry Active
-        </span>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2 hover:border-emerald-300 transition-all">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Diverted Waste</span>
-            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-mono font-bold text-xs">KG</span>
-          </div>
-          <div class="text-2xl font-black font-mono text-slate-900 tracking-tight">3,420 <span class="text-sm font-sans font-normal text-slate-500">kg</span></div>
-          <div class="text-[11px] text-emerald-600 font-semibold">▲ +14.2% vs Baseline</div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2 hover:border-emerald-300 transition-all">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Distance Saved</span>
-            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-mono font-bold text-xs">KM</span>
-          </div>
-          <div class="text-2xl font-black font-mono text-emerald-600 tracking-tight">28.4%</div>
-          <div class="text-[11px] text-slate-500 font-mono">13.0 km vs 18.2 km</div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2 hover:border-teal-300 transition-all">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Transport Cost</span>
-            <span class="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center font-mono font-bold text-xs">₹</span>
-          </div>
-          <div class="text-2xl font-black font-mono text-slate-900 tracking-tight">₹600 <span class="text-sm font-sans font-normal text-slate-500">/MT</span></div>
-          <div class="text-[11px] text-emerald-600 font-semibold font-mono">₹250 Under Baseline</div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2 hover:border-teal-300 transition-all">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Auction Bids</span>
-            <span class="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center font-mono font-bold text-xs">B2B</span>
-          </div>
-          <div class="text-2xl font-black font-mono text-slate-900 tracking-tight">₹84,250</div>
-          <div class="text-[11px] text-teal-600 font-semibold font-mono">7 Verified Recyclers</div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2 hover:border-indigo-300 transition-all">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">Green Techs</span>
-            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-mono font-bold text-xs">SW</span>
-          </div>
-          <div class="text-2xl font-black font-mono text-indigo-600 tracking-tight">48 <span class="text-sm font-sans font-normal text-slate-500">Active</span></div>
-          <div class="text-[11px] text-indigo-700 font-semibold font-mono">₹680 avg/day (+142%)</div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-2 hover:border-emerald-300 transition-all">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-mono">CO₂ Abated</span>
-            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-mono font-bold text-xs">CO₂</span>
-          </div>
-          <div class="text-2xl font-black font-mono text-emerald-700 tracking-tight">4.82 <span class="text-sm font-sans font-normal text-slate-500">MT</span></div>
-          <div class="text-[11px] text-emerald-600 font-semibold font-mono">Certified ESG Offset</div>
-        </div>
-
-      </div>
-    </section>
-
-
-    <!-- ============================================================== -->
-    <!-- SECTION 4: THE 3 CORE ENGINES (PROMINENT REDIRECT PORTALS)     -->
-    <!-- ============================================================== -->
-    <section class="space-y-6" aria-label="Core Feature Pages">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-2xl font-bold text-slate-900 tracking-tight">
-            Launch Standalone Feature Modules
-          </h3>
-          <p class="text-xs text-slate-500">
-            Click any module below or use the top right navigation redirects to open the dedicated pages.
-          </p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Portal Card 1: Route Optimizer -->
-        <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-          <div class="bg-gradient-to-br from-slate-950 to-emerald-950 p-6 text-white relative">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                PILLAR 01
-              </span>
-              <span class="text-xs font-mono text-slate-400">Google OR-Tools Engine</span>
-            </div>
-            <h4 class="text-xl font-bold text-white mt-3 group-hover:text-emerald-400 transition-colors">
-              Spatial Route Optimizer
-            </h4>
-            <p class="text-xs text-slate-300 mt-1 line-clamp-2">
-              Interactive 2D vector map of Ward 14 Pune with animated EV tricycle and dynamic CVRP heuristic re-route commands.
+</div>
+<!-- 3 Columns Architecture Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 1: Route Optimizer -->
+<div class="bg-white rounded-xl p-8 border border-stone-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between" id="route-optimizer">
+<div>
+<div class="w-12 h-12 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[26px]" data-icon="route">route</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold text-stone-900 mb-3">
+              Route Optimizer
+            </h3>
+<p class="font-body-md text-stone-600 leading-relaxed mb-6">
+              CVRP routing for collection fleets with real-time fuel minimization and GPS ward tracking across Pune Municipal Corporation zones.
             </p>
-          </div>
-
-          <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-            <div class="space-y-2.5 text-xs">
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Municipal Scope:</span>
-                <span class="font-bold text-slate-800">Ward 14 (8 Waypoint Nodes)</span>
-              </div>
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Distance Reduced:</span>
-                <span class="font-bold text-emerald-700">28.4% (5.2 km Saved)</span>
-              </div>
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Live Simulation:</span>
-                <span class="font-bold text-emerald-700">Surge Pickup Alert Tested</span>
-              </div>
-            </div>
-
-            <a href="route-optimizer.html" class="w-full py-3 px-4 rounded-xl bg-slate-900 group-hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2">
-              <span>Open Route Optimizer Webpage</span>
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Portal Card 2: B2B Digital Marketplace -->
-        <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-          <div class="bg-gradient-to-br from-slate-950 to-teal-950 p-6 text-white relative">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 rounded text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40">
-                PILLAR 02
-              </span>
-              <span class="text-xs font-mono text-slate-400">Live WebSocket Bidding</span>
-            </div>
-            <h4 class="text-xl font-bold text-white mt-3 group-hover:text-teal-400 transition-colors">
-              B2B Digital Scrap Marketplace
-            </h4>
-            <p class="text-xs text-slate-300 mt-1 line-clamp-2">
-              DWCC auction desk with active 500 kg PET bale tenders, live rate bidding, and statutory CPCB Plastic EPR token minting.
+</div>
+<a class="inline-flex items-center gap-1.5 text-primary hover:text-tertiary font-medium text-body-md group" href="route-optimizer.html">
+<span>Explore fleet engine</span>
+<span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<!-- Card 2: B2B Marketplace -->
+<div class="bg-white rounded-xl p-8 border border-stone-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between" id="marketplace">
+<div>
+<div class="w-12 h-12 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[26px]" data-icon="gavel">gavel</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold text-stone-900 mb-3">
+              B2B Marketplace
+            </h3>
+<p class="font-body-md text-stone-600 leading-relaxed mb-6">
+              Auction scrap lots to verified recyclers with transparent CPCB rate discovery and automated nodal escrow protecting civic balances.
             </p>
-          </div>
-
-          <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-            <div class="space-y-2.5 text-xs">
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Active Tender:</span>
-                <span class="font-bold text-slate-800">LOT #PET-2026-09 (500 kg)</span>
-              </div>
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Highest Bidder:</span>
-                <span class="font-bold text-teal-700">Chitose GreenTech (₹34.50/kg)</span>
-              </div>
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Statutory Compliance:</span>
-                <span class="font-bold text-emerald-700">CPCB EPR Token Minted</span>
-              </div>
-            </div>
-
-            <a href="marketplace.html" class="w-full py-3 px-4 rounded-xl bg-slate-900 group-hover:bg-teal-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2">
-              <span>Open B2B Marketplace Webpage</span>
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- Portal Card 3: Informal Worker Ledger -->
-        <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-          <div class="bg-gradient-to-br from-slate-950 to-indigo-950 p-6 text-white relative">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 rounded text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
-                PILLAR 03
-              </span>
-              <span class="text-xs font-mono text-slate-400">BLE Scale + NPCI UPI</span>
-            </div>
-            <h4 class="text-xl font-bold text-white mt-3 group-hover:text-indigo-400 transition-colors">
-              Informal Worker Dignity Ledger
-            </h4>
-            <p class="text-xs text-slate-300 mt-1 line-clamp-2">
-              Mobile client for waste pickers with optical camera QR audits, BLE digital scale calibration, and instant UPI payouts.
+</div>
+<a class="inline-flex items-center gap-1.5 text-primary hover:text-tertiary font-medium text-body-md group" href="marketplace.html">
+<span>Explore marketplace</span>
+<span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<!-- Card 3: Worker Ledger -->
+<div class="bg-white rounded-xl p-8 border border-stone-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between" id="worker-ledger">
+<div>
+<div class="w-12 h-12 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[26px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold text-stone-900 mb-3">
+              Worker Ledger
+            </h3>
+<p class="font-body-md text-stone-600 leading-relaxed mb-6">
+              Instant, honest pay for informal pickers via direct UPI penny-drop and statutory welfare contributions recorded on immutable ledgers.
             </p>
-          </div>
-
-          <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-            <div class="space-y-2.5 text-xs">
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Technician ID:</span>
-                <span class="font-bold text-slate-800">Ramesh Kale (#SW-342)</span>
-              </div>
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Earnings Uplift:</span>
-                <span class="font-bold text-emerald-700">+142% vs Cash Base</span>
-              </div>
-              <div class="flex justify-between pb-2 border-b border-slate-100">
-                <span class="text-slate-500">Languages:</span>
-                <span class="font-bold text-indigo-700">English + मराठी (Marathi)</span>
-              </div>
-            </div>
-
-            <a href="worker-ledger.html" class="w-full py-3 px-4 rounded-xl bg-slate-900 group-hover:bg-indigo-600 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2">
-              <span>Open Worker Client Webpage</span>
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ============================================================== -->
-  <!-- COMPREHENSIVE FOOTER & HACKATHON ATTRIBUTION                   -->
-  <!-- ============================================================== -->
-  <footer class="bg-slate-900 text-slate-300 border-t border-slate-800 mt-16">
-    <div class="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
-      
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        
-        <!-- Brand Info -->
-        <div class="space-y-3 md:col-span-1">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold">
-              E
-            </div>
-            <span class="font-black text-xl text-white">EcoLoop</span>
-            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-800">v1.0.4</span>
-          </div>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Smart City Civic SaaS &amp; Industrial Circular Scrap Platform. Designed and engineered by Team EcoMirai for the Thapar Japan Hackathon.
-          </p>
-          <div class="text-[11px] font-mono text-emerald-400 font-bold">
-            Mitsui &amp; Co. Track: MITSUI-PS-01
-          </div>
-        </div>
-
-        <!-- Three Webpages Quick Redirects -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-sm text-white font-mono uppercase tracking-wider">Feature Portals</h4>
-          <ul class="space-y-1.5 text-xs text-slate-400">
-            <li><a href="route-optimizer.html" class="hover:text-emerald-400 transition-colors">1. Spatial Route Optimizer (OR-Tools)</a></li>
-            <li><a href="marketplace.html" class="hover:text-teal-400 transition-colors">2. B2B Digital Scrap Marketplace (Auction)</a></li>
-            <li><a href="worker-ledger.html" class="hover:text-indigo-400 transition-colors">3. Informal Worker Dignity Ledger (SWaCH)</a></li>
-            <li><a href="index.html" class="hover:text-white transition-colors">4. Executive Command Dashboard</a></li>
-          </ul>
-        </div>
-
-        <!-- Technical Stack -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-sm text-white font-mono uppercase tracking-wider">Full-Stack Tech</h4>
-          <ul class="space-y-1 text-xs text-slate-400 font-mono">
-            <li>• Google OR-Tools CVRP Solver</li>
-            <li>• Node.js &amp; Express 4.19</li>
-            <li>• Redis 7.2 Sorted Sets &amp; Pub/Sub</li>
-            <li>• PostgreSQL 16 &amp; PostGIS 3.4</li>
-            <li>• NPCI UPI Rails &amp; Twilio Webhook</li>
-          </ul>
-        </div>
-
-        <!-- Hackathon & Credentials -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-sm text-white font-mono uppercase tracking-wider">Municipal Credentials</h4>
-          <p class="text-xs text-slate-400">
-            Pune Municipal Corporation (PMC) Ward 14 Solid Waste Logistics Pilot in partnership with SWaCH Informal Waste Pickers Cooperative.
-          </p>
-          <div class="pt-2">
-            <button onclick="replaySplash()" class="text-xs font-mono font-bold text-emerald-400 hover:text-emerald-300 underline">
-              Replay Intro Splash Screen
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 font-mono gap-3">
-        <div>© 2026 Team EcoMirai • Thapar Japan Hackathon • All Rights Reserved</div>
-        <div>Active Scope: PMC Ward 14 (Shivajinagar / Ghole Rd)</div>
-      </div>
-
-    </div>
-  </footer>
-
-  <!-- Splash Screen Controller Script -->
-  <script>
-    let splashProgress = 0;
-    const progressEl = document.getElementById('splash-progress-bar');
-    const progressNumEl = document.getElementById('splash-progress-num');
-    const statusTextEl = document.getElementById('splash-status-text');
-
-    const steps = [
-      { pct: 25, text: "Syncing Ward 14 Pune Mesh Nodes..." },
-      { pct: 55, text: "Connecting Google OR-Tools CVRP Engine..." },
-      { pct: 85, text: "Loading CPCB EPR Registry & SWaCH UPI Bridge..." },
-      { pct: 100, text: "EcoLoop Engine Initialized • Ready" }
-    ];
-
-    let currentStep = 0;
-
-    const splashInterval = setInterval(() => {
-      if (currentStep < steps.length) {
-        const s = steps[currentStep];
-        if (progressEl) progressEl.style.width = s.pct + '%';
-        if (progressNumEl) progressNumEl.innerText = s.pct + '%';
-        if (statusTextEl) statusTextEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ${s.text}`;
-        currentStep++;
-      } else {
-        clearInterval(splashInterval);
-        setTimeout(dismissSplash, 600); // Auto-dismiss after 600ms
-      }
-    }, 450);
-
-    function dismissSplash() {
-      clearInterval(splashInterval);
-      const splash = document.getElementById('splash-screen');
-      if (splash) {
-        splash.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
-          splash.classList.add('hidden');
-        }, 700);
-      }
-    }
-
-    function replaySplash() {
-      const splash = document.getElementById('splash-screen');
-      if (splash) {
-        splash.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-        currentStep = 0;
-        if (progressEl) progressEl.style.width = '20%';
-        if (progressNumEl) progressNumEl.innerText = '20%';
-        // Run ticker again
-        let step = 0;
-        const reInterval = setInterval(() => {
-          if (step < steps.length) {
-            const s = steps[step];
-            if (progressEl) progressEl.style.width = s.pct + '%';
-            if (progressNumEl) progressNumEl.innerText = s.pct + '%';
-            if (statusTextEl) statusTextEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ${s.text}`;
-            step++;
-          } else {
-            clearInterval(reInterval);
-            setTimeout(dismissSplash, 600);
-          }
-        }, 400);
-      }
-    }
-
-    // Live Clock
-    setInterval(() => {
-      const el = document.getElementById('live-clock');
-      if (el) el.innerText = new Date().toTimeString().split(' ')[0] + ' IST';
-    }, 1000);
-  </script>
-</body>
-</html>
+</div>
+<a class="inline-flex items-center gap-1.5 text-primary hover:text-tertiary font-medium text-body-md group" href="worker-ledger.html">
+<span>Explore worker registry</span>
+<span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+</main>
+<!-- 6. CIVIC FOOTER -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/60 py-12 relative z-10">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Top Row: Navigation Links & Seal -->
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-stone-200">
+<div class="flex items-center gap-3">
+<div class="w-7 h-7 rounded bg-primary text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="compost">compost</span>
+</div>
+<span class="font-bold text-headline-sm text-stone-900">EcoLoop Systems</span>
+<span class="text-xs bg-stone-100 text-stone-600 border border-stone-200 px-2 py-0.5 rounded">
+            PMC Certified Hub
+          </span>
+</div>
+<nav class="flex flex-wrap items-center gap-y-2 gap-x-6 text-body-sm font-medium text-stone-600">
+<a class="hover:text-primary transition-colors" href="#">PMC Ward Portal</a>
+<a class="hover:text-primary transition-colors" href="#">EPR Compliance</a>
+<a class="hover:text-primary transition-colors" href="#">Rate Card Rulebook</a>
+<a class="hover:text-primary transition-colors" href="#">Audit Logs</a>
+<a class="hover:text-primary transition-colors" href="#">Mitsui Problem Track</a>
+</nav>
+</div>
+<!-- Bottom Row: Attribution & Security Badges -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 text-xs text-stone-500 font-body-sm">
+<!-- Attribution -->
+<p>
+          Built for Pune Municipal Corporation · Mitsui &amp; Co. problem track · © 2025 EcoLoop Enterprise Systems
+        </p>
+<!-- Institutional Security Badges -->
+<div class="flex items-center gap-4 font-code-hash text-[11px] text-stone-600">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-emerald-700" data-icon="lock">lock</span>
+<span>256-bit Nodal Escrow</span>
+</div>
+<span>•</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-emerald-700" data-icon="sync">sync</span>
+<span>CPCB Master API Synced</span>
+</div>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

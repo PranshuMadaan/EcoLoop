@@ -11,18 +11,18 @@
     rel="stylesheet">
   <style>
     :root {
-      --bg: #f2f6f3;
+      --bg: #fff8f5;
       --card: #fff;
-      --ink: #10223a;
-      --mute: #5a6b80;
-      --line: #d6e0da;
-      --field: #f7faf8;
-      --acu: #1f8a5f;
-      --acm: #1d6fb8;
+      --ink: #1f1b17;
+      --mute: #78716c;
+      --line: #eae1da;
+      --field: #fcf2eb;
+      --acu: #166534;
+      --acm: #004c22;
       --on: #fff;
       --err: #c93a3a;
       --gold: #e9a817;
-      --neon: #00e599;
+      --neon: #166534;
       color-scheme: light;
       box-sizing: border-box;
       padding-top: env(safe-area-inset-top, 0px);
@@ -31,15 +31,15 @@
 
     @media(prefers-color-scheme:dark) {
       :root:not([data-theme="light"]) {
-        --bg: #0b1324;
-        --card: #152340;
-        --ink: #eef4f0;
-        --mute: #9fb0c6;
-        --line: #2a3a58;
-        --field: #0f1b33;
-        --acu: #3ccf91;
-        --acm: #62b0f2;
-        --on: #06251a;
+        --bg: #1c1917;
+        --card: #292524;
+        --ink: #fafaf9;
+        --mute: #a8a29e;
+        --line: #44403c;
+        --field: #211d1b;
+        --acu: #4ade80;
+        --acm: #8bd79b;
+        --on: #052e16;
         --err: #ff7b7b;
         --gold: #f2b632;
         color-scheme: dark
@@ -47,15 +47,15 @@
     }
 
     :root[data-theme="dark"] {
-      --bg: #0b1324;
-      --card: #152340;
-      --ink: #eef4f0;
-      --mute: #9fb0c6;
-      --line: #2a3a58;
-      --field: #0f1b33;
-      --acu: #3ccf91;
-      --acm: #62b0f2;
-      --on: #06251a;
+      --bg: #1c1917;
+      --card: #292524;
+      --ink: #fafaf9;
+      --mute: #a8a29e;
+      --line: #44403c;
+      --field: #211d1b;
+      --acu: #4ade80;
+      --acm: #8bd79b;
+      --on: #052e16;
       --err: #ff7b7b;
       --gold: #f2b632;
       color-scheme: dark
@@ -106,7 +106,7 @@
     }
 
     .brand {
-      background: #12203b;
+      background: #14532d;
       color: #f2f7f4;
       padding: 40px 44px;
       display: flex;
@@ -260,35 +260,35 @@
       padding: 6px 14px;
       border-radius: 99px;
       font: 700 12px/1 "JetBrains Mono", monospace;
-      background: rgba(0, 229, 153, 0.12);
-      color: #059669;
-      border: 1.5px solid rgba(0, 229, 153, 0.35);
+      background: rgba(22, 101, 52, 0.12);
+      color: #166534;
+      border: 1.5px solid rgba(22, 101, 52, 0.35);
       cursor: pointer;
       transition: all .2s
     }
 
     :root[data-theme="dark"] .neon-badge {
-      background: rgba(0, 229, 153, 0.15);
-      color: #00e599;
-      border-color: rgba(0, 229, 153, 0.4)
+      background: rgba(22, 101, 52, 0.15);
+      color: #166534;
+      border-color: rgba(22, 101, 52, 0.4)
     }
 
     .neon-badge:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(0, 229, 153, 0.25)
+      box-shadow: 0 4px 14px rgba(22, 101, 52, 0.25)
     }
 
     .neon-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #059669;
-      box-shadow: 0 0 8px #059669
+      background: #166534;
+      box-shadow: 0 0 8px #166534
     }
 
     :root[data-theme="dark"] .neon-dot {
-      background: #00e599;
-      box-shadow: 0 0 10px #00e599
+      background: #166534;
+      box-shadow: 0 0 10px rgba(22,101,52,.25)
     }
 
     .neon-dot.offline {
@@ -912,7 +912,7 @@
     <div class="modal-box">
       <div class="modal-hdr">
         <h3>
-          <span style="color:#00e599">🐘</span>
+          <span style="color:#166534">🐘</span>
           <span>Neon Serverless PostgreSQL</span>
         </h3>
         <button class="close-btn" id="close-neon-modal">✕</button>
@@ -1479,7 +1479,7 @@
       checkNeonBadgeStatus();
       var resBox = $("neon-ping-result");
       resBox.style.display = "block";
-      resBox.style.color = "#059669";
+      resBox.style.color = "#166534";
       resBox.textContent = "✓ Connection string saved to browser storage!";
       setTimeout(function () { $("neon-modal").classList.remove("open"); }, 800);
     };
@@ -1492,7 +1492,7 @@
       try {
         var isOk = await NeonDB.isConnected();
         if (isOk) {
-          resBox.style.color = "#059669";
+          resBox.style.color = "#166534";
           resBox.textContent = "✓ Neon Database Online & Authenticated!";
         } else {
           resBox.style.color = "var(--err)";
@@ -1510,7 +1510,7 @@
       resBox.textContent = "Creating PostgreSQL tables in Neon...";
       try {
         var res = await NeonDB.initSchema();
-        resBox.style.color = "#059669";
+        resBox.style.color = "#166534";
         resBox.textContent = "✓ Schema initialized successfully!\n- citizens table created & seeded\n- municipal_officers table created & seeded\n- otp_records table ready\n- login_audit_logs table ready";
       } catch (e) {
         resBox.style.color = "var(--err)";

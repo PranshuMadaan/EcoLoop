@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-surface" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoLoop - Municipal Payouts Ledger</title>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim from theme -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#00210b",
+            "outline": "#707a6f",
+            "outline-variant": "#bfc9bd",
+            "surface-container-high": "#f0e6e0",
+            "on-primary-container": "#93e0a2",
+            "surface-container": "#f6ece6",
+            "primary": "#004c22",
+            "error": "#ba1a1a",
+            "inverse-on-surface": "#f9efe8",
+            "on-primary-fixed-variant": "#005226",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed-dim": "#62df7d",
+            "on-secondary-container": "#663500",
+            "on-tertiary-container": "#6ae784",
+            "on-primary": "#ffffff",
+            "surface-tint": "#1f6c3a",
+            "on-tertiary-fixed-variant": "#005320",
+            "tertiary-fixed": "#7ffc97",
+            "secondary-container": "#fe932c",
+            "background": "#fff8f5",
+            "surface": "#fff8f5",
+            "on-surface": "#1f1b17",
+            "surface-variant": "#eae1da",
+            "surface-container-highest": "#eae1da",
+            "secondary-fixed-dim": "#ffb77d",
+            "inverse-primary": "#8bd79b",
+            "primary-container": "#166534",
+            "on-error": "#ffffff",
+            "primary-fixed": "#a6f4b5",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed": "#002109",
+            "secondary": "#904d00",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#2f1500",
+            "tertiary-container": "#00662a",
+            "on-secondary-fixed-variant": "#6e3900",
+            "tertiary": "#004b1d",
+            "surface-dim": "#e2d8d2",
+            "secondary-fixed": "#ffdcc3",
+            "primary-fixed-dim": "#8bd79b",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#fcf2eb",
+            "on-surface-variant": "#404940",
+            "error-container": "#ffdad6",
+            "on-background": "#1f1b17",
+            "surface-bright": "#fff8f5",
+            "inverse-surface": "#342f2b"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-md": "0.75rem",
+            "gutter-desktop": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "margin-desktop": "2rem",
+            "space-xl": "1.75rem",
+            "space-lg": "1.25rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "label-caps": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "code-hash": ["JetBrains Mono", "monospace"],
+            "headline-md": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "headline-xl": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "data-tabular": ["Inter", "sans-serif"],
+            "data-metric": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f6ece6;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #bfc9bd;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col bg-surface text-on-surface antialiased font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- ================= TOP STICKY APP BAR (Shared Component JSON Conformance) ================= -->
+<header class="fixed top-0 left-0 w-full z-50 h-14 px-margin-desktop flex items-center justify-between bg-surface-container-lowest border-b border-outline-variant shadow-sm">
+<!-- Brand Anchor & Switcher -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[26px] material-symbols-fill" data-icon="eco">eco</span>
+<span class="text-headline-md font-headline-md font-bold text-primary tracking-tight">EcoLoop</span>
+</div>
+<!-- Facility Switcher Chip -->
+<div class="hidden xl:flex items-center gap-space-xs px-2.5 py-1 bg-surface-container-low rounded border border-outline-variant text-on-surface-variant text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-outline text-[16px]" data-icon="domain">domain</span>
+<span class="font-medium text-on-surface">Western Hub Escrow Clearing</span>
+<span class="text-outline text-xs">· Zone 4</span>
+<span class="material-symbols-outlined text-outline text-[16px] cursor-pointer hover:text-on-surface" data-icon="unfold_more">unfold_more</span>
+</div>
+</div>
+<!-- Navigation Links Cluster with Exact Shared JSON Alignment -->
+<nav class="hidden md:flex items-center gap-6 h-full">
+<a class="text-on-surface-variant font-medium hover:text-on-surface transition-colors duration-150 py-4 text-body-md font-body-md" href="#">Auctions</a>
+<a class="text-on-surface-variant font-medium hover:text-on-surface transition-colors duration-150 py-4 text-body-md font-body-md" href="#">EPR Compliance</a>
+<a class="text-on-surface-variant font-medium hover:text-on-surface transition-colors duration-150 py-4 text-body-md font-body-md" href="#">Facility Registry</a>
+<a class="text-primary border-b-2 border-primary font-semibold py-4 text-body-md font-body-md" href="#">Settlements</a>
+<a class="text-on-surface-variant font-medium hover:text-on-surface transition-colors duration-150 py-4 text-body-md font-body-md" href="#">Audit Logs</a>
+</nav>
+<!-- Trailing Action Cluster & Identity Profile -->
+<div class="flex items-center gap-space-md">
+<!-- Live Telemetry Health Indicator -->
+<div class="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-code-hash text-[11px] text-primary font-semibold uppercase tracking-wider">API Live (99.98%)</span>
+</div>
+<!-- Outlined Post Scrap Lot Action -->
+<button class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-surface-container transition-colors duration-150 text-body-sm font-semibold">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_circle">add_circle</span>
+<span>Post Scrap Lot</span>
+</button>
+<!-- System Notification & Help Icons -->
+<div class="flex items-center gap-1 text-on-surface-variant">
+<button class="p-1.5 rounded hover:bg-surface-container transition-colors" title="Audit Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container transition-colors" title="CPCB Guidelines &amp; Help">
+<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<!-- Account Badge / Nodal Officer Session -->
+<div class="flex items-center gap-2 pl-2 border-l border-outline-variant">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-xs ring-1 ring-outline-variant">
+          AR
+        </div>
+<div class="hidden 2xl:flex flex-col text-left">
+<span class="text-body-sm font-semibold text-on-surface leading-tight">Attero Recycling</span>
+<span class="font-code-hash text-[10px] text-outline leading-tight">CPCB-REG-0941</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ================= MAIN CANVAS CONTAINER ================= -->
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-margin-desktop pt-20 pb-16">
+<!-- 1. BREADCRUMB SUBHEADER -->
+<div class="h-11 flex flex-wrap items-center justify-between border-b border-outline-variant pb-2 mb-6">
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-outline">
+<span class="hover:text-on-surface cursor-pointer">Marketplace</span>
+<span class="text-outline-variant">/</span>
+<span class="hover:text-on-surface cursor-pointer">Financial Clearinghouse</span>
+<span class="text-outline-variant">/</span>
+<span class="font-semibold text-on-surface">Payouts Ledger</span>
+</div>
+<!-- Live Regulatory Compliance Badges -->
+<div class="flex items-center gap-3 mt-1 sm:mt-0">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-low border border-outline-variant text-[11px] font-code-hash text-on-surface-variant font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>RBI-NODAL-ESCROW SYNCED</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-low border border-outline-variant text-[11px] font-code-hash text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="bolt">bolt</span>
+<span>SETTLEMENT PROTOCOL: T+0 UPI/IMPS</span>
+</div>
+</div>
+</div>
+<!-- 2. PAGE HEADER & AUDIT CONTROLS -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h1 class="text-headline-xl font-headline-xl text-on-surface tracking-tight">Payouts Ledger</h1>
+<span class="px-2 py-0.5 rounded font-code-hash text-[11px] bg-surface-container text-primary border border-outline-variant font-semibold">CPCB Circular Economy Nodal Clearing</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant flex items-center gap-2">
+<span>Every settlement, with the 98.5 / 1.0 / 0.5 split visible</span>
+<span class="text-outline-variant">·</span>
+<span class="font-code-hash text-xs text-outline">Escrow Split Model v2.4 (Statutory Reserve Enforced)</span>
+</p>
+</div>
+<!-- Operational Filter Cluster -->
+<div class="flex flex-wrap items-center gap-2.5">
+<!-- Search Lot ID / ULB -->
+<div class="relative min-w-[220px]">
+<span class="material-symbols-outlined absolute left-2.5 top-2.5 text-outline text-[18px]" data-icon="search">search</span>
+<input class="h-9 w-full pl-8 pr-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm font-body-sm text-on-surface placeholder-outline focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary shadow-sm" placeholder="Search Lot ID or Seller ULB..." type="text"/>
+</div>
+<!-- Filter Select -->
+<div class="relative">
+<select class="h-9 pl-3 pr-8 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm font-body-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary shadow-sm appearance-none cursor-pointer">
+<option>Status: All Settlements</option>
+<option>Status: SUCCESS (Settled)</option>
+<option>Status: PENDING (Clearing)</option>
+<option>Status: REVERSED (Disputed)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2.5 text-outline text-[16px] pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+<!-- Date Range Picker Chip -->
+<button class="h-9 inline-flex items-center gap-1.5 px-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm font-body-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="calendar_today">calendar_today</span>
+<span>Oct 2026</span>
+<span class="material-symbols-outlined text-[14px] text-outline" data-icon="arrow_drop_down">arrow_drop_down</span>
+</button>
+<!-- Export CSV / Report -->
+<button class="h-9 inline-flex items-center gap-1.5 px-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm font-body-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="download">download</span>
+<span>Export CSV / Report</span>
+</button>
+</div>
+</div>
+<!-- 3. METRIC SUMMARY ROW (High Density KPI Cards) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<!-- Card 1: Total Settled -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-caps text-label-caps uppercase text-outline tracking-wider">TOTAL SETTLED</span>
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="account_balance">account_balance</span>
+</div>
+<div class="font-data-metric text-data-metric font-bold text-on-surface tabular-nums">
+            ₹42,80,000<span class="text-body-md font-normal text-outline">.00</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-surface-container flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span>128 transactions</span>
+<span class="inline-flex items-center text-primary font-medium">14 ULBs Synced</span>
+</div>
+</div>
+<!-- Card 2: Seller Payouts (98.5%) -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-caps text-label-caps uppercase text-primary font-semibold tracking-wider">SELLER PAYOUTS (98.5%)</span>
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="payments">payments</span>
+</div>
+<div class="font-data-metric text-data-metric font-bold text-on-surface tabular-nums">
+            ₹42,15,800<span class="text-body-md font-normal text-outline">.00</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-surface-container flex items-center gap-1.5 text-body-sm font-body-sm text-outline">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="check_circle">check_circle</span>
+<span>Disbursed via instant UPI / NEFT rails</span>
+</div>
+</div>
+<!-- Card 3: Welfare Reserve (0.5%) -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-caps text-label-caps uppercase text-secondary font-semibold tracking-wider">WELFARE RESERVE (0.5%)</span>
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="volunteer_activism">volunteer_activism</span>
+</div>
+<div class="font-data-metric text-data-metric font-bold text-on-surface tabular-nums">
+            ₹21,400<span class="text-body-md font-normal text-outline">.00</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-surface-container flex items-center gap-1.5 text-body-sm font-body-sm text-outline">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="verified">verified</span>
+<span class="truncate">Direct Safai Karamchari Fund escrow</span>
+</div>
+</div>
+<!-- Card 4: Platform Fee (1.0%) -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-caps text-label-caps uppercase text-outline tracking-wider">PLATFORM CLEARING (1.0%)</span>
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="hub">hub</span>
+</div>
+<div class="font-data-metric text-data-metric font-bold text-on-surface tabular-nums">
+            ₹42,800<span class="text-body-md font-normal text-outline">.00</span>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-surface-container flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span>Infrastructure levy</span>
+<span class="text-primary font-medium font-code-hash text-xs">GST ITC Registered</span>
+</div>
+</div>
+</section>
+<!-- 4. FULL-WIDTH FINANCIAL AUDIT LEDGER DATA TABLE -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden mb-6">
+<!-- Table Header Status Bar -->
+<div class="px-4 py-2.5 bg-surface-container-low border-b border-outline-variant flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-body-sm font-semibold text-on-surface">Escrow Clearing Batches · Oct 2026</span>
+<span class="text-outline-variant">|</span>
+<span class="text-body-sm text-outline font-code-hash">Protocol: RTGS / IMPS Sub-Member ID #9942</span>
+</div>
+<div class="flex items-center gap-2 text-xs font-code-hash text-outline">
+<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> UPI Settlement: 100% Realtime</span>
+</div>
+</div>
+<!-- Overflow Container for High Density Columns -->
+<div class="overflow-x-auto custom-scroll">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-outline border-b border-outline-variant font-label-caps text-label-caps uppercase tracking-wider">
+<th class="py-2.5 px-4 font-semibold" scope="col">Lot &amp; Commodity</th>
+<th class="py-2.5 px-4 font-semibold" scope="col">Seller / ULB MRF</th>
+<th class="py-2.5 px-4 font-semibold text-right" scope="col">Gross Settlement</th>
+<th class="py-2.5 px-4 font-semibold text-right" scope="col">Seller Net (98.5%)</th>
+<th class="py-2.5 px-4 font-semibold text-right" scope="col">Platform (1.0%)</th>
+<th class="py-2.5 px-4 font-semibold text-right" scope="col">Welfare (0.5%)</th>
+<th class="py-2.5 px-4 font-semibold" scope="col">UPI / Bank Ref</th>
+<th class="py-2.5 px-4 font-semibold text-center" scope="col">Status</th>
+<th class="py-2.5 px-3 text-center" scope="col">Receipt</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-body-sm">
+<!-- ROW 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-primary">MSTC-2026-04</div>
+<div class="text-on-surface-variant font-medium text-xs">Paper Occidental (OCC)</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface">BBMP Ward 150</div>
+<div class="text-[11px] text-outline">Bengaluru Urban MRF-4</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold text-on-surface">
+                ₹1,50,000.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-primary font-semibold">
+                ₹1,47,750.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-outline">
+                ₹1,500.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-secondary font-medium">
+                ₹750.00
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant">
+<span>UPI-TXN-884291883</span>
+<button class="hover:text-primary" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  SUCCESS
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Download Escrow Settlement Voucher">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- ROW 2 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-primary">MSTC-2026-09</div>
+<div class="text-on-surface-variant font-medium text-xs">PET Flakes Grade A</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface">MCD MRF Dwarka</div>
+<div class="text-[11px] text-outline">South West Delhi ULB</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold text-on-surface">
+                ₹4,45,000.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-primary font-semibold">
+                ₹4,38,325.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-outline">
+                ₹4,450.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-secondary font-medium">
+                ₹2,225.00
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant">
+<span>UPI-TXN-902144721</span>
+<button class="hover:text-primary" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  SUCCESS
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Download Escrow Settlement Voucher">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- ROW 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-primary">WR-SCRAP-8812</div>
+<div class="text-on-surface-variant font-medium text-xs">Mixed Heavy Melting Steel</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface">Western Railway Depot</div>
+<div class="text-[11px] text-outline">Parel Workshop Mumbai</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold text-on-surface">
+                ₹8,60,000.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-primary font-semibold">
+                ₹8,47,100.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-outline">
+                ₹8,600.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-secondary font-medium">
+                ₹4,300.00
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant">
+<span>RTGS-HDFC-993102</span>
+<button class="hover:text-primary" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  SUCCESS
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Download Escrow Settlement Voucher">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- ROW 4 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-primary">IOCL-PNP-0419</div>
+<div class="text-on-surface-variant font-medium text-xs">Industrial HDPE Drums</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface">IOCL Panipat Refinery</div>
+<div class="text-[11px] text-outline">Hazardous Industrial Yard 2</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold text-on-surface">
+                ₹3,92,500.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-primary font-semibold">
+                ₹3,86,612.50
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-outline">
+                ₹3,925.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-secondary font-medium">
+                ₹1,962.50
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant">
+<span>UPI-TXN-551029384</span>
+<button class="hover:text-primary" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  SUCCESS
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Download Escrow Settlement Voucher">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- ROW 5 (PENDING) -->
+<tr class="hover:bg-surface-container transition-colors group bg-amber-50/20">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-primary">MCGM-KL-0211</div>
+<div class="text-on-surface-variant font-medium text-xs">Corrugated Cardboard (OCC 11)</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface">MCGM Kurla Station</div>
+<div class="text-[11px] text-outline">Brihanmumbai Solid Waste Mgmt</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold text-on-surface">
+                ₹2,16,000.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-primary font-semibold">
+                ₹2,12,760.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-outline">
+                ₹2,160.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-secondary font-medium">
+                ₹1,080.00
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant">
+<span>UPI-TXN-119283742</span>
+<button class="hover:text-primary" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-300">
+<span class="material-symbols-outlined text-[13px] text-amber-700" data-icon="schedule">schedule</span>
+                  PENDING
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="View Clearing Pipeline">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- ROW 6 (REVERSED) -->
+<tr class="hover:bg-surface-container transition-colors group bg-red-50/20">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-outline">DL-EW-2026-55</div>
+<div class="text-on-surface-variant font-medium text-xs line-through text-outline">Telecom PCB &amp; E-Waste Grade B</div>
+<div class="text-[10px] text-error font-medium">Assay Mismatch &gt; 3.2% moisture threshold</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface line-through text-outline">MCD Mayapuri Facility</div>
+<div class="text-[11px] text-outline">E-Waste Disposal Cell</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold line-through text-error">
+                ₹5,40,000.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums line-through text-outline">
+                ₹5,31,900.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums line-through text-outline">
+                ₹5,400.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums line-through text-outline">
+                ₹2,700.00
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-error bg-error-container/40 px-1.5 py-0.5 rounded border border-error/20">
+<span>UPI-TXN-001928341</span>
+<button class="hover:text-error" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-800 border border-red-200">
+<span class="material-symbols-outlined text-[13px] text-red-700" data-icon="cancel">cancel</span>
+                  REVERSED
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="View Reversal Audit Trail">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- ROW 7 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-primary">GCC-PE-0982</div>
+<div class="text-on-surface-variant font-medium text-xs">LDPE Washed Agricultural Film</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface">GCC Chennai Resource Park</div>
+<div class="text-[11px] text-outline">Perungudi Recovery Zone</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold text-on-surface">
+                ₹1,95,000.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-primary font-semibold">
+                ₹1,92,075.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-outline">
+                ₹1,950.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-secondary font-medium">
+                ₹975.00
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant">
+<span>UPI-TXN-773829104</span>
+<button class="hover:text-primary" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  SUCCESS
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Download Escrow Settlement Voucher">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- ROW 8 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-2.5 px-4">
+<div class="font-code-hash text-xs font-semibold text-primary">GHMC-HYD-304</div>
+<div class="text-on-surface-variant font-medium text-xs">Mixed Aluminium Extrusions</div>
+</td>
+<td class="py-2.5 px-4">
+<div class="font-medium text-on-surface">GHMC Uppal Facility</div>
+<div class="text-[11px] text-outline">Hyderabad East Aggregation Yard</div>
+</td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums font-semibold text-on-surface">
+                ₹6,10,000.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-primary font-semibold">
+                ₹6,00,850.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-outline">
+                ₹6,100.00
+              </td>
+<td class="py-2.5 px-4 text-right font-data-tabular tabular-nums text-secondary font-medium">
+                ₹3,050.00
+              </td>
+<td class="py-2.5 px-4">
+<div class="inline-flex items-center gap-1 font-code-hash text-xs text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant">
+<span>UPI-TXN-662910482</span>
+<button class="hover:text-primary" title="Copy Transaction ID">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-2.5 px-4 text-center">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  SUCCESS
+                </span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="p-1 rounded text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Download Escrow Settlement Voucher">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- 5. TABLE PAGINATION FOOTER -->
+<div class="px-4 py-3 bg-surface-container-low border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3 text-body-sm font-body-sm text-outline">
+<div class="flex items-center gap-2">
+<span>Showing <strong class="text-on-surface font-semibold">8</strong> of <strong class="text-on-surface font-semibold">128</strong> settlements</span>
+<span class="text-outline-variant">·</span>
+<span>50 per page</span>
+</div>
+<div class="flex items-center gap-1.5">
+<!-- Previous Disabled -->
+<button class="h-8 px-2.5 inline-flex items-center gap-1 rounded bg-surface-container border border-outline-variant text-outline opacity-50 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_left">chevron_left</span>
+<span>Previous</span>
+</button>
+<!-- Page Selection -->
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded bg-primary text-on-primary font-semibold text-xs">1</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container text-xs font-medium">2</button>
+<button class="w-8 h-8 rounded bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container text-xs font-medium">3</button>
+</div>
+<!-- Next Button -->
+<button class="h-8 px-2.5 inline-flex items-center gap-1 rounded bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container text-xs font-medium transition-colors">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- ESCROW MECHANISM AUDIT BREAKDOWN (Institutional Explainer Card) -->
+<div class="p-space-lg rounded-xl bg-surface-container-low border border-outline-variant flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[24px] mt-0.5" data-icon="lock_clock">lock_clock</span>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Automated Escrow Splitting Math</div>
+<div class="text-body-sm text-on-surface-variant mt-0.5">
+            Every transaction is routed through a dedicated nodal escrow account. Funds are auto-partitioned: 98.5% directly to municipal accounts, 1.0% platform clearing levy, and 0.5% statutory welfare levy for waste workers.
+          </div>
+</div>
+</div>
+<div class="flex items-center gap-4 text-xs font-code-hash text-outline shrink-0">
+<div class="text-right">
+<div class="text-on-surface font-semibold">T+0 UPI/NEFT Auto-Disbursement</div>
+<div>Escrow Master Account: HDFC-ESC-883910</div>
+</div>
+<button class="px-3 py-1.5 bg-surface-container-lowest border border-outline-variant rounded hover:bg-surface-container transition-colors text-on-surface font-body-sm font-medium">
+          Verify Escrow Deed
+        </button>
+</div>
+</div>
+</main>
+<!-- ================= INSTITUTIONAL FOOTER (Shared Component JSON Conformance) ================= -->
+<footer class="w-full py-space-lg px-margin-desktop bg-surface-container-lowest border-t border-outline-variant flex flex-col md:flex-row items-center justify-between gap-space-md text-body-sm font-body-sm">
+<div class="flex flex-col md:flex-row items-center gap-4">
+<span class="text-body-md font-body-md font-bold text-on-surface">EcoLoop</span>
+<span class="text-on-surface-variant text-center md:text-left">
+        © 2025 EcoLoop Enterprise Systems. CPCB &amp; Extended Producer Responsibility (EPR) Authorized Infrastructure.
+      </span>
+</div>
+<!-- Mandatory Regulatory Links from Shared JSON -->
+<div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-on-surface-variant font-medium">
+<a class="hover:text-primary transition-colors duration-150" href="#">EPR Rulebook Compliance</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Auction Arbitration Protocol</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">CPCB Portal Sync</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Data Custody &amp; Audit Trail</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">API &amp; Telemetry</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Security Disclaimer</a>
+</div>
+</footer>
+<!-- 6. BOTTOM INSTITUTIONAL COMPLIANCE BAR -->
+<aside class="w-full bg-surface-container py-2 px-margin-desktop border-t border-outline-variant text-[11px] font-code-hash text-outline flex flex-wrap items-center justify-between gap-2">
+<div>
+      EcoLoop — circular economy infrastructure · CPCB registered recyclers only · Escrow clearing compliance under RBI Master Direction 2020 / CPCB EPR Guidelines · Nodal Bank: HDFC Bank Nodal Clearing
+    </div>
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>SHA-256 LEDGER HASH: 84a9e...31b8</span>
+</div>
+</aside>
+</body></html>
