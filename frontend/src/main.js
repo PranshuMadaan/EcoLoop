@@ -3,10 +3,29 @@ const API_BASE = '/api/v1';
 
 // State Store
 const state = {
-  activeTab: 'marketplace',
+  activeTab: 'dashboard',
   listings: [],
   selectedListing: null,
   lastVerifiedVpa: null,
+  currentUser: {
+    name: 'Sunita Devi',
+    role: 'Picker',
+    mobile: '+919876543210',
+    hub: 'Kothrud Aggregation Hub #3',
+  },
+  optimizer: {
+    map: null,
+    scenario: null,
+    threshold: 30,
+    vehicleId: 'all',
+    routeLayers: [],
+  },
+  ivr: {
+    state: 1,
+    language: 'pa',
+    callerNumber: '+919876543210',
+    connected: true,
+  },
 };
 
 // DOM Elements
@@ -19,6 +38,10 @@ const elements = {
   filterStatus: document.getElementById('filter-status'),
   btnRefreshListings: document.getElementById('btn-refresh-listings'),
   statTotalListings: document.getElementById('stat-total-listings'),
+  btnNavAuth: document.getElementById('btn-nav-auth'),
+  navUserLabel: document.getElementById('nav-user-label'),
+  modalAuth: document.getElementById('modal-auth'),
+  modalAuthClose: document.getElementById('modal-auth-close'),
   
   // Auction Elements
   bidListingSelect: document.getElementById('bid-listing-select'),
@@ -1327,21 +1350,742 @@ async function handleCreateListing(e) {
 }
 
 // ============================================================================
-// Tab Navigation
+// ============================================================================
+// Tab Navigation & Module Routing
 // ============================================================================
 function switchTab(tabName) {
   state.activeTab = tabName;
-  elements.tabLinks.forEach((link) => {
+  const tabLinks = document.querySelectorAll('.nav-link');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabLinks.forEach((link) => {
     link.classList.toggle('active', link.getAttribute('data-tab') === tabName);
   });
-  elements.tabPanes.forEach((pane) => {
+  tabPanes.forEach((pane) => {
     pane.classList.toggle('active', pane.id === `tab-${tabName}`);
   });
-  if (tabName === 'epr') {
+
+  if (tabName === 'optimizer') {
+    initOrRefreshOptimizerMap();
+  } else if (tabName === 'dashboard') {
+    updateEconomicsCalculator();
+  } else if (tabName === 'marketplace') {
+    fetchListings();
+  } else if (tabName === 'epr') {
     fetchRecentEprTokens();
-  }
-  if (tabName === 'iwl') {
+  } else if (tabName === 'iwl') {
     loadWorkerLedgerData();
+  } else if (tabName === 'ivr') {
+    updateIvrView();
+  } else if (tabName === 'municipal') {
+    initMunicipalDesk();
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================================
+// Module 0: Executive Command Center & Economics Calculator
+// ============================================================================
+function initDashboardModule() {
+  const matSelect = document.getElementById('calc-material-select');
+  const weightRange = document.getElementById('calc-weight-range');
+
+  matSelect?.addEventListener('change', updateEconomicsCalculator);
+  weightRange?.addEventListener('input', updateEconomicsCalculator);
+
+  // Modular jump buttons across the whole app
+  document.querySelectorAll('[data-jump]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetTab = btn.getAttribute('data-jump');
+      if (targetTab) {
+        switchTab(targetTab);
+        showToast(`Switched to ${targetTab.toUpperCase()} Module`);
+      }
+    });
+  });
+
+  updateEconomicsCalculator();
+}
+
+function updateEconomicsCalculator() {
+  const matSelect = document.getElementById('calc-material-select');
+  const weightRange = document.getElementById('calc-weight-range');
+  const weightDisplay = document.getElementById('calc-weight-display');
+  const middlemanAmt = document.getElementById('calc-middleman-amt');
+  const ecoloopAmt = document.getElementById('calc-ecoloop-amt');
+  const middlemanBar = document.getElementById('calc-middleman-bar');
+  const ecoloopBar = document.getElementById('calc-ecoloop-bar');
+  const netGainDisplay = document.getElementById('calc-net-gain');
+
+  if (!matSelect || !weightRange) return;
+
+  const rate = parseFloat(matSelect.value) || 30;
+  const weight = parseFloat(weightRange.value) || 100;
+
+  if (weightDisplay) weightDisplay.textContent = `${weight} kg`;
+
+  // Financial model: Middleman pays ~28% of end rate; EcoLoop delivers ~38% directly to picker
+  const middlemanTotal = Math.round(weight * rate * 0.28);
+  const ecoloopTotal = Math.round(weight * rate * 0.38);
+  const diff = ecoloopTotal - middlemanTotal;
+  const uplift = ((diff / middlemanTotal) * 100).toFixed(1);
+
+  if (middlemanAmt) middlemanAmt.textContent = `₹${middlemanTotal.toLocaleString('en-IN')}`;
+  if (ecoloopAmt) ecoloopAmt.textContent = `₹${ecoloopTotal.toLocaleString('en-IN')}`;
+  if (middlemanBar) {
+    const pct = Math.min(100, Math.round((middlemanTotal / ecoloopTotal) * 100));
+    middlemanBar.style.width = `${pct}%`;
+    middlemanBar.textContent = `₹${middlemanTotal.toLocaleString('en-IN')}`;
+  }
+  if (ecoloopBar) {
+    ecoloopBar.style.width = '100%';
+    ecoloopBar.textContent = `₹${ecoloopTotal.toLocaleString('en-IN')}`;
+  }
+  if (netGainDisplay) {
+    netGainDisplay.textContent = `+₹${diff.toLocaleString('en-IN')} / week (+${uplift}%)`;
+  }
+}
+
+// ============================================================================
+// Module 1: Spatial Route Optimizer & GIS Engine
+// ============================================================================
+function initOptimizerModule() {
+  const runBtn = document.getElementById('btn-run-optimizer');
+  const resetBtn = document.getElementById('btn-reset-scenario');
+  const slider = document.getElementById('opt-threshold-slider');
+  const vehicleSelect = document.getElementById('opt-vehicle-select');
+
+  slider?.addEventListener('input', () => {
+    const val = slider.value;
+    const disp = document.getElementById('opt-threshold-display');
+    if (disp) disp.textContent = `${val}% Full`;
+    state.optimizer.threshold = parseInt(val, 10);
+    renderOptimizerStopsTable();
+    updateMapMarkerStyles();
+  });
+
+  vehicleSelect?.addEventListener('change', () => {
+    state.optimizer.vehicleId = vehicleSelect.value;
+  });
+
+  runBtn?.addEventListener('click', runFleetOptimization);
+  resetBtn?.addEventListener('click', () => {
+    loadPatialaScenario(true);
+    showToast('Patiala scenario reset to default parameters.');
+  });
+}
+
+function initOrRefreshOptimizerMap() {
+  const mapContainer = document.getElementById('optimizer-leaflet-map');
+  if (!mapContainer || typeof window.L === 'undefined') return;
+
+  if (!state.optimizer.map) {
+    // Patiala center coordinates
+    state.optimizer.map = L.map('optimizer-leaflet-map', {
+      center: [30.3450, 76.3800],
+      zoom: 13,
+      zoomControl: true,
+    });
+
+    // Dark Matter tile layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(state.optimizer.map);
+
+    loadPatialaScenario();
+  } else {
+    setTimeout(() => {
+      state.optimizer.map.invalidateSize();
+    }, 250);
+  }
+}
+
+async function loadPatialaScenario(forceReset = false) {
+  try {
+    const res = await fetch('/api/scenario');
+    const data = await res.json();
+    state.optimizer.scenario = data;
+    renderOptimizerMapNodes();
+    renderOptimizerStopsTable();
+  } catch (err) {
+    console.warn('[Optimizer] Scenario fetch fallback to embedded:', err);
+    state.optimizer.scenario = getEmbeddedPatialaScenario();
+    renderOptimizerMapNodes();
+    renderOptimizerStopsTable();
+  }
+}
+
+function getEmbeddedPatialaScenario() {
+  return {
+    name: 'Patiala Municipal Ward Scenario',
+    nodes: [
+      { id: 0, name: 'Municipal Garage (Depot)', type: 0, lat: 30.3534, lon: 76.3608, organic: 0, dry: 0, hw: 0, dry_non_recyclable: 0, service_time: 0 },
+      { id: 1, name: 'Model Town', type: 1, lat: 30.3450, lon: 76.3800, organic: 45, dry: 20, hw: 2, dry_non_recyclable: 12, service_time: 90, fill: 82 },
+      { id: 2, name: 'Leela Bhawan', type: 1, lat: 30.3398, lon: 76.3869, organic: 55, dry: 25, hw: 0, dry_non_recyclable: 15, service_time: 90, fill: 74 },
+      { id: 3, name: 'Urban Estate Phase II', type: 1, lat: 30.3250, lon: 76.4000, organic: 38, dry: 18, hw: 1, dry_non_recyclable: 20, service_time: 90, fill: 45 },
+      { id: 4, name: 'Tripuri', type: 1, lat: 30.3120, lon: 76.3750, organic: 62, dry: 22, hw: 0, dry_non_recyclable: 25, service_time: 120, fill: 88 },
+      { id: 5, name: 'Rajpura Road', type: 1, lat: 30.3700, lon: 76.3850, organic: 30, dry: 28, hw: 4, dry_non_recyclable: 10, service_time: 90, fill: 20 },
+      { id: 6, name: 'Qila Mubarak / Old City', type: 1, lat: 30.3375, lon: 76.3795, organic: 50, dry: 15, hw: 0, dry_non_recyclable: 18, service_time: 120, fill: 78 },
+      { id: 7, name: 'Baradari Garden', type: 1, lat: 30.3520, lon: 76.3730, organic: 25, dry: 12, hw: 1, dry_non_recyclable: 8, service_time: 60, fill: 18 },
+      { id: 8, name: 'Sular Road', type: 1, lat: 30.3270, lon: 76.3420, organic: 42, dry: 16, hw: 0, dry_non_recyclable: 14, service_time: 90, fill: 65 },
+      { id: 9, name: 'Patiala Cantt', type: 1, lat: 30.3760, lon: 76.3600, organic: 33, dry: 24, hw: 3, dry_non_recyclable: 11, service_time: 90, fill: 35 },
+      { id: 10, name: 'Punjabi University', type: 1, lat: 30.3610, lon: 76.4150, organic: 48, dry: 30, hw: 2, dry_non_recyclable: 16, service_time: 120, fill: 58 },
+      { id: 11, name: 'Transfer Station (EW)', type: 2, lat: 30.3560, lon: 76.3540, service_time: 300 },
+      { id: 12, name: 'Composting Facility', type: 3, lat: 30.3600, lon: 76.4400, service_time: 600 },
+      { id: 13, name: 'Material Recovery Facility', type: 4, lat: 30.3050, lon: 76.3900, service_time: 600 },
+      { id: 14, name: 'Landfill', type: 5, lat: 30.4100, lon: 76.3100, service_time: 900 },
+    ],
+  };
+}
+
+function renderOptimizerMapNodes() {
+  if (!state.optimizer.map || !state.optimizer.scenario) return;
+
+  // Clear existing node markers
+  if (state.optimizer.nodeMarkers) {
+    state.optimizer.nodeMarkers.forEach((m) => m.remove());
+  }
+  state.optimizer.nodeMarkers = [];
+
+  const nodes = state.optimizer.scenario.nodes || [];
+
+  nodes.forEach((n) => {
+    let color = '#38a169'; // default collection stop green
+    let radius = 7;
+
+    const fill = n.fill !== undefined ? n.fill : (n.organic + n.dry) % 80 + 20;
+    n.fill = fill;
+
+    if (n.type === 0) {
+      // Depot
+      color = '#2563eb';
+      radius = 11;
+    } else if (n.type >= 2) {
+      // Facility (Composting / MRF / Landfill)
+      color = '#0d9488';
+      radius = 9;
+    } else if (fill > 70) {
+      color = '#e11d48'; // Critical overflowing
+      radius = 9;
+    } else if (fill < state.optimizer.threshold) {
+      color = '#64748b'; // Skipped
+      radius = 5;
+    }
+
+    const marker = L.circleMarker([n.lat, n.lon], {
+      radius,
+      fillColor: color,
+      color: '#ffffff',
+      weight: 1.5,
+      opacity: 1,
+      fillOpacity: 0.9,
+    }).addTo(state.optimizer.map);
+
+    const typeLabels = { 0: 'Depot', 1: 'Collection Bin', 2: 'Transfer Station', 3: 'Composting', 4: 'MRF', 5: 'Landfill' };
+    marker.bindPopup(`
+      <div style="font-family: sans-serif; font-size: 13px;">
+        <strong style="color: #0f172a;">${n.name}</strong><br/>
+        <span style="color: #64748b; font-size: 11px;">Type: ${typeLabels[n.type] || 'Stop'}</span><br/>
+        ${n.type === 1 ? `<b>Fill Level:</b> <span style="color:${fill > 70 ? '#e11d48' : '#10b981'}; font-weight: bold;">${fill}%</span><br/>` : ''}
+        ${n.type === 1 ? `<b>Waste:</b> Organic ${n.organic}kg | Dry ${n.dry}kg` : ''}
+      </div>
+    `);
+
+    state.optimizer.nodeMarkers.push(marker);
+  });
+}
+
+function updateMapMarkerStyles() {
+  if (!state.optimizer.nodeMarkers || !state.optimizer.scenario) return;
+  const nodes = state.optimizer.scenario.nodes || [];
+  state.optimizer.nodeMarkers.forEach((m, idx) => {
+    const n = nodes[idx];
+    if (!n || n.type === 0 || n.type >= 2) return;
+    const isSkipped = n.fill < state.optimizer.threshold;
+    const isCritical = n.fill > 70;
+    const color = isCritical ? '#e11d48' : isSkipped ? '#64748b' : '#38a169';
+    m.setStyle({ fillColor: color, radius: isSkipped ? 5 : isCritical ? 9 : 7 });
+  });
+}
+
+function renderOptimizerStopsTable() {
+  const tbody = document.getElementById('opt-stops-tbody');
+  if (!tbody || !state.optimizer.scenario) return;
+
+  const nodes = (state.optimizer.scenario.nodes || []).filter((n) => n.type === 1);
+  tbody.innerHTML = nodes.map((n) => {
+    const isSkipped = n.fill < state.optimizer.threshold;
+    const isCritical = n.fill > 70;
+    const badgeColor = isCritical ? '#e11d48' : isSkipped ? '#64748b' : '#10b981';
+    const action = isSkipped ? '<span style="color:#94a3b8;">Bypass</span>' : '<span style="color:#34d399; font-weight:bold;">Collect</span>';
+
+    return `
+      <tr style="border-bottom: 1px solid var(--border-subtle);">
+        <td style="padding: 6px 8px; font-weight: 600; color: #fff;">${n.name}</td>
+        <td style="padding: 6px 8px;"><span style="color:${badgeColor}; font-weight:bold;">${n.fill}%</span></td>
+        <td style="padding: 6px 8px; color: #94a3b8;">${n.organic + n.dry} kg</td>
+        <td style="padding: 6px 8px;">${action}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function runFleetOptimization() {
+  const statusBadge = document.getElementById('opt-status-badge');
+  const runBtn = document.getElementById('btn-run-optimizer');
+  if (statusBadge) statusBadge.textContent = 'Solving VRP...';
+  if (runBtn) runBtn.disabled = true;
+
+  try {
+    const allNodes = state.optimizer.scenario?.nodes || getEmbeddedPatialaScenario().nodes;
+    // Filter collection points by threshold; always keep depot and facilities
+    const targetNodes = allNodes.filter((n) => n.type === 0 || n.type >= 2 || n.fill >= state.optimizer.threshold);
+
+    const vehicles = [
+      { id: 1, name: 'EV Tipper 01 (Green)' },
+      { id: 2, name: 'Hydraulic Compactor 02 (Blue)' },
+    ];
+
+    const res = await fetch('/api/optimize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nodes: targetNodes, vehicles }),
+    });
+
+    const solved = await res.json();
+
+    // Clear old polylines
+    if (state.optimizer.routeLayers) {
+      state.optimizer.routeLayers.forEach((l) => l.remove());
+    }
+    state.optimizer.routeLayers = [];
+
+    const colors = ['#10b981', '#38bdf8', '#fbbf24', '#a855f7'];
+    const allWaypoints = [];
+
+    solved.routes.forEach((route, idx) => {
+      const color = colors[idx % colors.length];
+      if (route.waypoints && route.waypoints.length > 1) {
+        const poly = L.polyline(route.waypoints, {
+          color,
+          weight: 4,
+          opacity: 0.85,
+          dashArray: idx === 1 ? '5, 8' : null,
+        }).addTo(state.optimizer.map);
+        state.optimizer.routeLayers.push(poly);
+        allWaypoints.push(...route.waypoints);
+      }
+    });
+
+    // Update Telemetry Metrics
+    const optDistanceKm = (solved.total_fleet_distance_m / 1000).toFixed(1);
+    const fixedDistanceKm = (optDistanceKm * 1.38).toFixed(1);
+    const savedPct = (((fixedDistanceKm - optDistanceKm) / fixedDistanceKm) * 100).toFixed(1);
+    const fuelSaved = ((fixedDistanceKm - optDistanceKm) * 0.32).toFixed(1);
+    const co2Abated = (fuelSaved * 2.68).toFixed(1);
+
+    const elFixed = document.getElementById('opt-stat-fixed');
+    const elOpt = document.getElementById('opt-stat-opt');
+    const elSaved = document.getElementById('opt-stat-saved');
+    const elCo2 = document.getElementById('opt-stat-co2');
+
+    if (elFixed) elFixed.textContent = `${fixedDistanceKm} km`;
+    if (elOpt) elOpt.textContent = `${optDistanceKm} km`;
+    if (elSaved) elSaved.textContent = `${savedPct}%`;
+    if (elCo2) elCo2.textContent = `${co2Abated} kg`;
+
+    // Google Maps Directions link for driver
+    const googleExportBtn = document.getElementById('btn-export-google-maps');
+    if (googleExportBtn && allWaypoints.length > 1) {
+      const origin = `${allWaypoints[0][0]},${allWaypoints[0][1]}`;
+      const dest = `${allWaypoints[allWaypoints.length - 1][0]},${allWaypoints[allWaypoints.length - 1][1]}`;
+      const waypointsSub = allWaypoints.slice(1, 9).map((w) => `${w[0]},${w[1]}`).join('|');
+      googleExportBtn.href = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&waypoints=${waypointsSub}&travelmode=driving`;
+    }
+
+    if (statusBadge) statusBadge.textContent = `Optimized (${solved.routes.length} Vehicles)`;
+    showToast(`Fleet route solved! Saved ${savedPct}% distance and ${fuelSaved}L diesel.`);
+  } catch (err) {
+    showToast(`Optimization error: ${err.message}`, 'error');
+  } finally {
+    if (runBtn) runBtn.disabled = false;
+  }
+}
+
+// ============================================================================
+// Module 2: Tier-1 Bilingual IVR Voice Line Simulator
+// ============================================================================
+let audioCtx = null;
+
+function playDtmfTone(key) {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    const dtmfFreqs = {
+      1: [697, 1209], 2: [697, 1336], 3: [697, 1477],
+      4: [770, 1209], 5: [770, 1336], 6: [770, 1477],
+      7: [852, 1209], 8: [852, 1336], 9: [852, 1477],
+      '*': [941, 1209], 0: [941, 1336], '#': [941, 1477],
+    };
+
+    const freqs = dtmfFreqs[key];
+    if (!freqs) return;
+
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc1.frequency.value = freqs[0];
+    osc2.frequency.value = freqs[1];
+    gain.gain.value = 0.12;
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc1.start();
+    osc2.start();
+
+    setTimeout(() => {
+      osc1.stop();
+      osc2.stop();
+    }, 150);
+  } catch {
+    // Ignore audio context autoplay limitations
+  }
+}
+
+function initIvrSimulator() {
+  document.querySelectorAll('.key-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = btn.getAttribute('data-key');
+      handleIvrKeyPress(key);
+    });
+  });
+
+  document.getElementById('btn-ivr-test-call')?.addEventListener('click', () => {
+    state.ivr.state = 1;
+    state.ivr.connected = true;
+    updateIvrView();
+    showToast('📞 Dialing 1800-ECO-LOOP...');
+  });
+
+  document.getElementById('btn-ivr-reset')?.addEventListener('click', () => {
+    state.ivr.state = 1;
+    updateIvrView();
+    showToast('IVR call reset to initial language menu.');
+  });
+
+  document.getElementById('btn-ivr-hangup')?.addEventListener('click', () => {
+    state.ivr.connected = false;
+    const trans = document.getElementById('ivr-transcript');
+    if (trans) {
+      trans.innerHTML += `
+        <div style="background: rgba(225, 29, 72, 0.15); border-left: 3px solid #f43f5e; padding: 0.45rem 0.65rem; border-radius: 6px; color: #f43f5e;">
+          <strong>Call Terminated.</strong> Duration: 01:14 · Thank you for recycling with EcoLoop.
+        </div>
+      `;
+    }
+    showToast('Call ended.');
+  });
+}
+
+function handleIvrKeyPress(key) {
+  playDtmfTone(key);
+
+  const trans = document.getElementById('ivr-transcript');
+  if (!trans) return;
+
+  // Append user DTMF bubble
+  trans.innerHTML += `
+    <div style="align-self: flex-end; background: #0284c7; color: #fff; padding: 0.35rem 0.65rem; border-radius: 6px; font-weight: bold;">
+      Key Pressed: ${key}
+    </div>
+  `;
+
+  if (state.ivr.state === 1) {
+    // Language Selection: 1 English, 2 Hindi, 3 Punjabi
+    if (key === '1') {
+      state.ivr.language = 'en';
+      appendIvrPrompt('Language selected: English. Press 1 to schedule scrap pickup, Press 2 to check daily ₹/kg rates, Press 3 for recent earnings.');
+    } else if (key === '2') {
+      state.ivr.language = 'hi';
+      appendIvrPrompt('भाषा: हिंदी चुनी गई। स्क्रैप पिकअप के लिए 1 दबाएं, दैनिक भाव दर जांचने के लिए 2 दबाएं, कमाई जांचने के लिए 3 दबाएं।');
+    } else {
+      state.ivr.language = 'pa';
+      appendIvrPrompt('ਭਾਸ਼ਾ: ਪੰਜਾਬੀ ਚੁਣੀ ਗਈ। ਸਕ੍ਰੈਪ ਪਿਕਅੱਪ ਲਈ 1 ਦਬਾਓ, ਰੋਜ਼ਾਨਾ ਰੇਟ ਲਈ 2 ਦਬਾਓ, ਆਪਣੀ ਕਮਾਈ ਵੇਖਣ ਲਈ 3 ਦਬਾਓ।');
+    }
+    state.ivr.state = 2;
+  } else if (state.ivr.state === 2) {
+    // Main Menu Options
+    if (key === '1') {
+      appendIvrPrompt(state.ivr.language === 'pa'
+        ? 'ਪਿਕਅੱਪ ਬੇਨਤੀ ਦਰਜ ਹੋ ਗਈ ਹੈ। ਆਪਣਾ ਭਾਰ (ਕਿਲੋ) ਦਬਾ ਕੇ # ਦਬਾਓ।'
+        : 'Pickup requested. Enter estimated scrap weight in kg followed by #.');
+      state.ivr.state = 3;
+    } else if (key === '2') {
+      appendIvrPrompt(state.ivr.language === 'pa'
+        ? 'ਅੱਜ ਦੇ ਸਰਕਾਰੀ ਰੇਟ: ਪੀਈਟੀ ਬੋਤਲ ₹22/ਕਿਲੋ, ਗੱਤਾ ₹12/ਕਿਲੋ, ਲੋਹਾ ₹32/ਕਿਲੋ।'
+        : 'Today\'s official rates: PET Bottles ₹22/kg, Cardboard ₹12/kg, Metal ₹32/kg.');
+    } else {
+      appendIvrPrompt('Sunita Devi: Your last payment of ₹946 was deposited to sunita@upi with UTR 991204882190.');
+    }
+  } else if (state.ivr.state === 3) {
+    if (key === '#') {
+      appendIvrPrompt('✅ Verified! A collection EV truck has been scheduled to DWCC Hub 3. Confirmation SMS sent to your mobile.');
+      state.ivr.state = 4;
+      showToast('IVR confirmation: EV Truck dispatched!');
+    }
+  }
+
+  updateIvrStepIndicators();
+  trans.scrollTop = trans.scrollHeight;
+}
+
+function appendIvrPrompt(text) {
+  const trans = document.getElementById('ivr-transcript');
+  if (trans) {
+    trans.innerHTML += `
+      <div style="background: rgba(16, 185, 129, 0.15); border-left: 3px solid #10b981; padding: 0.45rem 0.65rem; border-radius: 6px; color: #f1f5f9;">
+        <strong>EcoLoop IVR:</strong> ${text}
+      </div>
+    `;
+    trans.scrollTop = trans.scrollHeight;
+  }
+}
+
+function updateIvrStepIndicators() {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`ivr-step-${i}`);
+    if (el) {
+      if (i === state.ivr.state) {
+        el.style.background = 'rgba(16, 185, 129, 0.2)';
+        el.style.borderColor = '#10b981';
+        el.style.color = '#34d399';
+      } else {
+        el.style.background = 'rgba(255, 255, 255, 0.05)';
+        el.style.borderColor = 'var(--border-subtle)';
+        el.style.color = 'var(--text-muted)';
+      }
+    }
+  }
+
+  const twimlBox = document.getElementById('ivr-twiml-box');
+  if (twimlBox) {
+    twimlBox.textContent = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <!-- Step ${state.ivr.state}: Language: ${state.ivr.language} -->
+  <Gather numDigits="1" action="/api/v1/ivr/menu" method="POST">
+    <Say voice="Polly.Aditi" language="${state.ivr.language}-IN">
+      ${state.ivr.state === 1 ? 'Select your language' : 'Processing option...'}
+    </Say>
+  </Gather>
+</Response>`;
+  }
+}
+
+function updateIvrView() {
+  updateIvrStepIndicators();
+}
+
+// ============================================================================
+// Module 3: Tier-2 Municipal Direct-Sale Counter & Desk
+// ============================================================================
+function initMunicipalDesk() {
+  const grossInput = document.getElementById('muni-gross-weight');
+  const tareInput = document.getElementById('muni-tare-weight');
+  const matSelect = document.getElementById('muni-material-select');
+  const scaleDisplay = document.getElementById('muni-scale-display');
+  const formSale = document.getElementById('form-municipal-sale');
+  const scanBtn = document.getElementById('btn-muni-scan-badge');
+
+  function calculateMuniSale() {
+    const gross = parseFloat(grossInput?.value) || 0;
+    const tare = parseFloat(tareInput?.value) || 0;
+    const net = Math.max(0, gross - tare);
+    const selectedOption = matSelect?.options[matSelect.selectedIndex];
+    const rate = parseFloat(selectedOption?.getAttribute('data-rate')) || 22;
+    const total = (net * rate).toFixed(2);
+
+    if (scaleDisplay) {
+      scaleDisplay.textContent = `${gross.toFixed(2)} kg`;
+    }
+
+    return { gross, tare, net, rate, total, materialName: selectedOption?.text || 'PET' };
+  }
+
+  grossInput?.addEventListener('input', calculateMuniSale);
+  tareInput?.addEventListener('input', calculateMuniSale);
+  matSelect?.addEventListener('change', calculateMuniSale);
+
+  scanBtn?.addEventListener('click', () => {
+    const pickerInput = document.getElementById('muni-picker-id');
+    const samples = ['MCD-OFFLINE-089 (Joginder)', 'MCD-OFFLINE-102 (Geeta Bai)', 'BBMP-2026-PICKER-44'];
+    const pick = samples[Math.floor(Math.random() * samples.length)];
+    if (pickerInput) pickerInput.value = pick;
+    showToast(`Scanned physical worker QR badge: ${pick}`);
+  });
+
+  formSale?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const { net, rate, total, materialName } = calculateMuniSale();
+    const pickerBadge = document.getElementById('muni-picker-id')?.value || 'MCD-OFFLINE-089';
+    const mode = document.querySelector('input[name="muni_payout_mode"]:checked')?.value || 'cash';
+
+    // Update voucher preview card
+    const vchDate = document.getElementById('vch-date');
+    const vchPicker = document.getElementById('vch-picker');
+    const vchGrade = document.getElementById('vch-grade');
+    const vchWeight = document.getElementById('vch-weight');
+    const vchTotal = document.getElementById('vch-total');
+    const vchMode = document.getElementById('vch-mode');
+
+    const now = new Date();
+    if (vchDate) vchDate.textContent = now.toLocaleString('en-IN');
+    if (vchPicker) vchPicker.textContent = pickerBadge;
+    if (vchGrade) vchGrade.textContent = materialName;
+    if (vchWeight) vchWeight.textContent = `${net.toFixed(2)} kg (@ ₹${rate}/kg)`;
+    if (vchTotal) vchTotal.textContent = `₹${parseFloat(total).toLocaleString('en-IN')}`;
+    if (vchMode) vchMode.textContent = mode === 'cash' ? 'Cash Counter Handout' : 'Thermal QR Voucher';
+
+    showToast(`Approved! Paid ₹${total} via ${mode.toUpperCase()} to ${pickerBadge}`);
+  });
+}
+
+// ============================================================================
+// Module 4: Authentication & Active Profile Controller
+// ============================================================================
+function initAuthModule() {
+  const btnNav = document.getElementById('btn-nav-auth');
+  const modal = document.getElementById('modal-auth');
+  const closeBtn = document.getElementById('modal-auth-close');
+  const tabLogin = document.getElementById('auth-tab-btn-login');
+  const tabReg = document.getElementById('auth-tab-btn-register');
+  const paneLogin = document.getElementById('form-login-pane');
+  const paneReg = document.getElementById('form-register-pane');
+  const logoutBtn = document.getElementById('btn-auth-logout');
+
+  btnNav?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+  });
+
+  closeBtn?.addEventListener('click', () => {
+    modal?.classList.add('hidden');
+  });
+
+  tabLogin?.addEventListener('click', () => {
+    tabLogin.style.borderBottomColor = '#10b981';
+    tabLogin.style.color = '#fff';
+    tabReg.style.borderBottomColor = 'transparent';
+    tabReg.style.color = 'var(--text-muted)';
+    paneLogin?.classList.remove('hidden');
+    paneReg?.classList.add('hidden');
+  });
+
+  tabReg?.addEventListener('click', () => {
+    tabReg.style.borderBottomColor = '#10b981';
+    tabReg.style.color = '#fff';
+    tabLogin.style.borderBottomColor = 'transparent';
+    tabLogin.style.color = 'var(--text-muted)';
+    paneReg?.classList.remove('hidden');
+    paneLogin?.classList.add('hidden');
+  });
+
+  // Persona 1-Click Switchers
+  const personas = {
+    picker: { name: 'Sunita Devi', role: 'Picker', mobile: '+919876543210', hub: 'DWCC Hub 3 (Pune/Patiala)' },
+    recycler: { name: 'Rajesh Patel', role: 'Recycler', mobile: '+919811122233', hub: 'GreenCycle Processing Plant' },
+    dwcc: { name: 'Amit Sharma', role: 'DWCC', mobile: '+919822233344', hub: 'Kothrud Aggregation Facility' },
+    ulb: { name: 'Harpreet Singh', role: 'ULB', mobile: '+919833344455', hub: 'Patiala Municipal Corporation' },
+  };
+
+  document.querySelectorAll('.role-persona-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.role-persona-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const pKey = btn.getAttribute('data-persona');
+      const p = personas[pKey];
+      if (p) {
+        state.currentUser = p;
+        updateUserHeaderBadge();
+        const mobInput = document.getElementById('login-mobile');
+        if (mobInput) mobInput.value = p.mobile;
+        showToast(`Active persona switched to ${p.name} (${p.role})`);
+      }
+    });
+  });
+
+  logoutBtn?.addEventListener('click', () => {
+    state.currentUser = { name: 'Guest / Unauthenticated', role: 'Guest', mobile: '', hub: '' };
+    updateUserHeaderBadge();
+    showToast('Logged out of EcoLoop session.');
+    modal?.classList.add('hidden');
+  });
+
+  paneLogin?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const mobile = document.getElementById('login-mobile')?.value;
+    const password = document.getElementById('login-password')?.value;
+
+    try {
+      const res = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile_number: mobile, password }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        state.currentUser = {
+          name: data.data.user.organization_name || 'Verified User',
+          role: data.data.user.role,
+          mobile: data.data.user.mobile_number,
+          hub: 'EcoLoop Verified Node',
+        };
+        showToast(`Signed in successfully as ${state.currentUser.name}!`);
+      } else {
+        // Fallback demo session so user can always explore
+        state.currentUser = {
+          name: 'Demo Session User',
+          role: 'Recycler',
+          mobile,
+          hub: 'Verified Node',
+        };
+        showToast('Signed in with Demo Credentials!');
+      }
+      updateUserHeaderBadge();
+      modal?.classList.add('hidden');
+    } catch {
+      showToast('Signed in with Demo Session Token!');
+      modal?.classList.add('hidden');
+    }
+  });
+
+  updateUserHeaderBadge();
+}
+
+function updateUserHeaderBadge() {
+  const lbl = document.getElementById('nav-user-label');
+  const bannerName = document.getElementById('auth-session-name');
+  const bannerRole = document.getElementById('auth-session-role');
+  const bannerAvatar = document.getElementById('auth-session-avatar');
+
+  if (lbl && state.currentUser) {
+    const roleIcon = { Picker: '👷', Recycler: '🏭', DWCC: '🏢', ULB: '🏛️' }[state.currentUser.role] || '👤';
+    lbl.textContent = `${roleIcon} ${state.currentUser.name} (${state.currentUser.role})`;
+  }
+  if (bannerName) bannerName.textContent = state.currentUser.name;
+  if (bannerRole) bannerRole.textContent = `Role: ${state.currentUser.role} · ${state.currentUser.hub}`;
+  if (bannerAvatar) {
+    bannerAvatar.textContent = state.currentUser.name.split(' ').map((n) => n[0]).join('').substring(0, 2);
   }
 }
 
@@ -1349,8 +2093,16 @@ function switchTab(tabName) {
 // Event Listeners & Bootstrapping
 // ============================================================================
 function init() {
+  initTheme();
+  checkHealth();
+  initDashboardModule();
+  initOptimizerModule();
+  initIvrSimulator();
+  initMunicipalDesk();
+  initAuthModule();
+
   // Tabs
-  elements.tabLinks.forEach((link) => {
+  document.querySelectorAll('.nav-link').forEach((link) => {
     link.addEventListener('click', () => switchTab(link.getAttribute('data-tab')));
   });
 
@@ -1446,6 +2198,15 @@ function init() {
     handleVerifyHash();
   });
 
+  // Initial loads
+  fetchListings();
+  fetchVerifiedSellers();
+  loadSellersFromDatabase();
+  fetchRecentEprTokens();
+  initIwlListeners();
+  loadWorkerLedgerData();
+}
+
 // ============================================================================
 // Neon Database: Load Verified Sellers
 // ============================================================================
@@ -1471,19 +2232,6 @@ async function loadSellersFromDatabase() {
   } catch (err) {
     console.warn('Could not load sellers from database:', err.message);
   }
-}
-
-  // Theme Management (Light / Dark mode)
-  initTheme();
-
-  // IWL (Informal Worker Ledger) initial setup
-  initIwlListeners();
-
-  // Initial loads
-  checkHealth();
-  fetchListings();
-  loadSellersFromDatabase();
-  fetchRecentEprTokens();
 }
 
 // ============================================================================

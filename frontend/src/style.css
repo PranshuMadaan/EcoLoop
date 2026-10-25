@@ -1159,3 +1159,536 @@ body {
   color: var(--emerald-400);
 }
 
+/* ============================================================================
+   Unified Modular Navigation & Dashboard Extensions
+   ============================================================================ */
+
+/* Executive Dashboard Command Center */
+.dashboard-hero-card {
+  background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+              var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-hero-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .dashboard-hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.closed-loop-wrapper {
+  background: rgba(10, 14, 23, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spin-orbit {
+  transform-origin: 200px 200px;
+  animation: spinSlow 50s linear infinite;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Macro Stat Cards */
+.macro-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .macro-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .macro-stats-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.macro-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.4rem;
+  transition: var(--transition);
+}
+
+.macro-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: var(--shadow-glow);
+}
+
+.macro-stat-card .val {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--emerald-400);
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.macro-stat-card .lbl {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Modular Jump Grid */
+.module-jump-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+  .module-jump-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .module-jump-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.module-jump-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.module-jump-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.5), var(--shadow-glow);
+}
+
+.module-jump-card .mod-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.mod-badge.live { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+.mod-badge.tier1 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+.mod-badge.tier2 { background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); }
+.mod-badge.engine { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+
+.module-jump-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+  color: #fff;
+}
+
+.module-jump-card p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+}
+
+.module-jump-card .tech-stack {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: monospace;
+  margin-bottom: 1.25rem;
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: 0.75rem;
+}
+
+/* Payday Interactive Economics Calculator */
+.calc-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (max-width: 860px) {
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payday-bar-wrapper {
+  margin-bottom: 1.25rem;
+}
+
+.payday-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 0.45rem;
+}
+
+.payday-bar-track {
+  height: 44px;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  position: relative;
+}
+
+.payday-bar-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  font-weight: 700;
+  color: #fff;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+.payday-bar-fill.middleman {
+  background: linear-gradient(90deg, #f43f5e, #e11d48);
+}
+
+.payday-bar-fill.ecoloop {
+  background: linear-gradient(90deg, #10b981, #059669);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Four Stream SWM Rules 2026 Grid */
+.four-stream-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 900px) {
+  .four-stream-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .four-stream-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stream-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  border-left: 4px solid #10b981;
+  border-top: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.stream-card.wet { border-left-color: #10b981; }
+.stream-card.dry { border-left-color: #38bdf8; }
+.stream-card.sanitary { border-left-color: #f59e0b; }
+.stream-card.hazardous { border-left-color: #ec4899; }
+
+/* ============================================================================
+   Route Optimizer Styles
+   ============================================================================ */
+.optimizer-layout {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .optimizer-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.optimizer-map-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+#optimizer-leaflet-map {
+  width: 100%;
+  height: 480px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: #0f172a;
+}
+
+.optimizer-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.opt-stat {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+}
+
+.opt-stat .k {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+}
+
+.opt-stat .v {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ============================================================================
+   Tier-1 IVR Simulator Styles
+   ============================================================================ */
+.ivr-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .ivr-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.phone-mockup {
+  background: #0a0f1d;
+  border: 10px solid #1e293b;
+  border-radius: 40px;
+  padding: 1.25rem 1rem 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 30px rgba(16, 185, 129, 0.1);
+  position: relative;
+}
+
+.phone-notch {
+  width: 120px;
+  height: 18px;
+  background: #1e293b;
+  border-radius: 0 0 12px 12px;
+  margin: -1.25rem auto 1rem;
+}
+
+.phone-screen {
+  background: rgba(15, 23, 42, 0.95);
+  border-radius: 24px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.key-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  color: #fff;
+  height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.key-btn:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  transform: scale(1.05);
+}
+
+.key-btn:active {
+  transform: scale(0.95);
+}
+
+.key-btn small {
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ============================================================================
+   Tier-2 Municipal Direct-Sale Counter Styles
+   ============================================================================ */
+.municipal-desk-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.75rem;
+}
+
+@media (max-width: 900px) {
+  .municipal-desk-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.weighbridge-scale-box {
+  background: #020617;
+  border: 2px solid #059669;
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: center;
+  margin-bottom: 1.25rem;
+  box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.weighbridge-scale-box .disp {
+  font-family: monospace;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.05em;
+}
+
+.voucher-preview-card {
+  background: #fff;
+  color: #0f172a;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  border: 2px dashed #0f172a;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+[data-theme="light"] .voucher-preview-card {
+  background: #f8fafc;
+  border-color: #475569;
+}
+
+/* ============================================================================
+   Authentication Modal & Profile Switcher
+   ============================================================================ */
+.role-persona-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 500px) {
+  .role-persona-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.role-persona-btn {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-main);
+}
+
+.role-persona-btn:hover, .role-persona-btn.active {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--emerald-400);
+}
+
+.role-persona-btn b {
+  display: block;
+  font-size: 0.92rem;
+  color: #fff;
+}
+
+.role-persona-btn span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.user-nav-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #34d399;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.user-nav-chip:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #34d399;
+}
+
+

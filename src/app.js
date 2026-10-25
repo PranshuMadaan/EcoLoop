@@ -14,6 +14,7 @@ import iwlRoutes from './routes/iwlRoutes.js';
 import marketplaceRoutes from './routes/marketplaceRoutes.js';
 import ivrRoutes from './routes/ivrRoutes.js';
 import municipalRoutes from './routes/municipalRoutes.js';
+import optimizerRoutes from './routes/optimizerRoutes.js';
 import { pingDatabase } from './config/db.js';
 import { errorHandler, AppError } from './middleware/errorHandler.js';
 
@@ -130,6 +131,9 @@ app.use('/api/v1/iwl', iwlRoutes);
 app.use('/api/v1/marketplace', marketplaceRoutes);
 app.use('/api/v1/ivr', ivrRoutes);
 app.use('/api/v1/municipal', municipalRoutes);
+app.use('/api/v1/optimizer', optimizerRoutes);
+app.use('/api/v1', optimizerRoutes);
+app.use('/api', optimizerRoutes);
 
 // SPA client-side fallback: serve index.html for non-API GET requests
 app.get('*', (req, res, next) => {

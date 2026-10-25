@@ -7,6 +7,18 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   root: __dirname,
+  esbuild: {
+    jsx: 'automatic',
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react/jsx-runtime', 'axios'],
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '../src'),
+      src: path.resolve(__dirname, '../src'),
+    },
+  },
   server: {
     port: 3000,
     proxy: {

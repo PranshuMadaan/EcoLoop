@@ -5,7 +5,19 @@ import { AppError } from '../middleware/errorHandler.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ecoloop_default_dev_jwt_secret_key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-const VALID_ROLES = ['Picker', 'DWCC', 'Recycler', 'ULB'];
+const ROLE_MAP = {
+  ULB_OFFICIAL: 'ULB',
+  DWCC_OPERATOR: 'DWCC',
+  RECYCLER: 'Recycler',
+  WASTE_PICKER: 'Picker',
+  CITIZEN_HOUSEHOLD: 'Picker',
+  CITIZEN: 'Picker',
+  Picker: 'Picker',
+  DWCC: 'DWCC',
+  Recycler: 'Recycler',
+  ULB: 'ULB',
+};
+const VALID_ROLES = Object.keys(ROLE_MAP);
 const MOBILE_REGEX = /^\+?[0-9]{10,15}$/;
 
 /**
@@ -359,8 +371,9 @@ export const register = async (req, res, next) => {
       RETURNING user_id, role, mobile_number, upi_vpa, organization_name, cpcb_reg_number, upi_vpa_status, upi_bank_account_holder, verification_status, created_at;
     `;
 
+    const dbRole = ROLE_MAP[role] || 'Picker';
     const result = await query(insertSql, [
-      role,
+      dbRole,
       trimmedMobile,
       passwordHash,
       cleanUpi,
