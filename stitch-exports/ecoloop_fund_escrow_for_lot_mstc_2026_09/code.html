@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-surface" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fund Escrow | EcoLoop Municipal &amp; Industrial Scrap Auctions</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error-container": "#93000a",
+            "on-primary-container": "#93e0a2",
+            "on-secondary-fixed-variant": "#6e3900",
+            "primary": "#004c22",
+            "surface-container-low": "#fcf2eb",
+            "on-secondary-fixed": "#2f1500",
+            "on-background": "#1f1b17",
+            "on-surface": "#1f1b17",
+            "tertiary-fixed-dim": "#62df7d",
+            "outline-variant": "#bfc9bd",
+            "secondary-fixed": "#ffdcc3",
+            "secondary": "#904d00",
+            "primary-container": "#166534",
+            "surface-container-lowest": "#ffffff",
+            "outline": "#707a6f",
+            "on-tertiary-container": "#6ae784",
+            "on-surface-variant": "#404940",
+            "on-primary": "#ffffff",
+            "on-secondary-container": "#663500",
+            "tertiary-fixed": "#7ffc97",
+            "on-secondary": "#ffffff",
+            "surface-tint": "#1f6c3a",
+            "inverse-primary": "#8bd79b",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "surface": "#fff8f5",
+            "inverse-surface": "#342f2b",
+            "on-primary-fixed": "#00210b",
+            "background": "#fff8f5",
+            "on-primary-fixed-variant": "#005226",
+            "surface-container": "#f6ece6",
+            "primary-fixed": "#a6f4b5",
+            "on-tertiary-fixed": "#002109",
+            "primary-fixed-dim": "#8bd79b",
+            "on-tertiary-fixed-variant": "#005320",
+            "on-error": "#ffffff",
+            "surface-bright": "#fff8f5",
+            "surface-dim": "#e2d8d2",
+            "secondary-container": "#fe932c",
+            "tertiary": "#004b1d",
+            "tertiary-container": "#00662a",
+            "surface-variant": "#eae1da",
+            "surface-container-highest": "#eae1da",
+            "inverse-on-surface": "#f9efe8",
+            "secondary-fixed-dim": "#ffb77d",
+            "surface-container-high": "#f0e6e0",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "margin": "1rem",
+            "margin-desktop": "2rem",
+            "gutter-desktop": "1.5rem",
+            "space-md": "0.75rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "space-xl": "1.75rem"
+          },
+          "fontFamily": {
+            "data-tabular": ["Inter", "sans-serif"],
+            "data-metric": ["Inter", "sans-serif"],
+            "code-hash": ["JetBrains Mono", "monospace"],
+            "label-caps": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-xl": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    }
+    .custom-card-shadow {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+  </style>
+</head>
+<body class="min-h-full bg-[#FAFAF9] text-on-surface antialiased flex flex-col font-body-md text-body-md">
+<!-- TOP NAVIGATION BAR (Shared Component Anchor) -->
+<header class="sticky top-0 z-50 h-14 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-margin-desktop shadow-sm">
+<div class="flex items-center gap-space-lg">
+<!-- EcoLoop Brand Mark -->
+<a class="flex items-center gap-space-sm text-primary" href="#">
+<span class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold">
+<span class="material-symbols-outlined fill-icon text-[20px]" data-icon="eco">eco</span>
+</span>
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">EcoLoop</span>
+</a>
+<!-- Primary Navigation Links -->
+<nav class="hidden md:flex items-center gap-6 ml-4">
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors" href="#">Auctions</a>
+<a class="text-primary font-headline-sm text-body-md font-semibold border-b-2 border-primary pb-1" href="#">Settlements</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors" href="#">EPR Compliance</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors" href="#">Facility Registry</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface transition-colors" href="#">Audit Logs</a>
+</nav>
+</div>
+<!-- Trailing Actions & Organization Chip -->
+<div class="flex items-center gap-space-md">
+<!-- Live Webhook / API Beacon -->
+<div class="hidden sm:flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-[#F0FDF4] border border-[#BBF7D0]">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary-container tracking-wider">API LIVE</span>
+</div>
+<!-- Action Button -->
+<button class="hidden sm:inline-flex items-center gap-space-xs px-3 py-1.5 text-body-sm font-body-sm font-medium text-on-surface bg-surface-container-lowest border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="add_circle">add_circle</span>
+        Post Scrap Lot
+      </button>
+<!-- Facility / Recycler Chip -->
+<div class="flex items-center gap-2 pl-2 border-l border-outline-variant">
+<div class="flex items-center gap-space-sm bg-[#FAFAF9] border border-outline-variant rounded-lg px-2.5 py-1">
+<div class="w-6 h-6 rounded bg-primary text-on-primary flex items-center justify-center text-xs font-bold font-label-caps">
+            AR
+          </div>
+<div class="flex flex-col text-left">
+<div class="flex items-center gap-1">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface leading-tight">Attero Recycling</span>
+<span class="material-symbols-outlined fill-icon text-[#166534] text-[14px]" data-icon="verified">verified</span>
+</div>
+<span class="font-label-caps text-[10px] text-outline tracking-wider">CPCB-REG-0941</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[16px] ml-1" data-icon="unfold_more">unfold_more</span>
+</div>
+</div>
+</div>
+</header>
+<!-- BREADCRUMB & REGULATORY CUSTODY SUBHEADER -->
+<div class="bg-surface-container-lowest border-b border-outline-variant py-2.5 px-margin-desktop">
+<div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-space-sm">
+<!-- Breadcrumb Hierarchy -->
+<div class="flex items-center gap-2 font-body-sm text-body-sm">
+<a class="text-outline hover:text-on-surface transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="gavel">gavel</span>
+          Live Auctions
+        </a>
+<span class="text-outline">/</span>
+<a class="text-outline hover:text-on-surface transition-colors font-code-hash text-[11px]" href="#">
+          PET Flakes Lot MSTC-2026-09
+        </a>
+<span class="text-outline">/</span>
+<span class="font-semibold text-on-surface flex items-center gap-1">
+          Fund Escrow
+        </span>
+</div>
+<!-- Right Metadata Protocol Info -->
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1 text-primary-container bg-[#F0FDF4] border border-[#BBF7D0] px-2.5 py-0.5 rounded-full">
+<span class="material-symbols-outlined fill-icon text-[14px]" data-icon="verified_user">verified_user</span>
+<span class="font-label-caps text-label-caps tracking-wider">Escrow Custody: RBI/CPCB Regulated Node</span>
+</div>
+<span class="hidden md:inline text-outline text-xs">|</span>
+<span class="hidden md:inline font-code-hash text-[11px] text-outline">PROTOCOL-V4.2.0</span>
+</div>
+</div>
+</div>
+<!-- MAIN CANVAS: FOCUSED ESCROW CHECKOUT -->
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-8 flex flex-col items-center justify-start">
+<!-- Centered Card Container (Max Width 640px) -->
+<div class="w-full max-w-[640px] bg-surface-container-lowest border border-outline-variant rounded-xl custom-card-shadow overflow-hidden">
+<!-- Card Header -->
+<div class="p-space-lg border-b border-[#F5F5F4]">
+<div class="flex items-start justify-between gap-4">
+<div>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] font-label-caps text-label-caps mb-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span>
+              AUCTION BID GUARANTEE
+            </div>
+<h1 class="font-headline-lg text-headline-lg tracking-tight text-on-surface">
+              Fund escrow for Lot MSTC-2026-09
+            </h1>
+<p class="mt-1 text-body-md text-on-surface-variant">
+              Deposit <span class="font-semibold text-on-surface">₹4,45,000</span> to the EcoLoop escrow account. Funds are released to the seller only when you win.
+            </p>
+</div>
+</div>
+<!-- CPCB / Escrow Safety Guarantee Chip -->
+<div class="mt-4 flex items-start gap-2.5 p-3 rounded-lg bg-[#FAFAF9] border border-outline-variant">
+<span class="material-symbols-outlined text-[#166534] text-[20px] shrink-0 mt-0.5" data-icon="security">security</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Funds held in nodal clearing escrow until gate-pass generation &amp; assay confirmation. 100% refunded within 4 hours if bid outmatched.
+          </p>
+</div>
+</div>
+<!-- Payment Method Segmented Tabs -->
+<div class="px-space-lg pt-4 bg-[#FAFAF9] border-b border-[#E7E5E4]">
+<div class="flex border-b border-[#E7E5E4] -mb-[1px]">
+<!-- Active Tab: UPI Intent -->
+<button class="flex-1 py-3 px-4 text-center border-b-2 border-primary-container text-primary-container font-headline-sm text-body-md font-semibold flex items-center justify-center gap-2 bg-surface-container-lowest rounded-t-lg" type="button">
+<span class="material-symbols-outlined fill-icon text-[18px]" data-icon="mobile_friendly">mobile_friendly</span>
+            UPI Intent
+            <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</button>
+<!-- Inactive Tab: Scan QR -->
+<button class="flex-1 py-3 px-4 text-center text-outline font-body-md text-body-md hover:text-on-surface flex items-center justify-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="qr_code_scanner">qr_code_scanner</span>
+            Scan QR
+          </button>
+<!-- Inactive Tab: Bank Transfer -->
+<button class="flex-1 py-3 px-4 text-center text-outline font-body-md text-body-md hover:text-on-surface flex items-center justify-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="account_balance">account_balance</span>
+            Bank Transfer (RTGS)
+          </button>
+</div>
+</div>
+<!-- Active Content: UPI Intent Panel -->
+<div class="p-space-lg space-y-6">
+<!-- Total Escrow Amount Highlight Box -->
+<div class="text-center py-4 bg-[#FAFAF9] rounded-xl border border-outline-variant">
+<span class="font-label-caps text-label-caps text-outline tracking-wider uppercase">Total Escrow Amount</span>
+<div class="mt-1 font-data-metric text-[36px] sm:text-[40px] leading-tight font-bold text-on-surface tabular-nums">
+            ₹4,45,000.00
+          </div>
+<span class="inline-block mt-1 font-body-sm text-body-sm text-outline">
+            100% Backed Deposit for 18.5 Metric Tonnes PET Flakes
+          </span>
+</div>
+<!-- Green-Tinted Payment Reference Card -->
+<div class="p-4 rounded-lg bg-[#F0FDF4] border border-[#BBF7D0] relative">
+<div class="flex items-start justify-between gap-2">
+<div>
+<span class="font-label-caps text-label-caps text-[#166534] tracking-wider uppercase block mb-1">
+                Payment Reference Number
+              </span>
+<div class="flex items-center gap-2">
+<span class="font-code-hash text-headline-sm text-[#004c22] font-bold tracking-wide" id="ref-number">
+                  ECOP1A2B3C4D5E
+                </span>
+<!-- Interactive Copy Button -->
+<button class="p-1 rounded hover:bg-[#DCFCE7] text-[#166534] transition-colors flex items-center justify-center" onclick="copyRefCode()" title="Copy Reference Code" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy" id="copy-icon">content_copy</span>
+</button>
+<span class="hidden font-body-sm text-xs bg-[#166534] text-white px-2 py-0.5 rounded shadow-sm" id="copy-toast">
+                  Copied!
+                </span>
+</div>
+</div>
+<span class="material-symbols-outlined fill-icon text-[#166534] text-[24px]" data-icon="verified">verified</span>
+</div>
+<div class="mt-3 pt-2.5 border-t border-[#DCFCE7] flex flex-wrap items-center justify-between text-xs text-on-surface-variant font-body-sm">
+<span>Beneficiary: <strong class="text-on-surface">EcoLoop Municipal Escrow Clearing A/C</strong></span>
+<span class="font-code-hash text-outline">IFSC: HDFC0000240</span>
+</div>
+</div>
+<!-- Primary Call to Action -->
+<div class="space-y-3">
+<button class="w-full h-12 bg-primary-container hover:bg-[#14532D] active:scale-[0.99] text-on-primary font-body-md font-semibold rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="open_in_new">open_in_new</span>
+<span>Open UPI App to Pay ₹4,45,000</span>
+</button>
+<!-- UPI App Compatibility & Dynamic Expiry Countdown -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-outline px-1">
+<div class="flex items-center gap-1.5 font-body-sm">
+<span class="material-symbols-outlined text-[16px] text-[#166534]" data-icon="smartphone">smartphone</span>
+<span>Works with GPay, PhonePe, Paytm, BHIM and any UPI app.</span>
+</div>
+<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-[14px] animate-spin" data-icon="schedule" style="animation-duration: 4s;">schedule</span>
+<span>Expires in <strong class="tabular-nums font-bold" id="countdown-timer">12:41</strong></span>
+</div>
+</div>
+</div>
+<!-- DIVIDER WITH LIVE WEBHOOK HEADER -->
+<div class="pt-4 border-t border-[#E7E5E4]">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Deposit status</h2>
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+</div>
+<span class="font-code-hash text-[11px] text-outline">NPCI GATEWAY SYNC ACTIVE</span>
+</div>
+<!-- 3-STEP VERTICAL CONNECTED TIMELINE -->
+<div class="relative pl-6 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-[#E7E5E4]">
+<!-- Step 1: Deposit Created (Completed) -->
+<div class="relative flex items-start gap-3">
+<div class="absolute -left-6 mt-0.5 w-6 h-6 rounded-full bg-[#F0FDF4] border-2 border-primary-container flex items-center justify-center text-primary-container z-10">
+<span class="material-symbols-outlined text-[16px] font-bold" data-icon="check">check</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<p class="font-body-md text-body-md font-semibold text-on-surface">Deposit created</p>
+<span class="font-label-caps text-label-caps text-primary-container bg-[#F0FDF4] px-1.5 py-0.5 rounded border border-[#BBF7D0]">DONE</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">
+                  Just now · Ref: <span class="font-code-hash">#DEP-9021</span>
+</p>
+</div>
+</div>
+<!-- Step 2: Bank Confirmation (In Progress) -->
+<div class="relative flex items-start gap-3">
+<div class="absolute -left-6 mt-0.5 w-6 h-6 rounded-full bg-[#FFFBEB] border-2 border-[#D97706] flex items-center justify-center text-[#D97706] z-10">
+<span class="w-2 h-2 rounded-full bg-[#D97706] animate-ping"></span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<p class="font-body-md text-body-md font-semibold text-[#92400E]">Bank confirmation</p>
+<span class="font-label-caps text-label-caps text-[#92400E] bg-[#FFFBEB] px-1.5 py-0.5 rounded border border-[#FDE68A] flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706] animate-pulse"></span>
+                    IN PROGRESS
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Waiting for bank webhook… Instant verification via NPCI / E-NACH gateway.
+                </p>
+</div>
+</div>
+<!-- Step 3: Escrow Funded (Upcoming) -->
+<div class="relative flex items-start gap-3">
+<div class="absolute -left-6 mt-0.5 w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-[#D6D3D1] flex items-center justify-center text-outline z-10">
+<span class="w-2 h-2 rounded-full bg-[#D6D3D1]"></span>
+</div>
+<div class="flex-1 opacity-70">
+<div class="flex items-center justify-between">
+<p class="font-body-md text-body-md font-medium text-outline">Escrow funded</p>
+<span class="font-label-caps text-label-caps text-outline bg-[#FAFAF9] px-1.5 py-0.5 rounded border border-[#E7E5E4]">UPCOMING</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">
+                  Auction bid unlocked &amp; marked as fully backed. Dispatch authorization initiated.
+                </p>
+</div>
+</div>
+</div>
+<!-- Sandbox Simulation Control -->
+<div class="mt-8 pt-4 border-t border-dashed border-[#E7E5E4]">
+<button class="w-full py-2.5 px-4 bg-[#FAFAF9] hover:bg-[#F5F5F4] border border-dashed border-outline-variant rounded-lg text-body-sm font-body-sm text-on-surface-variant flex items-center justify-center gap-2 transition-all" id="sandbox-btn" onclick="simulatePaymentConfirmation()" type="button">
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="bug_report">bug_report</span>
+<span>I've paid — simulate bank confirmation</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-[10px] font-label-caps tracking-wider text-outline uppercase">Sandbox Demo</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Security & Institutional Assurances Box Below Card -->
+<div class="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-outline max-w-[640px] text-center">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="lock">lock</span>
+<span>256-bit TLS Encrypted Channel</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="account_balance">account_balance</span>
+<span>RBI Master Direction Comp. 2020</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="verified_user">verified_user</span>
+<span>Central Pollution Control Board Linked</span>
+</div>
+</div>
+</main>
+<!-- SHARED FOOTER COMPONENT -->
+<footer class="w-full py-space-lg px-margin-desktop bg-surface-container-lowest border-t border-outline-variant flex flex-col md:flex-row items-center justify-between gap-space-md text-body-sm font-body-sm text-on-surface-variant mt-auto">
+<div class="flex items-center gap-2">
+<span class="font-bold text-on-surface font-headline-sm">EcoLoop</span>
+<span class="text-outline">·</span>
+<span>Circular economy infrastructure</span>
+<span class="text-outline">·</span>
+<span>CPCB registered recyclers only</span>
+<span class="text-outline">·</span>
+<span>RBI regulated nodal escrow</span>
+</div>
+<!-- Contract Protocol & Copyright -->
+<div class="flex items-center gap-4">
+<span class="font-code-hash text-[11px] text-outline">
+        ESCROW CONTRACT: 0x9b41...77e2
+      </span>
+<span class="text-outline text-xs">|</span>
+<span class="text-xs text-outline">
+        © 2025 EcoLoop Enterprise Systems.
+      </span>
+</div>
+</footer>
+<!-- Light Vanilla Script for Demo Interactivity -->
+<script>
+    // Copy reference code functionality
+    function copyRefCode() {
+      const code = document.getElementById('ref-number').innerText.trim();
+      navigator.clipboard.writeText(code).then(() => {
+        const toast = document.getElementById('copy-toast');
+        const icon = document.getElementById('copy-icon');
+        toast.classList.remove('hidden');
+        icon.innerText = 'check';
+        setTimeout(() => {
+          toast.classList.add('hidden');
+          icon.innerText = 'content_copy';
+        }, 2000);
+      });
+    }
+
+    // Dynamic timer decrement simulation
+    let seconds = 761; // 12:41
+    const timerElem = document.getElementById('countdown-timer');
+    if (timerElem) {
+      setInterval(() => {
+        if (seconds > 0) {
+          seconds--;
+          const m = Math.floor(seconds / 60);
+          const s = seconds % 60;
+          timerElem.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+      }, 1000);
+    }
+
+    // Sandbox simulate webhook confirmation
+    function simulatePaymentConfirmation() {
+      const btn = document.getElementById('sandbox-btn');
+      btn.innerHTML = `
+        <span class="material-symbols-outlined text-[16px] animate-spin" data-icon="sync">sync</span>
+        <span>Simulating webhook callback from NPCI...</span>
+      `;
+      btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+      setTimeout(() => {
+        btn.innerHTML = `
+          <span class="material-symbols-outlined text-[16px] text-primary" data-icon="check_circle">check_circle</span>
+          <span class="text-primary font-medium">Bank Webhook Received! Escrow Backed.</span>
+        `;
+        btn.classList.remove('opacity-75');
+        btn.classList.add('bg-[#F0FDF4]', 'border-[#BBF7D0]');
+      }, 1500);
+    }
+  </script>
+</body></html>

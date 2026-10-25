@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoLoop IVR Console — Municipal Voice Gateway</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "secondary-container": "#fe932c",
+          "secondary-fixed": "#ffdcc3",
+          "primary-container": "#166534",
+          "on-tertiary-fixed-variant": "#005320",
+          "on-background": "#1f1b17",
+          "on-secondary": "#ffffff",
+          "on-tertiary-container": "#6ae784",
+          "on-secondary-fixed-variant": "#6e3900",
+          "surface-container-highest": "#eae1da",
+          "primary": "#004c22",
+          "tertiary-container": "#00662a",
+          "surface-dim": "#e2d8d2",
+          "on-primary": "#ffffff",
+          "outline": "#707a6f",
+          "on-tertiary-fixed": "#002109",
+          "on-primary-fixed-variant": "#005226",
+          "on-primary-container": "#93e0a2",
+          "surface-container-low": "#fcf2eb",
+          "inverse-surface": "#342f2b",
+          "on-tertiary": "#ffffff",
+          "inverse-on-surface": "#f9efe8",
+          "on-surface-variant": "#404940",
+          "background": "#fff8f5",
+          "surface-variant": "#eae1da",
+          "on-error": "#ffffff",
+          "primary-fixed-dim": "#8bd79b",
+          "error-container": "#ffdad6",
+          "inverse-primary": "#8bd79b",
+          "surface-tint": "#1f6c3a",
+          "surface-container-lowest": "#ffffff",
+          "on-primary-fixed": "#00210b",
+          "tertiary": "#004b1d",
+          "surface-container-high": "#f0e6e0",
+          "outline-variant": "#bfc9bd",
+          "tertiary-fixed": "#7ffc97",
+          "secondary": "#904d00",
+          "error": "#ba1a1a",
+          "secondary-fixed-dim": "#ffb77d",
+          "on-surface": "#1f1b17",
+          "on-secondary-fixed": "#2f1500",
+          "tertiary-fixed-dim": "#62df7d",
+          "on-error-container": "#93000a",
+          "surface-container": "#f6ece6",
+          "surface": "#fff8f5",
+          "on-secondary-container": "#663500",
+          "primary-fixed": "#a6f4b5",
+          "surface-bright": "#fff8f5"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "space-lg": "1.25rem",
+          "margin-desktop": "2rem",
+          "space-sm": "0.5rem",
+          "gutter": "1rem",
+          "margin": "1rem",
+          "space-md": "0.75rem",
+          "space-xl": "1.75rem",
+          "gutter-desktop": "1.5rem"
+        },
+        "fontFamily": {
+          "data-metric": ["Inter"],
+          "body-md": ["Inter"],
+          "label-caps": ["Inter"],
+          "headline-lg": ["Inter"],
+          "body-lg": ["Inter"],
+          "code-hash": ["JetBrains Mono"],
+          "headline-md": ["Inter"],
+          "headline-xl": ["Inter"],
+          "body-sm": ["Inter"],
+          "data-tabular": ["Inter"],
+          "headline-sm": ["Inter"]
+        },
+        "fontSize": {
+          "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+          "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+          "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+          "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+          "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+          "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+          "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+          "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+          "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+          "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+        }
+      }
+    }
+  }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f5f5f4;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #d6d3d1;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased font-body-md text-body-md min-h-screen flex flex-col">
+<!-- TOP APP BAR (from Shared Components JSON Blueprint) -->
+<header class="bg-surface-container-lowest docked full-width top-0 sticky z-50 h-14 border-b border-outline-variant shadow-sm">
+<div class="w-full max-w-[1440px] mx-auto px-margin-desktop flex items-center justify-between h-full">
+<!-- Left: Logo & Nav items -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-xs cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight">EcoLoop IVR Console</span>
+</div>
+<nav class="hidden md:flex items-center gap-space-lg ml-space-md">
+<a class="border-b-2 border-primary text-primary font-headline-sm text-headline-sm py-4" href="#">Call Console</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 py-4 px-1" href="#">Decision Trees</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 py-4 px-1" href="#">Benchmark Rates</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 py-4 px-1" href="#">Audit Manifests</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 py-4 px-1" href="#">EPR Tracking</a>
+</nav>
+</div>
+<!-- Right: Search, Actions, Profile -->
+<div class="flex items-center gap-space-md">
+<!-- Facility Switcher -->
+<button class="hidden lg:flex items-center gap-space-xs bg-surface-container-low px-space-md py-1.5 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors duration-150 text-left active:scale-[0.99]">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">domain</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Switch Facility</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span>
+</button>
+<!-- Trailing Primary Action -->
+<button class="bg-primary hover:bg-primary-container text-on-primary font-body-md text-body-md px-space-md py-1.5 rounded-lg font-medium flex items-center gap-space-xs transition-colors duration-150 shadow-sm active:scale-[0.99]" id="topSimulateBtn">
+<span class="material-symbols-outlined text-[18px]">phone_in_talk</span>
+<span>Simulate Call</span>
+</button>
+<!-- Action Icons -->
+<div class="flex items-center gap-1 border-l border-outline-variant pl-space-md">
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors duration-150" title="Notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors duration-150" title="Help">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors duration-150" title="Settings">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+<!-- Avatar -->
+<div class="flex items-center gap-space-xs border-l border-outline-variant pl-space-md">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- OPERATIONAL SUBHEADER (Breadcrumbs & Telemetry) -->
+<div class="bg-surface-container-lowest border-b border-outline-variant">
+<div class="w-full max-w-[1440px] mx-auto px-margin-desktop py-space-sm flex flex-wrap items-center justify-between gap-space-md">
+<!-- Breadcrumb & Context -->
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">dialer_sip</span>
+<div class="flex items-center gap-space-xs">
+<span class="font-body-sm text-body-sm text-outline">Municipal Voice Gateway</span>
+<span class="text-outline text-xs">/</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Ward 14 Shivajinagar · Central Command</span>
+</div>
+</div>
+<!-- Live status & Telemetry indicators -->
+<div class="flex items-center gap-space-md flex-wrap">
+<!-- Live status pill -->
+<div class="flex items-center gap-space-xs bg-surface-container-lowest border border-outline-variant px-space-md py-1 rounded-full shadow-sm">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="font-label-caps text-label-caps text-primary tracking-wider uppercase font-semibold">Line Live: +91 172 XXX 4310</span>
+</div>
+<!-- Latency / SIP Metric -->
+<div class="flex items-center gap-1.5 text-outline font-code-hash text-code-hash">
+<span class="material-symbols-outlined text-[16px] text-primary">speed</span>
+<span>42ms · Asterisk v20 SIP Trunk</span>
+</div>
+<!-- Language toggle -->
+<div class="flex items-center bg-surface-container border border-outline-variant rounded-lg p-0.5 text-xs">
+<button class="px-2 py-0.5 rounded font-medium text-on-surface hover:bg-surface-container-lowest transition-colors">ENG</button>
+<button class="px-2 py-0.5 rounded font-semibold bg-surface-container-lowest text-primary shadow-xs">हिंदी</button>
+<button class="px-2 py-0.5 rounded font-medium text-on-surface hover:bg-surface-container-lowest transition-colors">मराठी</button>
+</div>
+</div>
+</div>
+</div>
+<!-- MAIN TWO-COLUMN WORKSPACE -->
+<main class="w-full max-w-[1440px] mx-auto px-margin-desktop py-space-lg flex-1 flex flex-col gap-space-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
+<!-- LEFT COLUMN: Vertical Flow Diagram (7 cols ~ 58-60%) -->
+<section class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Flowchart Card Wrapper -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-space-lg shadow-sm">
+<!-- Flowchart Title Bar -->
+<div class="flex items-start justify-between border-b border-outline-variant pb-space-md mb-space-lg">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">account_tree</span>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">IVR Call Decision Tree & Audio Logic</h2>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">Automated DTMF & STT Voice Routing for Feature Phones (GSM / 2G PRI)</p>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-low text-on-surface border border-outline-variant">v3.4.1 Active</span>
+<button class="p-1 text-outline hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Zoom Flowchart">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+<button class="p-1 text-outline hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Collapse Branches">
+<span class="material-symbols-outlined text-[18px]">unfold_less</span>
+</button>
+</div>
+</div>
+<!-- Tree Visual Canvas -->
+<div class="flex flex-col items-center relative">
+<!-- Node 1: Inbound Call -->
+<div class="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-lg p-space-md shadow-sm relative group hover:border-primary transition-colors">
+<div class="flex items-start gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-surface-container-low border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[16px]">call_received</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Node 01 · Trigger</span>
+<span class="font-code-hash text-[11px] text-primary bg-primary-fixed/20 px-1.5 py-0.2 rounded font-semibold">PRI TRUNK</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Caller dials +91 172 XXX 4310</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Inbound PRI Trunk lookup: CLI match checks DB for registered waste picker profile (UID / Ward number).</p>
+</div>
+</div>
+</div>
+<!-- Connector Line Down -->
+<div class="w-0.5 h-6 bg-outline-variant my-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-outline mt-3">expand_more</span>
+</div>
+<!-- Node 2: Language Selection + Amber Side Branch -->
+<div class="w-full grid grid-cols-1 md:grid-cols-12 gap-space-sm items-start">
+<!-- Main Path Node 2 -->
+<div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg p-space-md shadow-sm hover:border-primary transition-colors">
+<div class="flex items-start gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-surface-container-low border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[16px]">translate</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Node 02 · Branch</span>
+<span class="font-code-hash text-[11px] text-on-surface font-semibold">DTMF 1/2/3</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Language Selection Menu</h3>
+<div class="mt-1 flex flex-wrap gap-1 font-code-hash text-[11px]">
+<span class="bg-surface-container px-2 py-0.5 rounded border border-outline-variant">[1] English</span>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/20 font-semibold">[2] हिंदी (Active)</span>
+<span class="bg-surface-container px-2 py-0.5 rounded border border-outline-variant">[3] मराठी</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Amber Side Branch (Unregistered Worker) -->
+<div class="md:col-span-4 bg-[#FFFBEB] border border-[#FDE68A] rounded-lg p-space-sm text-xs shadow-xs">
+<div class="flex items-center gap-1 text-[#92400E] font-semibold mb-1">
+<span class="material-symbols-outlined text-[15px]">help_outline</span>
+<span>CLI Not Registered</span>
+</div>
+<p class="text-[#78350F] leading-snug font-body-sm text-[11px]">
+                  Worker CLI unknown: Auto-plays public spot scrap rates, triggers instant Audio SMS via CDAC gateway, and routes to nearest Ward 14 MRF Counter kiosk.
+                </p>
+</div>
+</div>
+<!-- Connector Line Down -->
+<div class="w-0.5 h-6 bg-outline-variant my-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-outline mt-3">expand_more</span>
+</div>
+<!-- Node 3: Main Menu + Amber Branch -->
+<div class="w-full grid grid-cols-1 md:grid-cols-12 gap-space-sm items-start">
+<!-- Main Path Node 3 -->
+<div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg p-space-md shadow-sm hover:border-primary transition-colors">
+<div class="flex items-start gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-surface-container-low border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[16px]">menu</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Node 03 · Router</span>
+<span class="font-code-hash text-[11px] text-on-surface font-semibold">CLI MATCHED: PB-402</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Main Action Selection</h3>
+<div class="mt-1 flex flex-col gap-1 text-xs">
+<div class="flex items-center gap-2 bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20 font-medium">
+<span class="font-code-hash font-bold">[1]</span>
+<span>Report Daily Collection (Active Route)</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-2 py-1 rounded text-outline">
+<span class="font-code-hash font-medium">[2]</span>
+<span>Today's Verified Rates</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-2 py-1 rounded text-outline">
+<span class="font-code-hash font-medium">[3]</span>
+<span>My Passbook & Direct Benefit Transfer Earnings</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Amber Side Branch (System Busy/Failover) -->
+<div class="md:col-span-4 bg-[#FFFBEB] border border-[#FDE68A] rounded-lg p-space-sm text-xs shadow-xs">
+<div class="flex items-center gap-1 text-[#92400E] font-semibold mb-1">
+<span class="material-symbols-outlined text-[15px]">alt_route</span>
+<span>Rate Failure / Busy</span>
+</div>
+<p class="text-[#78350F] leading-snug font-body-sm text-[11px]">
+                  If CPCB rate index is offline or audio stream buffers over 1.2s: Auto re-routes to Ward 14 live sanitation supervisor queue (+91 172 254 0911).
+                </p>
+</div>
+</div>
+<!-- Connector Line Down -->
+<div class="w-0.5 h-6 bg-outline-variant my-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-outline mt-3">expand_more</span>
+</div>
+<!-- Node 4: Material Selection -->
+<div class="w-full max-w-xl bg-surface-container-lowest border border-outline-variant rounded-lg p-space-md shadow-sm hover:border-primary transition-colors">
+<div class="flex items-start gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-surface-container-low border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[16px]">category</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Node 04 · Material Taxonomy</span>
+<span class="font-code-hash text-[11px] text-primary font-semibold">8 CPCB CLASSIFICATIONS</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Material Keypad Selector</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mt-2 font-code-hash text-[11px]">
+<div class="bg-primary text-on-primary px-2 py-1 rounded text-center font-semibold">[1] PET Clear</div>
+<div class="bg-surface-container px-2 py-1 rounded text-center text-on-surface">[2] HDPE Drums</div>
+<div class="bg-surface-container px-2 py-1 rounded text-center text-on-surface">[3] OCC Board</div>
+<div class="bg-surface-container px-2 py-1 rounded text-center text-on-surface">[4] LDPE Film</div>
+<div class="bg-surface-container px-2 py-1 rounded text-center text-on-surface">[5] Mixed Rigid</div>
+<div class="bg-surface-container px-2 py-1 rounded text-center text-on-surface">[6] Glass Bottles</div>
+<div class="bg-surface-container px-2 py-1 rounded text-center text-on-surface">[7] Metal / Alum</div>
+<div class="bg-surface-container px-2 py-1 rounded text-center text-on-surface">[8] PP Polyprop</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Connector Line Down -->
+<div class="w-0.5 h-6 bg-outline-variant my-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-outline mt-3">expand_more</span>
+</div>
+<!-- Node 5: Weight via DTMF -->
+<div class="w-full max-w-xl bg-surface-container-lowest border border-outline-variant rounded-lg p-space-md shadow-sm hover:border-primary transition-colors">
+<div class="flex items-start gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-surface-container-low border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[16px]">scale</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Node 05 · Data Input</span>
+<span class="font-code-hash text-[11px] text-on-surface-variant font-medium">DTMF BUFFER</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Enter Weight via Keypad (* = decimal, # = submit)</h3>
+<div class="mt-1.5 flex items-center gap-2">
+<span class="text-xs text-outline">Active Buffer Parsing:</span>
+<span class="font-code-hash text-sm bg-surface-container px-2.5 py-0.5 rounded border border-outline-variant font-bold text-primary tracking-widest">
+                      1 2 * 5 #
+                    </span>
+<span class="text-xs font-semibold text-primary">→ Parsed: 12.50 kg (Tolerance: ±0.05)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Connector Line Down -->
+<div class="w-0.5 h-6 bg-outline-variant my-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-outline mt-3">expand_more</span>
+</div>
+<!-- Node 6: Audio Confirmation & Calculation -->
+<div class="w-full max-w-xl bg-surface-container-lowest border border-outline-variant rounded-lg p-space-md shadow-sm hover:border-primary transition-colors">
+<div class="flex items-start gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-surface-container-low border border-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[16px]">record_voice_over</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Node 06 · Synthesis & Math</span>
+<span class="font-code-hash text-[11px] text-on-surface font-semibold">RATE: ₹28.30/KG</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Audio Readback & Realtime Valuation</h3>
+<blockquote class="mt-1 p-2 bg-surface-container-low border-l-2 border-primary text-xs italic text-on-surface">
+                    “You entered 12.5 kg of PET Clear. Total payout calculated at ₹353.75. Press 1 to confirm, 2 to re-enter weight.”
+                  </blockquote>
+</div>
+</div>
+</div>
+<!-- Connector Line Down -->
+<div class="w-0.5 h-6 bg-primary my-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-primary mt-3">expand_more</span>
+</div>
+<!-- Terminal Node: Success / Blockchain Ledger -->
+<div class="w-full max-w-xl bg-[#F0FDF4] border-2 border-primary rounded-xl p-space-lg shadow-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-xs">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between flex-wrap gap-1">
+<span class="font-label-caps text-label-caps uppercase text-primary font-bold">Terminal Stage · Verified Event</span>
+<span class="font-code-hash text-[11px] bg-primary text-on-primary px-2 py-0.5 rounded font-medium">NPCI UPI TOKEN EMITTED</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary font-bold mt-1">Listing Created & Approved</h3>
+<p class="font-body-sm text-body-sm text-on-surface mt-1">
+                    Auto-enqueued to <strong>EcoLoop B2B Scrap Auction</strong> & Ward 14 Sanitation Dispatch Ledger. SMS receipt generated with immutable audit hash.
+                  </p>
+<div class="mt-space-sm pt-space-xs border-t border-primary/20 flex flex-wrap items-center justify-between gap-2 font-code-hash text-[11px]">
+<span class="text-outline">TXID: <strong class="text-on-surface">ECL-2024-W14-8842</strong></span>
+<span class="text-primary font-semibold">Dispatched to Buyer: Recykal MRF Plant 3</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Live Simulation & DTMF Terminal (5 cols ~ 40%) -->
+<section class="lg:col-span-5 flex flex-col gap-space-md">
+<!-- Live Call Sandbox Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-space-lg shadow-sm flex flex-col">
+<!-- Sandbox Header -->
+<div class="flex items-start justify-between border-b border-outline-variant pb-space-sm mb-space-md">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">play_circle</span>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Live Call Simulation & Audio Sandbox</h2>
+</div>
+<p class="font-code-hash text-[11px] text-outline mt-0.5">Call ID #IVR-8842-DLH · <span class="text-primary font-semibold">01:24 active</span></p>
+</div>
+<div class="flex items-center gap-1">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold">REC</span>
+</div>
+</div>
+<!-- Audio Waveform & Player Widget -->
+<div class="bg-surface-container-low rounded-lg p-space-sm border border-outline-variant mb-space-md">
+<div class="flex items-center justify-between text-xs text-outline font-code-hash mb-1">
+<span>Voice Channel 1 (TTS Hindi Neural)</span>
+<span>16kHz / 64kbps Opus</span>
+</div>
+<!-- Waveform visualizer -->
+<div class="h-8 flex items-end gap-0.5 py-1 px-2 bg-surface-container-lowest rounded border border-outline-variant overflow-hidden">
+<div class="w-1 bg-outline-variant h-2"></div>
+<div class="w-1 bg-outline-variant h-4"></div>
+<div class="w-1 bg-primary h-6"></div>
+<div class="w-1 bg-primary h-7"></div>
+<div class="w-1 bg-primary h-5"></div>
+<div class="w-1 bg-primary h-3"></div>
+<div class="w-1 bg-outline-variant h-2"></div>
+<div class="w-1 bg-outline-variant h-3"></div>
+<div class="w-1 bg-primary h-6"></div>
+<div class="w-1 bg-primary h-8"></div>
+<div class="w-1 bg-primary h-7"></div>
+<div class="w-1 bg-primary h-4"></div>
+<div class="w-1 bg-outline-variant h-2"></div>
+<div class="w-1 bg-outline-variant h-3"></div>
+<div class="w-1 bg-primary h-5"></div>
+<div class="w-1 bg-primary h-6"></div>
+<div class="w-1 bg-primary h-7"></div>
+<div class="w-1 bg-primary h-3"></div>
+<div class="w-1 bg-outline-variant h-2"></div>
+<div class="w-1 bg-outline-variant h-1"></div>
+<div class="w-1 bg-outline-variant h-2"></div>
+<div class="w-1 bg-outline-variant h-4"></div>
+<div class="w-1 bg-outline-variant h-2"></div>
+<div class="w-1 bg-outline-variant h-1"></div>
+</div>
+<!-- Playback controls -->
+<div class="flex items-center justify-between mt-2 pt-1">
+<div class="flex items-center gap-2">
+<button class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-primary-container transition-colors shadow-xs" id="playbackPlayBtn">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+</button>
+<span class="font-code-hash text-[11px] text-on-surface">01:24 / 01:52</span>
+</div>
+<div class="flex items-center gap-1 font-code-hash text-[11px] text-outline">
+<button class="px-1.5 py-0.5 rounded hover:bg-surface-container font-semibold">1.0x</button>
+<button class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-semibold">1.2x</button>
+</div>
+</div>
+</div>
+<!-- Transcript Stream -->
+<div class="border border-outline-variant rounded-lg p-space-sm bg-surface-bright flex flex-col gap-space-sm max-h-[300px] overflow-y-auto custom-scrollbar mb-space-md" id="transcriptLog">
+<!-- Message 1: System -->
+<div class="flex flex-col gap-0.5 items-start">
+<span class="text-[10px] font-label-caps text-outline uppercase font-semibold">EcoLoop System (AI Voice)</span>
+<div class="bg-surface-container-low border border-outline-variant text-on-surface text-xs rounded-lg px-2.5 py-1.5 max-w-[90%]">
+                “EcoLoop Pune mein aapka swagat hai. For English press 1, हिंदी ke liye 2 dabayein.”
+              </div>
+</div>
+<!-- Message 1 Caller: DTMF 2 -->
+<div class="flex flex-col gap-0.5 items-end">
+<span class="text-[10px] font-label-caps text-primary uppercase font-semibold">Caller (Bhagwan Das - PB-402)</span>
+<div class="bg-primary text-on-primary font-code-hash text-xs rounded-lg px-2.5 py-1 flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[14px]">dialpad</span>
+<span>Pressed [ 2 ] · हिंदी</span>
+</div>
+</div>
+<!-- Message 2: System -->
+<div class="flex flex-col gap-0.5 items-start">
+<span class="text-[10px] font-label-caps text-outline uppercase font-semibold">EcoLoop System (AI Voice)</span>
+<div class="bg-surface-container-low border border-outline-variant text-on-surface text-xs rounded-lg px-2.5 py-1.5 max-w-[90%]">
+                “Collection report karne ke liye 1 dabayein. Aaj ke scrap bhao janne ke liye 2 dabayein.”
+              </div>
+</div>
+<!-- Message 2 Caller: DTMF 1 -->
+<div class="flex flex-col gap-0.5 items-end">
+<span class="text-[10px] font-label-caps text-primary uppercase font-semibold">Caller (Bhagwan Das)</span>
+<div class="bg-primary text-on-primary font-code-hash text-xs rounded-lg px-2.5 py-1 flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[14px]">dialpad</span>
+<span>Pressed [ 1 ] · Report Collection</span>
+</div>
+</div>
+<!-- Message 3: System -->
+<div class="flex flex-col gap-0.5 items-start">
+<span class="text-[10px] font-label-caps text-outline uppercase font-semibold">EcoLoop System (AI Voice)</span>
+<div class="bg-surface-container-low border border-outline-variant text-on-surface text-xs rounded-lg px-2.5 py-1.5 max-w-[90%]">
+                “Plastic PET ke liye 1, HDPE ke liye 2... dabayein.”
+              </div>
+</div>
+<!-- Message 3 Caller: DTMF 1 -->
+<div class="flex flex-col gap-0.5 items-end">
+<span class="text-[10px] font-label-caps text-primary uppercase font-semibold">Caller (Bhagwan Das)</span>
+<div class="bg-primary text-on-primary font-code-hash text-xs rounded-lg px-2.5 py-1 flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[14px]">dialpad</span>
+<span>Pressed [ 1 ] · PET Clear</span>
+</div>
+</div>
+<!-- Message 4: System -->
+<div class="flex flex-col gap-0.5 items-start">
+<span class="text-[10px] font-label-caps text-outline uppercase font-semibold">EcoLoop System (AI Voice)</span>
+<div class="bg-surface-container-low border border-outline-variant text-on-surface text-xs rounded-lg px-2.5 py-1.5 max-w-[90%]">
+                “Kripya kul vajan (kg) enter karein. Decimal ke liye star (*) aur enter ke liye hash (#) dabayein.”
+              </div>
+</div>
+<!-- Message 4 Caller: DTMF 1 2 * 5 # -->
+<div class="flex flex-col gap-0.5 items-end">
+<span class="text-[10px] font-label-caps text-primary uppercase font-semibold">Caller (Bhagwan Das)</span>
+<div class="bg-primary text-on-primary font-code-hash text-xs rounded-lg px-2.5 py-1 flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[14px]">dialpad</span>
+<span>Pressed [ 1 2 * 5 # ] · 12.5 kg</span>
+</div>
+</div>
+<!-- Message 5: System Confirmation -->
+<div class="flex flex-col gap-0.5 items-start">
+<span class="text-[10px] font-label-caps text-outline uppercase font-semibold">EcoLoop System (AI Voice)</span>
+<div class="bg-surface-container-low border border-outline-variant text-on-surface text-xs rounded-lg px-2.5 py-1.5 max-w-[90%]">
+                “12.5 kg PET. Aapka bhugtan ₹353.75 hoga. Confirm karne ke liye 1 dabayein.”
+              </div>
+</div>
+<!-- Message 5 Caller: DTMF 1 -->
+<div class="flex flex-col gap-0.5 items-end">
+<span class="text-[10px] font-label-caps text-primary uppercase font-semibold">Caller (Bhagwan Das)</span>
+<div class="bg-primary text-on-primary font-code-hash text-xs rounded-lg px-2.5 py-1 flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[14px]">dialpad</span>
+<span>Pressed [ 1 ] · Confirmed</span>
+</div>
+</div>
+<!-- Message 6: Final SMS Notification -->
+<div class="flex flex-col gap-0.5 items-start">
+<span class="text-[10px] font-label-caps text-primary uppercase font-semibold">EcoLoop System (AI Voice)</span>
+<div class="bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] text-xs rounded-lg px-2.5 py-1.5 max-w-[90%]">
+                “Dhan-yavad! Aapka scrap lot auction mein darj ho gaya hai. UPI reference link SMS bhej diya gaya hai.”
+              </div>
+</div>
+</div>
+<!-- Tactile 12-Key DTMF Keypad Grid -->
+<div class="border-t border-outline-variant pt-space-md">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-outline uppercase font-semibold">DTMF Hardware Emulation Grid</span>
+<span class="font-code-hash text-[11px] text-primary bg-primary/10 px-2 py-0.5 rounded">Tone: 440Hz ITU-T</span>
+</div>
+<!-- Keypad Matrix (3x4) -->
+<div class="grid grid-cols-3 gap-2 max-w-[280px] mx-auto my-2">
+<!-- Key 1 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border-2 border-primary rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm ring-2 ring-primary/20">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">1</span>
+<span class="font-label-caps text-[9px] text-primary -mt-1 font-semibold">PET / Rep</span>
+</button>
+<!-- Key 2 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">2</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">HDPE / Rates</span>
+</button>
+<!-- Key 3 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">3</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">OCC / Pass</span>
+</button>
+<!-- Key 4 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">4</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">LDPE</span>
+</button>
+<!-- Key 5 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">5</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">Rigid</span>
+</button>
+<!-- Key 6 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">6</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">Glass</span>
+</button>
+<!-- Key 7 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">7</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">Metal</span>
+</button>
+<!-- Key 8 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">8</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">PP Hard</span>
+</button>
+<!-- Key 9 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">9</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">Other</span>
+</button>
+<!-- Key Star (*) -->
+<button class="keypad-key h-12 bg-surface-container border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container-high transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">*</span>
+<span class="font-label-caps text-[8px] text-outline -mt-1">Decimal point</span>
+</button>
+<!-- Key 0 -->
+<button class="keypad-key h-12 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">0</span>
+<span class="font-label-caps text-[9px] text-outline -mt-1">Oper</span>
+</button>
+<!-- Key Hash (#) -->
+<button class="keypad-key h-12 bg-surface-container border border-outline-variant rounded-xl flex flex-col items-center justify-center hover:bg-surface-container-high transition-all active:scale-95 shadow-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">#</span>
+<span class="font-label-caps text-[8px] text-outline -mt-1">Complete/Enter</span>
+</button>
+</div>
+<!-- Key instructions -->
+<p class="text-center font-body-sm text-body-sm text-outline mt-2">
+<span class="font-code-hash font-bold text-on-surface">*</span> works as decimal point · <span class="font-code-hash font-bold text-on-surface">#</span> to submit quantity
+            </p>
+<!-- Action buttons -->
+<div class="grid grid-cols-2 gap-space-sm mt-space-md pt-space-xs">
+<button class="bg-primary hover:bg-primary-container text-on-primary font-body-md text-body-md py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center justify-center gap-1 active:scale-[0.99]" id="simulateCallTrigger">
+<span class="material-symbols-outlined text-[18px]">ring_volume</span>
+<span>Simulate Call</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-on-surface font-body-md text-body-md py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center justify-center gap-1 active:scale-[0.99]" id="resetKeypadBtn">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+<span>Reset Keypad Log</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- BOTTOM FULL-WIDTH SECTION: Official vs. Middleman Benchmark Table -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-space-lg shadow-sm">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-space-md border-b border-outline-variant gap-space-sm">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">balance</span>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">
+              Ward 14 MRF Official Procurement Rates vs. Unorganized Middleman Rates (Kabadiwala Benchmark)
+            </h2>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">
+            Daily synced with CPCB Mandate & NCDEX Commodity Index · Updated today 06:00 IST · Ensures fair waste-picker compensation via direct UPI
+          </p>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1 bg-[#F0FDF4] border border-[#BBF7D0] px-2.5 py-1 rounded-full text-xs font-semibold text-[#166534]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+<span>Avg Uplift: +54.3%</span>
+</div>
+<button class="bg-surface-container-low border border-outline-variant hover:bg-surface-container text-on-surface text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Export CSV</span>
+</button>
+</div>
+</div>
+<!-- Compact Data Table -->
+<div class="overflow-x-auto mt-space-md">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant font-label-caps text-label-caps uppercase text-outline">
+<th class="py-2.5 px-space-md font-semibold">Material Grade & Code</th>
+<th class="py-2.5 px-space-md text-center font-semibold">IVR DTMF Key</th>
+<th class="py-2.5 px-space-md text-right font-semibold">Official Price (₹/kg)</th>
+<th class="py-2.5 px-space-md text-right font-semibold">Middleman Baseline (₹/kg)</th>
+<th class="py-2.5 px-space-md text-right font-semibold">Net Value Uplift (₹)</th>
+<th class="py-2.5 px-space-md text-right font-semibold">Worker Uplift (%)</th>
+<th class="py-2.5 px-space-md text-center font-semibold">Regulatory Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-md text-body-md">
+<!-- Row 1: PET Clear -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<div class="font-semibold text-on-surface">PET Bottles (Clear / Grade A)</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-CAT-01 · Shredded Bales</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-primary text-on-primary px-2 py-0.5 rounded font-bold">[ 1 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹28.30</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹19.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹9.30</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +48.9%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                  Active MSP
+                </span>
+</td>
+</tr>
+<!-- Row 2: HDPE Containers -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<div class="font-semibold text-on-surface">HDPE Containers & Chemical Drums</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-CAT-02 · Blow Moulded</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-surface-container text-on-surface px-2 py-0.5 rounded font-bold border border-outline-variant">[ 2 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹34.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹24.50</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹9.50</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +38.8%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                  Active MSP
+                </span>
+</td>
+</tr>
+<!-- Row 3: OCC Cardboard -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<div class="font-semibold text-on-surface">OCC Cardboard (Old Corrugated Cartons)</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-PPR-01 · Dry Baled</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-surface-container text-on-surface px-2 py-0.5 rounded font-bold border border-outline-variant">[ 3 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹14.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹9.50</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹4.50</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +47.4%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                  Active MSP
+                </span>
+</td>
+</tr>
+<!-- Row 4: LDPE Film -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<div class="font-semibold text-on-surface">LDPE Thin Film (Packaging Wraps)</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-CAT-04 · Clean Washed</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-surface-container text-on-surface px-2 py-0.5 rounded font-bold border border-outline-variant">[ 4 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹22.50</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹15.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹7.50</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +50.0%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                  Active MSP
+                </span>
+</td>
+</tr>
+<!-- Row 5: PP Hard Plastic -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<div class="font-semibold text-on-surface">PP Hard Plastic (Crates, Buckets)</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-CAT-05 · Unmixed Lots</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-surface-container text-on-surface px-2 py-0.5 rounded font-bold border border-outline-variant">[ 5 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹31.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹21.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹10.00</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +47.6%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                  Active MSP
+                </span>
+</td>
+</tr>
+<!-- Row 6: Aluminium Cans -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<div class="font-semibold text-on-surface">Aluminium Cans (Beverage UBC)</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-MET-03 · Crushed UBC</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-surface-container text-on-surface px-2 py-0.5 rounded font-bold border border-outline-variant">[ 7 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹92.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹68.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹24.00</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +35.3%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                  High Demand
+                </span>
+</td>
+</tr>
+<!-- Row 7: E-Waste (Mixed PCB) -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-[#fe932c]"></div>
+<div>
+<div class="font-semibold text-on-surface">E-Waste (Mixed Household PCB / Circuit)</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-EWT-02 · Class B Sorted</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-surface-container text-on-surface px-2 py-0.5 rounded font-bold border border-outline-variant">[ 8 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹65.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹40.00</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹25.00</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +62.5%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#92400E]"></span>
+                  Special Hazmat
+                </span>
+</td>
+</tr>
+<!-- Row 8: Mixed Scrap Glass -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div>
+<div class="font-semibold text-on-surface">Mixed Scrap Glass Bottles (Cullet)</div>
+<div class="font-code-hash text-[11px] text-outline">CPCB-GLS-01 · Colored & Amber</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="font-code-hash text-xs bg-surface-container text-on-surface px-2 py-0.5 rounded font-bold border border-outline-variant">[ 6 ]</span>
+</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-on-surface tabular-nums">₹4.50</td>
+<td class="py-3 px-space-md text-right font-data-tabular text-outline tabular-nums">₹2.20</td>
+<td class="py-3 px-space-md text-right font-data-tabular font-semibold text-[#166534] tabular-nums">+₹2.30</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] tabular-nums">
+                  +104.5%
+                </span>
+</td>
+<td class="py-3 px-space-md text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                  Subsidized
+                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footnote -->
+<div class="mt-space-md pt-space-sm border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between text-xs text-outline gap-2 font-code-hash">
+<div>Benchmark sync: National Bulk Commodity Mandate · Pune Municipal Corporation Notification #PMC-SWM-4491</div>
+<div class="text-on-surface font-medium">All weight tickets guaranteed under EPR Certificate Token standard (ISO 14001)</div>
+</div>
+</section>
+</main>
+<!-- MUNICIPAL FOOTER -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant mt-space-xl py-space-md">
+<div class="w-full max-w-[1440px] mx-auto px-margin-desktop flex flex-col sm:flex-row items-center justify-between text-xs text-outline gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">EcoLoop</span>
+<span class="text-outline">© 2024 Urban Circularity & EPR Traceability Protocol.</span>
+</div>
+<div class="flex items-center gap-space-md font-body-sm">
+<a class="hover:text-primary transition-colors" href="#">CPCB API Sync</a>
+<a class="hover:text-primary transition-colors" href="#">Telephony SLA (99.98%)</a>
+<a class="hover:text-primary transition-colors" href="#">Emergency Dispatch</a>
+<span class="text-primary font-code-hash font-semibold">Node: PUNE-MH-014</span>
+</div>
+</div>
+</footer>
+<!-- TACTILE INTERACTION SCRIPT FOR KEYPAD & SIMULATOR -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const keys = document.querySelectorAll('.keypad-key');
+      const transcriptLog = document.getElementById('transcriptLog');
+      const resetBtn = document.getElementById('resetKeypadBtn');
+      const simBtn = document.getElementById('simulateCallTrigger');
+      const topSimBtn = document.getElementById('topSimulateBtn');
+      const playBtn = document.getElementById('playbackPlayBtn');
+
+      // Keypad click handler with micro-interaction feedback
+      keys.forEach(key => {
+        key.addEventListener('click', () => {
+          const char = key.querySelector('span:first-child').innerText.trim();
+          
+          // Flash effect
+          key.classList.add('bg-primary/20');
+          setTimeout(() => key.classList.remove('bg-primary/20'), 150);
+
+          // Append to transcript
+          const bubble = document.createElement('div');
+          bubble.className = 'flex flex-col gap-0.5 items-end animate-fadeIn';
+          bubble.innerHTML = `
+            <span class="text-[10px] font-label-caps text-primary uppercase font-semibold">Live DTMF Trigger</span>
+            <div class="bg-primary text-on-primary font-code-hash text-xs rounded-lg px-2.5 py-1 flex items-center gap-1 shadow-xs">
+              <span class="material-symbols-outlined text-[14px]">touch_app</span>
+              <span>Tone Injected [ ${char} ]</span>
+            </div>
+          `;
+          transcriptLog.appendChild(bubble);
+          transcriptLog.scrollTop = transcriptLog.scrollHeight;
+        });
+      });
+
+      // Reset Keypad Log
+      resetBtn.addEventListener('click', () => {
+        const triggers = transcriptLog.querySelectorAll('.animate-fadeIn');
+        triggers.forEach(el => el.remove());
+        transcriptLog.scrollTop = transcriptLog.scrollHeight;
+      });
+
+      // Simulation Trigger
+      const triggerSim = () => {
+        const promptBubble = document.createElement('div');
+        promptBubble.className = 'flex flex-col gap-0.5 items-start animate-fadeIn';
+        promptBubble.innerHTML = `
+          <span class="text-[10px] font-label-caps text-outline uppercase font-semibold">EcoLoop System (PRI Live)</span>
+          <div class="bg-surface-container-low border border-outline-variant text-on-surface text-xs rounded-lg px-2.5 py-1.5 max-w-[90%]">
+            “Incoming call picked from +91 98230 XXXX (PB-402 - Bhagwan Das). Line latency 38ms. Ready for voice menu routing.”
+          </div>
+        `;
+        transcriptLog.appendChild(promptBubble);
+        transcriptLog.scrollTop = transcriptLog.scrollHeight;
+      };
+
+      simBtn.addEventListener('click', triggerSim);
+      topSimBtn.addEventListener('click', triggerSim);
+
+      // Playback toggle
+      let isPlaying = false;
+      playBtn.addEventListener('click', () => {
+        isPlaying = !isPlaying;
+        const icon = playBtn.querySelector('.material-symbols-outlined');
+        icon.innerText = isPlaying ? 'pause' : 'play_arrow';
+      });
+    });
+  </script>
+</body></html>

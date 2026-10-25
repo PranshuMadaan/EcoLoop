@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoLoop Sort — Civic Waste Vision System (Pune DWCC)</title>
+<!-- Material Symbols & Typography -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS Engine -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-container": "#663500",
+            "surface-container": "#f6ece6",
+            "on-tertiary-fixed-variant": "#005320",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#fff8f5",
+            "tertiary-container": "#00662a",
+            "primary-fixed": "#a6f4b5",
+            "on-secondary-fixed-variant": "#6e3900",
+            "inverse-primary": "#8bd79b",
+            "surface-tint": "#1f6c3a",
+            "inverse-on-surface": "#f9efe8",
+            "on-background": "#1f1b17",
+            "secondary-fixed": "#ffdcc3",
+            "primary-container": "#166534",
+            "on-primary-container": "#93e0a2",
+            "surface-container-high": "#f0e6e0",
+            "on-surface-variant": "#404940",
+            "on-tertiary-container": "#6ae784",
+            "primary": "#004c22",
+            "surface-container-low": "#fcf2eb",
+            "surface": "#fff8f5",
+            "secondary-fixed-dim": "#ffb77d",
+            "secondary": "#904d00",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "outline": "#707a6f",
+            "surface-variant": "#eae1da",
+            "tertiary-fixed-dim": "#62df7d",
+            "primary-fixed-dim": "#8bd79b",
+            "surface-container-highest": "#eae1da",
+            "surface-dim": "#e2d8d2",
+            "background": "#fff8f5",
+            "on-tertiary-fixed": "#002109",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#005226",
+            "on-primary-fixed": "#00210b",
+            "on-surface": "#1f1b17",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#342f2b",
+            "secondary-container": "#fe932c",
+            "tertiary": "#004b1d",
+            "outline-variant": "#bfc9bd",
+            "tertiary-fixed": "#7ffc97",
+            "error": "#ba1a1a",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#2f1500"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-desktop": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin": "1rem",
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "margin-desktop": "2rem",
+            "space-xl": "1.75rem",
+            "space-md": "0.75rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-xl": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "label-caps": ["Inter"],
+            "headline-sm": ["Inter"],
+            "data-tabular": ["Inter"],
+            "data-metric": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "code-hash": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined[data-weight="fill"] {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #bfc9bd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-full flex flex-col font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TOP APP BAR (Shared Component: TopNavBar) -->
+<header class="w-full bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0 z-50">
+<div class="w-full h-14 border-b border-outline-variant flex items-center justify-between px-4 lg:px-8 max-w-[1440px] mx-auto">
+<!-- Brand & Facility Node Identifier -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-2 text-decoration-none group" href="#">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined" data-weight="fill">recycling</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-headline-md font-headline-md font-bold text-primary tracking-tight">EcoLoop Sort</span>
+<span class="bg-surface-container text-primary font-label-caps text-label-caps px-2 py-0.5 rounded-full border border-outline-variant">VISION NODE #14</span>
+</div>
+<span class="text-[10px] text-on-surface-variant font-medium tracking-wide">PUNE MUNICIPAL DWCC • PMC ZONE 04</span>
+</div>
+</a>
+<!-- Desktop Navigation Clusters -->
+<nav class="hidden md:flex items-center gap-6 ml-4">
+<a class="border-b-2 border-primary text-primary font-bold py-3 text-body-md font-body-md transition-colors" href="#">Classify</a>
+<a class="text-on-surface-variant hover:text-on-surface py-3 text-body-md font-body-md transition-colors" href="#">DWCC Manifests</a>
+<a class="text-on-surface-variant hover:text-on-surface py-3 text-body-md font-body-md transition-colors" href="#">Audit Log</a>
+<a class="text-on-surface-variant hover:text-on-surface py-3 text-body-md font-body-md transition-colors" href="#">Bin Guide</a>
+</nav>
+</div>
+<!-- Live Inference & Node Diagnostics Actions -->
+<div class="flex items-center gap-3">
+<!-- Live Model Heartbeat Pill -->
+<div class="hidden sm:flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary-container"></span>
+</span>
+<span class="text-label-caps font-label-caps text-primary tracking-wide">YOLOv8-Waste · 42ms</span>
+<span class="text-outline-variant font-light">|</span>
+<span class="text-[11px] font-code-hash text-on-surface-variant">Edge Sync OK</span>
+</div>
+<!-- Offline Cache Toggle Pill -->
+<div class="flex items-center gap-1.5 bg-surface-container px-2.5 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">wifi</span>
+<span class="text-label-caps font-label-caps hidden lg:inline">Offline Cache</span>
+<span class="text-[11px] font-bold text-primary">Active (3.2MB)</span>
+</div>
+<!-- Trailing System Actions -->
+<div class="flex items-center border-l border-outline-variant pl-3 gap-1">
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" title="Settings">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" title="Help &amp; Protocol SOP">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="ml-1 pl-2 border-l border-outline-variant flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-xs" title="DWCC Supervisor Station 14 Badge">
+              S14
+            </div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- SUBHEADER / TELEMETRY CANVAS -->
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-4 lg:px-8 py-6 space-y-6">
+<!-- COMPACT HERO & FACILITY BANNER -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 lg:p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<div class="space-y-2 max-w-2xl">
+<div class="flex items-center gap-2">
+<span class="text-label-caps font-label-caps text-secondary font-bold tracking-wider">MUNICIPAL COMPUTER VISION UTILITY</span>
+<span class="text-outline-variant">•</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">SWACHH BHARAT URBAN 2.0 PROTOCOL</span>
+</div>
+<h1 class="text-headline-xl font-headline-xl text-on-surface tracking-tight">Snap it. Sort it. Done.</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">
+          Photograph any waste item — the vision model identifies the bin stream, polymer or substrate category, and estimated dry scrap recovery value for Shivaji Nagar DWCC.
+        </p>
+</div>
+<!-- Quick Telemetry Chips Bento -->
+<div class="flex flex-wrap lg:flex-nowrap gap-3 items-center">
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3 min-w-[140px]">
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">FACILITY</span>
+<div class="flex items-center gap-1.5 font-bold text-body-md text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-primary">location_city</span>
+            DWCC Shivajinagar
+          </div>
+<span class="text-body-sm font-body-sm text-outline">Zone 4 · Shed C</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3 min-w-[170px]">
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">COMPLIANCE FRAMEWORK</span>
+<div class="flex items-center gap-1.5 font-bold text-body-md text-primary">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+            CPCB 4-Stream
+          </div>
+<span class="text-body-sm font-body-sm text-outline">EPR Registry Sync</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3 min-w-[160px]">
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">DAILY INWARD ACCURACY</span>
+<div class="flex items-center gap-1.5 font-data-metric text-headline-sm text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+            96.8%
+          </div>
+<span class="text-body-sm font-body-sm text-tertiary-container font-medium">+1.4% vs PMC baseline</span>
+</div>
+</div>
+</section>
+<!-- 4-STREAM MUNICIPAL BIN GUIDE STRIP -->
+<section class="space-y-2">
+<div class="flex items-center justify-between px-1">
+<span class="text-label-caps font-label-caps text-on-surface-variant font-bold tracking-wider">OFFICIAL PMC / CPCB 4-STREAM SEGREGATION DIRECTIVE</span>
+<span class="text-body-sm font-body-sm text-primary hover:underline cursor-pointer flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span> View Segregation Penalty By-laws 2024
+        </span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+<!-- 1. Dry / Recyclable (Green) -->
+<div class="bg-surface-container-lowest border-2 border-primary-container/30 rounded-xl p-3.5 flex items-start gap-3 shadow-sm hover:border-primary-container transition-all">
+<div class="w-10 h-10 rounded-lg bg-[#F0FDF4] border border-[#BBF7D0] flex-shrink-0 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[24px]" data-weight="fill">delete_outline</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<h2 class="font-bold text-headline-sm text-on-surface">Dry / Recyclable</h2>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Paper, plastics, metals, glass</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded bg-surface-container text-primary font-bold text-[11px] font-code-hash">
+              Market: ₹12–₹45/kg
+            </div>
+</div>
+</div>
+<!-- 2. Wet / Organic (Brown/Olive) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 flex items-start gap-3 shadow-sm hover:border-secondary transition-all">
+<div class="w-10 h-10 rounded-lg bg-[#FEF3C7] border border-[#FDE68A] flex-shrink-0 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">compost</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<h2 class="font-bold text-headline-sm text-on-surface">Wet / Organic</h2>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Kitchen scraps, cooked food, leaves</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded bg-surface-container text-secondary font-bold text-[11px]">
+              Destination: Biomethanation
+            </div>
+</div>
+</div>
+<!-- 3. Hazardous (Red) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 flex items-start gap-3 shadow-sm hover:border-error transition-all">
+<div class="w-10 h-10 rounded-lg bg-error-container/40 border border-error/20 flex-shrink-0 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[24px]" data-weight="fill">dangerous</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<h2 class="font-bold text-headline-sm text-on-surface">Hazardous</h2>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Sanitary pads, batteries, e-waste, paints</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded bg-error-container/30 text-error font-bold text-[11px]">
+              Incineration / TSDF
+            </div>
+</div>
+</div>
+<!-- 4. Reject / Inert (Gray) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 flex items-start gap-3 shadow-sm hover:border-outline transition-all">
+<div class="w-10 h-10 rounded-lg bg-surface-variant border border-outline-variant flex-shrink-0 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[24px]">delete_sweep</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<h2 class="font-bold text-headline-sm text-on-surface">Reject / Sanitary</h2>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Soiled thermo, chips wrappers, dust</p>
+<div class="mt-2 inline-flex items-center px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-bold text-[11px]">
+              Engineered Landfill
+            </div>
+</div>
+</div>
+</div>
+</section>
+<!-- MAIN TWO-COLUMN OPERATIONAL WORKBENCH -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN: PHOTO INTAKE & UPLOAD ZONE (5 cols) -->
+<section class="lg:col-span-5 space-y-4">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">add_a_photo</span>
+<h2 class="text-headline-sm font-headline-sm text-on-surface">Vision Inward Stream</h2>
+</div>
+<span class="text-label-caps font-label-caps bg-surface-container px-2 py-1 rounded text-on-surface-variant">BATCH QUEUE: 3</span>
+</div>
+<!-- Drag and Drop Target Area -->
+<div class="group relative border-2 border-dashed border-outline-variant hover:border-primary-container rounded-2xl p-8 bg-surface-container-low transition-all duration-200 text-center cursor-pointer flex flex-col items-center justify-center">
+<div class="w-14 h-14 rounded-full bg-primary-fixed flex items-center justify-center text-primary mb-3 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-weight="fill">cloud_upload</span>
+</div>
+<h3 class="text-body-lg font-bold text-on-surface">Drag photos here or click to upload</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Up to 32 images · JPG/PNG · Camera capture supported</p>
+<div class="mt-4 flex items-center gap-2 text-xs font-code-hash text-outline bg-surface-container-lowest px-3 py-1 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+              Edge Hardware Accelerated (NPU Active)
+            </div>
+<input accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" multiple="" type="file"/>
+</div>
+<!-- Recent Uploaded Items Mini-Gallery Preview -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-label-caps font-label-caps text-on-surface-variant">
+<span>ACTIVE SESSION BATCH (STATION #14)</span>
+<span>3 OF 3 PROCESSED</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<!-- Item Thumbnail 1 -->
+<div class="relative group rounded-lg overflow-hidden border-2 border-primary-container bg-surface-container">
+<img class="w-full h-20 object-cover" data-alt="A clean crushed 1-liter clear PET plastic mineral water bottle laid flat on a neutral municipal sorting table surface in bright diffused daytime light. A crisp digital green bounding box overlays the object with high-clarity industrial inspection aesthetics and clear waste category focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-9qtrvXGrpkGUsYx-Fa_oUzjd-uMrrzJAjCegRHpFXQPBBb0orMl4PQksKvAr4Aw01HdDa0IMU_nwFiV2EPsEqlyt664bc1mpClMAm18Bd9-5PTUGnohLJAAWSO2j_JaSB_E3yRNzWOn-GqUFsXpBH40Iq77WTNMpDnLvffXFuzGqrGFVerIWDUP5BBemkZfltda5uBpjFtzw9DOB-Dp2TX9wPGsa1UKCpBYl9TBJMAOyKSlyCeOy"/>
+<div class="absolute bottom-0 inset-x-0 bg-primary/90 text-on-primary text-[10px] font-bold px-1.5 py-0.5 truncate flex items-center justify-between">
+<span>Bisleri 1L</span>
+<span class="material-symbols-outlined text-[12px]">check</span>
+</div>
+</div>
+<!-- Item Thumbnail 2 -->
+<div class="relative group rounded-lg overflow-hidden border border-outline-variant bg-surface-container">
+<img class="w-full h-20 object-cover" data-alt="An open take-out biryani food delivery container with grease marks and residual spices sitting on an industrial stone inspection bench. Natural indoor municipal facility lighting casts gentle shadows highlighting grease residue on the recyclable carton surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA64mjwFiuZbOmWHvl1mlj0rDvD-_feafyVZ1HHScex0sSUhyvAzjfad70fOogQK1SNymWI--QKcnnvY8u0W8LyIXQ0TFju-B0vArPRgtgAD3P3OR1_08rqwhElj8vmPLSJdtKLUs0F4np1AV338sl2dKaV9y1zY1uu2cx4KsK9vBDB61qFstOyNx_vOnBRleeO-7m5fACvKw3u_svA0pF4mlS9BkUQTMMO22BgqmwUfvDs1LBVbBcp"/>
+<div class="absolute bottom-0 inset-x-0 bg-secondary/90 text-on-secondary text-[10px] font-bold px-1.5 py-0.5 truncate flex items-center justify-between">
+<span>Food Box</span>
+<span class="material-symbols-outlined text-[12px]">sync_problem</span>
+</div>
+</div>
+<!-- Item Thumbnail 3 -->
+<div class="relative group rounded-lg overflow-hidden border border-amber-300 bg-surface-container">
+<img class="w-full h-20 object-cover" data-alt="A crinkled metallic multi-layer potato chips foil pouch positioned against a neutral grey stone backdrop in an Indian municipal dry waste collection center. Crisp utilitarian lighting highlights the reflective foil and polymer blend requiring material classification." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3Kb2MU5V7cJ66yb8bnoj0kXYXbO1m2HyQHho9vaJqIMltOmPL9jpxwirLDmHkv-MCq-K_r4w9mHyyJuZB3u5C1oY3BuLhrMRewMaIVDP1PW3kxTwJwmcQZmfH8OsEif4onC-jSe7bWhW5tSj3KdZ042YVD2ZKQ-6DQgBwLkxYp2fWiKa7il_-Mx_gjvg2l_fhDDOWG5WEU5qa8EM1F4srEOfj8F7rMRmtJX4uEqOumrzN_okcXTV5"/>
+<div class="absolute bottom-0 inset-x-0 bg-amber-700/90 text-white text-[10px] font-bold px-1.5 py-0.5 truncate flex items-center justify-between">
+<span>Foil Pouch</span>
+<span class="material-symbols-outlined text-[12px]">help</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Button Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+<button class="w-full bg-primary-container hover:bg-primary text-on-primary py-2.5 px-4 rounded-lg font-medium text-body-md flex items-center justify-center gap-2 shadow-sm transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+              Classify photos
+            </button>
+<button class="w-full bg-surface-container-lowest hover:bg-surface-container border border-outline-variant text-on-surface py-2.5 px-4 rounded-lg font-medium text-body-md flex items-center justify-center gap-2 transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+              Use camera
+            </button>
+</div>
+<!-- Batch Shutter Toggle Option -->
+<div class="pt-3 border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[20px]">shutter_speed</span>
+<div>
+<div class="text-body-sm font-body-sm font-semibold text-on-surface">Batch DWCC Mode</div>
+<div class="text-[11px] text-on-surface-variant">Auto-classify instantly on shutter release</div>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Municipal Operator Guidance Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-4 text-body-sm space-y-2">
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined text-[18px]">shield</span>
+<span>Pune DWCC Operator Instruction</span>
+</div>
+<p class="text-on-surface-variant">
+            Items classified below 50% confidence must undergo a manual touch-test before baling. Record EPR barcode if visible for manufacturer plastic credit reimbursement.
+          </p>
+</div>
+</section>
+<!-- RIGHT COLUMN: AI CLASSIFICATION RESULTS & RECOVERY AUDIT (7 cols) -->
+<section class="lg:col-span-7 space-y-4">
+<!-- Header Strip -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl px-5 py-3.5 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">fact_check</span>
+<h2 class="text-headline-sm font-headline-sm text-on-surface">Classification Output</h2>
+<span class="bg-surface-container px-2 py-0.5 rounded text-xs font-bold text-primary">(3 items analyzed)</span>
+</div>
+<button class="text-primary hover:text-primary-container font-semibold text-body-sm flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+            Export CPCB Log
+          </button>
+</div>
+<!-- CLASSIFICATION CARDS LIST -->
+<div class="space-y-4">
+<!-- CARD 1: Plastic bottle (PET) - High Confidence Recyclable -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 lg:p-5 shadow-sm space-y-4 transition-all hover:shadow-md">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+<!-- Thumbnail + Meta -->
+<div class="flex items-start gap-3.5">
+<div class="relative w-16 h-16 rounded-lg bg-surface-container flex-shrink-0 overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of a clear plastic 1-liter mineral water bottle labeled Bisleri with transparent texture and faint blue cap lying in an inspection box. Clean lighting with slight industrial contrast emphasizing clear PET polymer clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS7qCrFqvWTwTZSDmA1NhZ3ePbreLQoQd2czQjtofmCJ80ukC3tt0WpiK-eHEhrwzFQZTmmSnYFFrIo3zXabjc5-VdYAGy2C6yMGiYngdIFo1NUaPHe7eZM7QBse70Fxc9WYoXKBT9afaVwQsIYijbi1VjM_CcGB9Dda4S0mjS4QKiAhMsIuYeBXGDRpfCv_v9Cq8ojn_ivtFJByrlovQ9FxgLBiFMY8YCoCHXiaxx7b4kcDngXc6E"/>
+<div class="absolute inset-1 border border-primary-container rounded pointer-events-none"></div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-headline-sm text-on-surface">Plastic bottle (Bisleri 1L)</h3>
+<span class="text-label-caps font-code-hash text-outline">#PMC-8491</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+                      Dry / Recyclable bin
+                    </span>
+<span class="text-xs text-on-surface-variant font-medium">Stream: Rigid Plastics</span>
+</div>
+</div>
+</div>
+<!-- Confidence Radial / Ring Badge -->
+<div class="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-outline-variant">
+<div class="flex items-center gap-2">
+<div class="text-right">
+<div class="text-[11px] font-label-caps text-on-surface-variant uppercase">Model Match</div>
+<div class="font-data-metric text-headline-lg text-primary-container font-bold leading-none">94%</div>
+</div>
+<div class="w-9 h-9 rounded-full border-4 border-primary-container border-t-primary-fixed flex items-center justify-center font-bold text-[10px] text-primary">
+                    AI
+                  </div>
+</div>
+</div>
+</div>
+<!-- Top-3 Prediction Progress Breakdown -->
+<div class="bg-surface-container-low rounded-lg p-3 space-y-2 border border-outline-variant/60">
+<div class="flex justify-between items-center text-xs font-medium text-on-surface">
+<span class="font-code-hash">PET 94% · HDPE 4% · Other 2%</span>
+<span class="text-[11px] text-on-surface-variant font-mono">Resin ID: #1 (Polyethylene Terephthalate)</span>
+</div>
+<!-- Segmented Progress Bar -->
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex">
+<div class="bg-primary-container h-full" style="width: 94%"></div>
+<div class="bg-primary-fixed-dim h-full" style="width: 4%"></div>
+<div class="bg-outline h-full" style="width: 2%"></div>
+</div>
+</div>
+<!-- Economic Valuation & Facility Action Footer -->
+<div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-body-sm border-t border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">payments</span>
+<span class="text-on-surface font-medium">Est. scrap value:</span>
+<span class="font-bold font-data-tabular text-primary">₹1.40</span>
+<span class="text-outline text-xs">(₹28.50/kg baled index)</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 bg-surface-container hover:bg-surface-container-high text-on-surface rounded text-xs font-semibold transition-colors">
+                  Log in Inward Ledger
+                </button>
+</div>
+</div>
+</div>
+<!-- CARD 2: Greasy Food Container (Wet / Rinse Required) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 lg:p-5 shadow-sm space-y-4 transition-all hover:shadow-md">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+<!-- Thumbnail + Meta -->
+<div class="flex items-start gap-3.5">
+<div class="relative w-16 h-16 rounded-lg bg-surface-container flex-shrink-0 overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A greasy cardboard food takeout container with visible red oil stains and rice grains resting inside an inspection tray under bright fluorescent warehouse illumination. The packaging shows structural creases and paper fiber discoloration." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDucgdqT8-Zk--pHyLB4Xj9pMIflhPfM89xh91vySoJyegWISR2drytF86JMZf-6VV0eXqdpZPrPAv5zB53tz_fWbaMk_UwWM-hVSz7hTXP79c4NCjhY-p2JTO4cYlqMJ8cETxwph8LCXZP_gVF96BhVfba_cR5waKmin4h9s7iUOBNLH-hEpErk74L0FKoQu2eaKAgjP8yIHMq4CYDboQz7shoemAzWgIIjFA7IjHtyQL8JXVN6B3M"/>
+<div class="absolute inset-1 border border-secondary rounded pointer-events-none"></div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-headline-sm text-on-surface">Greasy Food Container (Biryani Box)</h3>
+<span class="text-label-caps font-code-hash text-outline">#PMC-8492</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#92400E]"></span>
+                      Wet / Organic or Rinse Required
+                    </span>
+<span class="text-xs text-on-surface-variant font-medium">Stream: Soiled Kraft Board</span>
+</div>
+</div>
+</div>
+<!-- Confidence Radial / Ring Badge -->
+<div class="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-outline-variant">
+<div class="flex items-center gap-2">
+<div class="text-right">
+<div class="text-[11px] font-label-caps text-on-surface-variant uppercase">Model Match</div>
+<div class="font-data-metric text-headline-lg text-secondary font-bold leading-none">88%</div>
+</div>
+<div class="w-9 h-9 rounded-full border-4 border-secondary border-t-secondary-fixed flex items-center justify-center font-bold text-[10px] text-secondary">
+                    AI
+                  </div>
+</div>
+</div>
+</div>
+<!-- Top-3 Prediction Progress Breakdown -->
+<div class="bg-surface-container-low rounded-lg p-3 space-y-2 border border-outline-variant/60">
+<div class="flex justify-between items-center text-xs font-medium text-on-surface">
+<span class="font-code-hash">Contaminated Paper 88% · Clean OCC 8% · Plastic 4%</span>
+<span class="text-[11px] text-error font-medium">Oil Contamination Detected: High (&gt;15%)</span>
+</div>
+<!-- Segmented Progress Bar -->
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex">
+<div class="bg-secondary h-full" style="width: 88%"></div>
+<div class="bg-secondary-fixed h-full" style="width: 8%"></div>
+<div class="bg-outline-variant h-full" style="width: 4%"></div>
+</div>
+</div>
+<!-- Operator Guidance / Warning Banner -->
+<div class="bg-surface-container rounded-lg p-2.5 flex items-center gap-2.5 text-xs text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[18px]">wash</span>
+<span><strong>Action hint:</strong> Rinse with facility greywater before baling with dry paper, or discard into Reject / Inert bin to prevent paper lot contamination.</span>
+</div>
+<!-- Economic Valuation & Facility Action Footer -->
+<div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-body-sm border-t border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[18px]">money_off</span>
+<span class="text-on-surface-variant">Dry value forfeited due to grease</span>
+<span class="text-xs text-secondary font-bold">Compost/Refuse Stream</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-surface-container-lowest border border-outline-variant hover:bg-surface-container text-on-surface rounded text-xs font-semibold">
+                  Rinsed &amp; Salvaged
+                </button>
+<button class="px-2.5 py-1 bg-surface-container-high hover:bg-surface-variant text-on-surface rounded text-xs font-semibold">
+                  Send to Composting
+                </button>
+</div>
+</div>
+</div>
+<!-- CARD 3: Composite Metallic Foil Pouch (WARNING STATE / LOW CONFIDENCE) -->
+<div class="bg-surface-container-lowest border-2 border-amber-300 rounded-xl p-4 lg:p-5 shadow-sm space-y-4 transition-all hover:shadow-md">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+<!-- Thumbnail + Meta -->
+<div class="flex items-start gap-3.5">
+<div class="relative w-16 h-16 rounded-lg bg-surface-container flex-shrink-0 overflow-hidden border border-amber-300">
+<img class="w-full h-full object-cover" data-alt="A crinkled metallic silver foil potato snack packaging pouch resting angled on an inspection surface with reflected specular highlights. The object appears multi-layered with visible aluminum vapor deposit and plastic laminates under high-accuracy diagnostic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_S3JvK2zUNODFEHh2O_QK2mFM9VF01aPRWLgMBbbrF7vhoUwLyXFPLrW-NSdswemO5CYOI7cEM0XRsIEMNV9b9LvDQ_tQE-iP3Vnfj-GH_KsUC1W2Ivl7HVaetdDHYHptV9EASSTDEAKEJIM-UUxkaVJeMOHUwubrIxwzFF2J2dGybp0RbjlbaDrRV6ldWqHehjqrMfC9Eca9YogERcY259B9K3Ows0gPMiqS6crpo-DdNmvJzTau"/>
+<div class="absolute inset-1 border border-amber-500 rounded pointer-events-none"></div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-headline-sm text-on-surface">Composite Metallic Foil Pouch</h3>
+<span class="text-label-caps font-code-hash text-outline">#PMC-8493</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 mt-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]">
+<span class="material-symbols-outlined text-[13px] text-amber-600">warning</span>
+                      Needs manual check — confidence 41%
+                    </span>
+<span class="text-xs text-on-surface-variant font-medium">Multi-Layer Plastic (MLP)</span>
+</div>
+</div>
+</div>
+<!-- Confidence Radial / Ring Badge (Warning) -->
+<div class="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-outline-variant">
+<div class="flex items-center gap-2">
+<div class="text-right">
+<div class="text-[11px] font-label-caps text-on-surface-variant uppercase">Model Match</div>
+<div class="font-data-metric text-headline-lg text-amber-700 font-bold leading-none">41%</div>
+</div>
+<div class="w-9 h-9 rounded-full border-4 border-amber-500 border-t-amber-200 flex items-center justify-center font-bold text-[10px] text-amber-700">
+                    LOW
+                  </div>
+</div>
+</div>
+</div>
+<!-- Top-3 Prediction Progress Breakdown -->
+<div class="bg-surface-container-low rounded-lg p-3 space-y-2 border border-outline-variant/60">
+<div class="flex justify-between items-center text-xs font-medium text-on-surface">
+<span class="font-code-hash">Multi-layer Foil 41% · Mixed Plastic 35% · Dry Waste 24%</span>
+<span class="text-[11px] text-amber-800 font-medium">Specular glare detected</span>
+</div>
+<!-- Segmented Progress Bar -->
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex">
+<div class="bg-amber-600 h-full" style="width: 41%"></div>
+<div class="bg-amber-300 h-full" style="width: 35%"></div>
+<div class="bg-outline h-full" style="width: 24%"></div>
+</div>
+</div>
+<!-- Manual Supervisor Override Action Bar -->
+<div class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-body-sm border-t border-outline-variant">
+<div class="text-xs text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-amber-600">touch_app</span>
+<span>Requires human physical classification</span>
+</div>
+<!-- Manual Buttons -->
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 bg-surface-container-lowest border border-outline-variant hover:bg-surface-container text-on-surface rounded text-xs font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">close</span>
+                  Send to Reject
+                </button>
+<button class="px-3 py-1.5 bg-primary-container text-on-primary hover:bg-primary rounded text-xs font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                  Tag as Dry Metal
+                </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- COLLAPSIBLE MODEL CONNECTION & EDGE INFERENCE SETTINGS -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<!-- Expandable Header -->
+<details class="group" open="">
+<summary class="list-none flex items-center justify-between p-4 cursor-pointer hover:bg-surface-container-low transition-colors select-none">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">settings_ethernet</span>
+</div>
+<div>
+<h2 class="font-bold text-headline-sm text-on-surface">Local Inference &amp; Edge Server Settings</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Connected endpoint: <code class="font-code-hash text-primary font-bold">http://localhost:8000/v1/predict</code></p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>
+              Ping: 18ms latency
+            </span>
+<span class="material-symbols-outlined text-outline transition-transform duration-200 group-open:rotate-180">expand_more</span>
+</div>
+</summary>
+<!-- Expanded Form Controls -->
+<div class="p-4 pt-0 border-t border-outline-variant space-y-4 mt-3 bg-surface-container-lowest">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- API URL Field -->
+<div class="space-y-1">
+<label class="text-label-caps font-label-caps text-on-surface-variant uppercase">Classifier API URL</label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded-lg px-3 py-2 text-body-md font-code-hash text-on-surface focus:outline-none focus:border-primary" type="text" value="http://localhost:8000/v1/predict"/>
+<span class="absolute right-2.5 top-2.5 text-xs font-bold text-primary">ACTIVE</span>
+</div>
+<span class="text-[11px] text-on-surface-variant">Pune DWCC Local Vision Box (On-premise Jetson Orin Nano)</span>
+</div>
+<!-- API Key Field -->
+<div class="space-y-1">
+<label class="text-label-caps font-label-caps text-on-surface-variant uppercase">Facility API Key (Optional)</label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded-lg px-3 py-2 text-body-md font-code-hash text-on-surface focus:outline-none focus:border-primary" type="password" value="pmc_dwcc_node14_live_session_k9x2"/>
+<button class="absolute right-2.5 top-2 text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<span class="text-[11px] text-on-surface-variant">Validated against PMC Central Civic Waste Registry</span>
+</div>
+</div>
+<!-- Bottom Utility Row -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+<div class="flex items-center gap-4 text-body-sm text-on-surface-variant">
+<span>Model Architecture: <strong class="text-on-surface">YOLOv8x-Seg (640x640)</strong></span>
+<span>Quantization: <strong class="text-on-surface">INT8 TensorRT</strong></span>
+<span>Dataset Version: <strong class="text-on-surface">IN-Waste-v3.4.1</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-1.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg text-body-sm font-medium text-on-surface flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+                Test connection
+              </button>
+<button class="px-3.5 py-1.5 bg-primary-container text-on-primary hover:bg-primary rounded-lg text-body-sm font-medium transition-colors">
+                Save &amp; Switch Endpoint
+              </button>
+</div>
+</div>
+</div>
+</details>
+</section>
+</main>
+<!-- MUNICIPAL UTILITY FOOTER (Shared Component: Footer) -->
+<footer class="w-full bg-surface-container border-t border-outline-variant mt-12">
+<div class="w-full py-6 px-4 lg:px-8 max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-body-sm font-body-sm">
+<!-- Brand & Copyright -->
+<div class="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
+<span class="text-headline-sm font-headline-sm font-bold text-primary">EcoLoop Sort</span>
+<span class="hidden sm:inline text-outline-variant">|</span>
+<span class="text-on-surface-variant text-[12px]">
+          © 2025 EcoLoop Civic Systems. Swachh Bharat EPR &amp; Municipal Waste Sorting Protocol Compliant.
+        </span>
+</div>
+<!-- Compliance & Telemetry Links -->
+<div class="flex flex-wrap items-center justify-center gap-4 text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">DWCC SOP Manual</a>
+<a class="hover:text-primary transition-colors" href="#">Model Weights &amp; Latency</a>
+<a class="hover:text-primary transition-colors" href="#">CPCB Category Matrix</a>
+<a class="hover:text-primary transition-colors" href="#">System Telemetry</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle button active visual states
+      const testBtn = document.querySelector('button:has(.material-symbols-outlined:contains("sync"))');
+      if (testBtn) {
+        testBtn.addEventListener('click', () => {
+          testBtn.classList.add('opacity-50');
+          setTimeout(() => {
+            testBtn.classList.remove('opacity-50');
+            alert('Local Vision Node connection verified: 18ms latency with zero packet loss.');
+          }, 400);
+        });
+      }
+    });
+  </script>
+</body></html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoLoop · PMC Ward 14 Civic Waste Platform Sign In</title>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#fff8f5",
+            "surface": "#fff8f5",
+            "inverse-surface": "#342f2b",
+            "on-primary-fixed": "#00210b",
+            "outline": "#707a6f",
+            "on-surface-variant": "#404940",
+            "secondary-fixed-dim": "#ffb77d",
+            "tertiary": "#004b1d",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#8bd79b",
+            "on-primary-fixed-variant": "#005226",
+            "surface-container-highest": "#eae1da",
+            "primary-fixed": "#a6f4b5",
+            "on-tertiary": "#ffffff",
+            "surface-container": "#f6ece6",
+            "on-tertiary-fixed-variant": "#005320",
+            "inverse-primary": "#8bd79b",
+            "on-primary-container": "#93e0a2",
+            "surface-variant": "#eae1da",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#2f1500",
+            "error-container": "#ffdad6",
+            "surface-dim": "#e2d8d2",
+            "primary": "#004c22",
+            "on-surface": "#1f1b17",
+            "on-error-container": "#93000a",
+            "surface-container-high": "#f0e6e0",
+            "secondary-fixed": "#ffdcc3",
+            "tertiary-fixed-dim": "#62df7d",
+            "secondary": "#904d00",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#6ae784",
+            "tertiary-container": "#00662a",
+            "on-secondary-fixed-variant": "#6e3900",
+            "on-background": "#1f1b17",
+            "secondary-container": "#fe932c",
+            "tertiary-fixed": "#7ffc97",
+            "surface-container-low": "#fcf2eb",
+            "surface-tint": "#1f6c3a",
+            "outline-variant": "#bfc9bd",
+            "on-secondary-container": "#663500",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed": "#002109",
+            "inverse-on-surface": "#f9efe8",
+            "primary-container": "#166534",
+            "background": "#fff8f5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-desktop": "2rem",
+            "margin": "1rem",
+            "space-md": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-xl": "1.75rem",
+            "space-sm": "0.5rem",
+            "gutter-desktop": "1.5rem",
+            "gutter": "1rem",
+            "space-lg": "1.25rem"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "code-hash": ["JetBrains Mono"],
+            "headline-xl": ["Inter"],
+            "headline-sm": ["Inter"],
+            "data-tabular": ["Inter"],
+            "body-lg": ["Inter"],
+            "data-metric": ["Inter"],
+            "label-caps": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-lg": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #bfc9bd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="h-full bg-surface-container-low text-on-surface font-body-md antialiased select-none">
+<!-- Fullscreen 50/50 Desktop Split Layout (Navigation shell suppressed per destination/transactional rule) -->
+<main class="min-h-screen w-full flex flex-col lg:flex-row">
+<!-- LEFT HALF: Brand & Civic Trust Panel -->
+<section class="lg:w-1/2 w-full bg-primary-container relative flex flex-col justify-between p-8 sm:p-12 lg:p-16 text-on-primary overflow-hidden">
+<!-- Topographic & Circular Organic SVG Overlay at subtle low opacity -->
+<div class="absolute inset-0 pointer-events-none opacity-10 flex items-center justify-center">
+<svg class="w-[180%] h-[180%] -translate-y-12" fill="none" stroke="currentColor" viewbox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+<circle cx="400" cy="400" r="120" stroke-dasharray="6 4" stroke-width="1.5"></circle>
+<circle cx="400" cy="400" r="180" stroke-width="1.5"></circle>
+<circle cx="400" cy="400" r="260" stroke-dasharray="10 8" stroke-width="1"></circle>
+<circle cx="400" cy="400" r="340" stroke-width="1.5"></circle>
+<circle cx="400" cy="400" r="420" stroke-width="1"></circle>
+<path d="M 120 400 C 240 280, 560 520, 680 400" stroke-dasharray="4 4" stroke-width="1.5"></path>
+<path d="M 160 540 C 300 360, 500 440, 720 280" stroke-width="1.2"></path>
+<path d="M 80 260 C 260 480, 540 220, 760 540" stroke-width="1.2"></path>
+</svg>
+</div>
+<!-- Top Brand Area -->
+<div class="relative z-10 flex flex-col gap-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center border border-white/20 shadow-sm backdrop-blur-sm">
+<span class="material-symbols-outlined text-primary-fixed text-2xl" data-icon="recycling">recycling</span>
+</div>
+<div>
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-white block">EcoLoop</span>
+<span class="font-body-sm text-body-sm text-primary-fixed-dim/90 block">Civic Waste Platform</span>
+</div>
+</div>
+<!-- Ward Badge -->
+<div class="inline-flex items-center gap-space-xs px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+<span class="font-label-caps text-label-caps tracking-wide">Ward 14 · Pune Municipal Corporation</span>
+</div>
+</div>
+<!-- Headline & Explainer -->
+<div class="pt-8 lg:pt-14 max-w-lg space-y-4">
+<h1 class="font-headline-xl text-headline-xl font-bold tracking-tight text-white leading-tight">
+            Clean wards begin with verified civic participation.
+          </h1>
+<p class="font-body-lg text-body-lg text-white/85 leading-relaxed">
+            Access door-to-door waste tracking, schedule scrap pickups, and verify Swachh Bharat community rebates.
+          </p>
+</div>
+<!-- Trust Bullets -->
+<div class="pt-6 sm:pt-8 flex flex-col gap-4 max-w-md">
+<div class="flex items-start gap-space-md p-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-fixed text-lg" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm text-white font-medium">Aadhaar-safe OTP login</p>
+<p class="font-body-sm text-body-sm text-white/70">Authenticated via UIDAI state gateway with instant credential verification.</p>
+</div>
+</div>
+<div class="flex items-start gap-space-md p-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-fixed text-lg" data-icon="gavel">gavel</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm text-white font-medium">DPDP compliant</p>
+<p class="font-body-sm text-body-sm text-white/70">Guaranteed data protection under the Digital Personal Data Protection Act 2023.</p>
+</div>
+</div>
+<div class="flex items-start gap-space-md p-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-fixed text-lg" data-icon="groups">groups</span>
+</div>
+<div>
+<p class="font-headline-sm text-headline-sm text-white font-medium">Used by 850 citizens in Ward 14</p>
+<p class="font-body-sm text-body-sm text-white/70">Active households participating in daily wet/dry segregation audits.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Left Panel Footer Badge -->
+<div class="relative z-10 pt-10 border-t border-white/15 mt-10">
+<div class="flex items-center gap-3 text-white/70 font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-sm text-primary-fixed" data-icon="assured_workload">assured_workload</span>
+<span>Pune Municipal Corporation · Swachh Bharat Mission (Urban) · Digital India</span>
+</div>
+</div>
+</section>
+<!-- RIGHT HALF: Citizen Login & Verification Container -->
+<section class="lg:w-1/2 w-full flex items-center justify-center p-6 sm:p-10 lg:p-12 bg-surface-container-low min-h-screen lg:min-h-0">
+<!-- Elevated Form Card -->
+<div class="w-full max-w-lg bg-surface-container-lowest rounded-2xl border border-outline-variant/60 shadow-sm p-6 sm:p-10 space-y-7">
+<!-- Header row with Language Switcher and Welcome text -->
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-4">
+<div class="flex items-center gap-2 text-primary font-medium text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="security">security</span>
+<span>Civic Access Portal</span>
+</div>
+<!-- Language Switcher Pills -->
+<div class="inline-flex p-1 bg-surface-container rounded-lg border border-outline-variant/40 text-xs">
+<button class="px-2.5 py-1 rounded bg-surface-container-lowest text-primary font-semibold shadow-xs" type="button">English</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface font-medium transition-colors" type="button">हिंदी</button>
+<button class="px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface font-medium transition-colors" type="button">मराठी</button>
+</div>
+</div>
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight text-on-surface">Sign in to EcoLoop</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Enter your registered mobile number to continue.</p>
+</div>
+</div>
+<!-- Segmented Control with 2 Tabs -->
+<div class="grid grid-cols-2 p-1 bg-surface-container rounded-lg border border-outline-variant/50">
+<button class="flex items-center justify-center gap-2 py-2 px-3 rounded-md bg-primary-container text-white font-medium text-sm transition-all shadow-xs" type="button">
+<span class="material-symbols-outlined text-base" data-icon="person">person</span>
+<span>Citizen</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span>
+</button>
+<button class="flex items-center justify-center gap-2 py-2 px-3 rounded-md text-on-surface-variant hover:text-on-surface font-medium text-sm transition-all" type="button">
+<span class="material-symbols-outlined text-base" data-icon="badge">badge</span>
+<span>Municipal Officer</span>
+</button>
+</div>
+<!-- Citizen Flow Fields Form -->
+<form class="space-y-6" onsubmit="event.preventDefault();">
+<!-- Step 1: Mobile number input (Verified/Sent state) -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="font-headline-sm text-headline-sm text-on-surface font-medium" for="mobile-number">Mobile number</label>
+<span class="text-xs font-semibold text-primary inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                OTP Dispatched
+              </span>
+</div>
+<div class="flex rounded-lg border border-outline-variant focus-within:border-primary-container focus-within:ring-1 focus-within:ring-primary-container transition-all overflow-hidden bg-surface-container-lowest">
+<span class="inline-flex items-center px-3.5 bg-surface-container-low text-on-surface-variant font-code-hash text-body-md border-r border-outline-variant select-none">
+                +91
+              </span>
+<input class="flex-1 block w-full px-3.5 py-2.5 font-code-hash text-on-surface text-body-md bg-transparent border-0 focus:ring-0 focus:outline-none" id="mobile-number" readonly="" type="tel" value="98765 43210"/>
+<button class="px-3.5 py-1 text-xs font-medium text-primary hover:text-primary-container flex items-center gap-1 hover:bg-surface-container transition-colors" title="Change mobile number" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+<span>Edit</span>
+</button>
+</div>
+</div>
+<!-- Step 2: OTP verification step shown in entered state -->
+<div class="space-y-3 pt-1">
+<div class="flex items-center justify-between">
+<label class="font-body-md text-body-md text-on-surface font-medium">
+                Enter the 6-digit code sent to <span class="font-semibold text-on-surface font-code-hash">+91 98765 43210</span>
+</label>
+</div>
+<!-- 6 square OTP input boxes with entered numbers -->
+<div class="grid grid-cols-6 gap-2 sm:gap-3" id="otp-inputs">
+<div class="h-12 sm:h-14 flex items-center justify-center rounded-lg border-2 border-primary-container bg-surface-container-lowest text-primary font-code-hash text-xl font-semibold shadow-xs">
+                1
+              </div>
+<div class="h-12 sm:h-14 flex items-center justify-center rounded-lg border-2 border-primary-container bg-surface-container-lowest text-primary font-code-hash text-xl font-semibold shadow-xs">
+                2
+              </div>
+<div class="h-12 sm:h-14 flex items-center justify-center rounded-lg border-2 border-primary-container bg-surface-container-lowest text-primary font-code-hash text-xl font-semibold shadow-xs">
+                3
+              </div>
+<div class="h-12 sm:h-14 flex items-center justify-center rounded-lg border-2 border-primary-container bg-surface-container-lowest text-primary font-code-hash text-xl font-semibold shadow-xs">
+                4
+              </div>
+<div class="h-12 sm:h-14 flex items-center justify-center rounded-lg border-2 border-primary-container bg-surface-container-lowest text-primary font-code-hash text-xl font-semibold shadow-xs">
+                5
+              </div>
+<div class="h-12 sm:h-14 flex items-center justify-center rounded-lg border-2 border-primary-container bg-surface-container-lowest text-primary font-code-hash text-xl font-semibold shadow-xs">
+                6
+              </div>
+</div>
+<!-- Resend countdown timer -->
+<div class="flex items-center justify-between pt-1 font-body-sm text-body-sm">
+<span class="inline-flex items-center gap-1.5 text-on-surface-variant font-data-tabular">
+<span class="material-symbols-outlined text-sm text-outline animate-spin" data-icon="refresh" style="animation-duration: 4s;">refresh</span>
+<span>Resend code in <strong class="text-on-surface font-semibold font-code-hash tabular-nums">00:23</strong></span>
+</span>
+<button class="text-primary hover:text-primary-container font-medium hover:underline focus:outline-none" type="button">
+                Resend via SMS
+              </button>
+</div>
+</div>
+<!-- Solid deep green button: Verify & Sign In -->
+<div class="pt-2">
+<button class="w-full h-11 px-6 rounded-lg bg-primary-container text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#14532D] active:scale-[0.99] transition-all shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-primary-container" type="submit">
+<span>Verify &amp; Sign In</span>
+<span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Bottom Section Inside Card -->
+<div class="space-y-4 pt-2 border-t border-surface-container-high">
+<!-- Demo hint box -->
+<div class="flex items-start gap-2.5 p-3 rounded-lg bg-surface-container-low border border-outline-variant/60 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary shrink-0 mt-0.5" data-icon="info">info</span>
+<div>
+<p class="font-semibold text-on-surface">Demo Environment Active</p>
+<p class="text-on-surface-variant mt-0.5">Use any Indian 10-digit mobile number with sample verification code <code class="px-1.5 py-0.5 rounded bg-surface-container-high font-code-hash text-on-surface font-semibold">123456</code> to access the citizen portal.</p>
+</div>
+</div>
+<!-- Terms Note -->
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant/80 px-2 leading-tight">
+            By signing in, you agree to the <a class="text-primary hover:underline font-medium" href="#">PMC Citizen Charter</a> and <a class="text-primary hover:underline font-medium" href="#">Ward 14 Solid Waste Bye-laws</a>.
+          </p>
+</div>
+</div>
+</section>
+</main>
+</body></html>

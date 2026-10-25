@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EcoLoop Route Optimizer — Patiala Ward</title>
+<!-- Material Symbols & Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed-dim": "#ffb77d",
+            "tertiary": "#004b1d",
+            "on-background": "#1f1b17",
+            "error": "#ba1a1a",
+            "surface": "#fff8f5",
+            "surface-container-highest": "#eae1da",
+            "on-secondary-container": "#663500",
+            "outline-variant": "#bfc9bd",
+            "on-surface-variant": "#404940",
+            "surface-container-low": "#fcf2eb",
+            "inverse-on-surface": "#f9efe8",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#00662a",
+            "primary": "#004c22",
+            "error-container": "#ffdad6",
+            "inverse-primary": "#8bd79b",
+            "on-secondary-fixed-variant": "#6e3900",
+            "surface-tint": "#1f6c3a",
+            "surface-bright": "#fff8f5",
+            "on-surface": "#1f1b17",
+            "surface-container-high": "#f0e6e0",
+            "primary-fixed": "#a6f4b5",
+            "inverse-surface": "#342f2b",
+            "on-primary-fixed-variant": "#005226",
+            "on-secondary-fixed": "#2f1500",
+            "tertiary-fixed": "#7ffc97",
+            "primary-container": "#166534",
+            "on-tertiary": "#ffffff",
+            "secondary-container": "#fe932c",
+            "primary-fixed-dim": "#8bd79b",
+            "outline": "#707a6f",
+            "on-error-container": "#93000a",
+            "on-error": "#ffffff",
+            "surface-dim": "#e2d8d2",
+            "secondary": "#904d00",
+            "on-tertiary-container": "#6ae784",
+            "on-primary-container": "#93e0a2",
+            "on-tertiary-fixed": "#002109",
+            "tertiary-fixed-dim": "#62df7d",
+            "on-primary-fixed": "#00210b",
+            "on-primary": "#ffffff",
+            "surface-variant": "#eae1da",
+            "on-secondary": "#ffffff",
+            "secondary-fixed": "#ffdcc3",
+            "on-tertiary-fixed-variant": "#005320",
+            "surface-container": "#f6ece6",
+            "background": "#fff8f5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "1.75rem",
+            "margin-desktop": "2rem",
+            "margin": "1rem",
+            "gutter-desktop": "1.5rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "space-md": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.25rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter", "sans-serif"],
+            "data-tabular": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "headline-xl": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "code-hash": ["JetBrains Mono", "monospace"],
+            "label-caps": ["Inter", "sans-serif"],
+            "data-metric": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      vertical-align: middle;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f6ece6;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #bfc9bd;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #707a6f;
+    }
+  </style>
+</head>
+<body class="h-full bg-background text-on-surface font-body-md overflow-hidden flex flex-col antialiased selection:bg-primary selection:text-white">
+<!-- TOP BAR (56px) -->
+<header class="h-14 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-30 shrink-0">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded-lg bg-primary-container text-white flex items-center justify-center font-bold text-headline-sm shadow-sm">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">eco</span>
+</span>
+<span class="font-headline-md text-headline-md tracking-tight text-primary">EcoLoop</span>
+</div>
+<div class="h-4 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Route Optimizer — Patiala Ward</span>
+<span class="text-label-caps font-label-caps px-2 py-0.5 rounded bg-surface-container text-on-surface-variant border border-outline-variant">PMC / SBM-U 2.0</span>
+</div>
+</div>
+<!-- Right status & Actions -->
+<div class="flex items-center gap-3">
+<!-- C++ Engine Status -->
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant border border-outline-variant text-body-sm font-data-tabular">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary-container"></span>
+</span>
+<span class="font-medium">C++ engine connected</span>
+<span class="text-code-hash font-code-hash text-outline text-[11px]">(v4.2 OR-Tools)</span>
+</div>
+<!-- Sync / Refresh -->
+<button class="h-9 w-9 rounded-lg border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors" title="Sync Telemetry">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<!-- Primary Action -->
+<button class="h-9 px-4 rounded-lg bg-primary-container hover:bg-tertiary text-white flex items-center gap-2 text-headline-sm font-headline-sm shadow-sm transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[18px]">alt_route</span>
+<span>Optimize Fleet Route</span>
+</button>
+</div>
+</header>
+<!-- MAIN WORKSPACE: SIDEBAR + FULL GIS MAP -->
+<div class="flex-1 flex overflow-hidden relative">
+<!-- LEFT CONTROL PANEL (360px wide) -->
+<aside class="w-[360px] bg-surface-container-lowest border-r border-outline-variant flex flex-col z-20 shrink-0 shadow-sm">
+<div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
+<!-- CARD 1: ACTIVE FLEET -->
+<div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">local_shipping</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Active fleet</h2>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-caps font-label-caps bg-emerald-50 text-primary-container border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+              1 on route
+            </span>
+</div>
+<!-- Vehicle details -->
+<div class="flex items-center justify-between py-2 border-b border-surface-container">
+<div>
+<div class="font-headline-sm text-[15px] font-semibold text-on-surface">Truck PB-01</div>
+<div class="text-body-sm font-body-sm text-outline">Tata Ace EV Tipper · Ward 14</div>
+</div>
+<span class="text-label-caps font-code-hash px-2 py-1 bg-surface-container rounded text-on-surface-variant font-medium">EV 84% BAT</span>
+</div>
+<!-- Capacity Number Inputs -->
+<div class="mt-3">
+<div class="text-label-caps font-label-caps text-outline mb-2">VEHICLE PAYLOAD ALLOCATION</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-surface-container-low rounded-lg p-2 border border-outline-variant/60">
+<span class="block text-label-caps font-label-caps text-on-surface-variant">Organic (kg)</span>
+<input class="w-full bg-transparent font-data-tabular text-body-md font-bold text-on-surface p-0 border-none focus:ring-0 focus:outline-none" type="number" value="1000"/>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2 border border-outline-variant/60">
+<span class="block text-label-caps font-label-caps text-on-surface-variant">Dry Recyclable (kg)</span>
+<input class="w-full bg-transparent font-data-tabular text-body-md font-bold text-on-surface p-0 border-none focus:ring-0 focus:outline-none" type="number" value="1000"/>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2 border border-outline-variant/60">
+<span class="block text-label-caps font-label-caps text-on-surface-variant">Hazardous (kg)</span>
+<input class="w-full bg-transparent font-data-tabular text-body-md font-bold text-on-surface p-0 border-none focus:ring-0 focus:outline-none" type="number" value="200"/>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2 border border-outline-variant/60">
+<span class="block text-label-caps font-label-caps text-on-surface-variant">Other / Inert (kg)</span>
+<input class="w-full bg-transparent font-data-tabular text-body-md font-bold text-on-surface p-0 border-none focus:ring-0 focus:outline-none" type="number" value="1000"/>
+</div>
+</div>
+</div>
+<!-- Payload utilization bar -->
+<div class="mt-3.5 pt-3 border-t border-surface-container">
+<div class="flex justify-between items-center text-body-sm font-data-tabular mb-1.5">
+<span class="text-on-surface-variant">Total Payload Capacity</span>
+<span class="font-bold text-primary-container">68% loaded (2,176 / 3,200 kg)</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden flex">
+<div class="bg-primary-container h-full rounded-full transition-all duration-500" style="width: 68%"></div>
+</div>
+</div>
+</div>
+<!-- CARD 2: DEPOT INTAKE -->
+<div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">warehouse</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Depot intake</h2>
+</div>
+<span class="text-label-caps font-code-hash px-2 py-0.5 rounded bg-surface-container text-outline">Sirhind MRF</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mb-3">
+            For workers who drop waste at the depot without a phone.
+          </p>
+<div class="grid grid-cols-2 gap-2 mb-3">
+<div>
+<label class="block text-label-caps font-label-caps text-on-surface-variant mb-1">WORKER ID</label>
+<div class="relative">
+<input class="w-full h-9 rounded-lg border border-outline-variant bg-surface-container-lowest px-2.5 text-body-md font-code-hash text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container" type="text" value="W-102"/>
+</div>
+</div>
+<div>
+<label class="block text-label-caps font-label-caps text-on-surface-variant mb-1">DEPOSIT (KG)</label>
+<div class="relative">
+<input class="w-full h-9 rounded-lg border border-outline-variant bg-surface-container-lowest px-2.5 text-body-md font-data-tabular text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container" type="text" value="15.0"/>
+<span class="absolute right-2.5 top-2 text-body-sm text-outline">kg</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex-1 h-9 rounded-lg border border-primary-container text-primary-container hover:bg-emerald-50 flex items-center justify-center gap-1.5 text-headline-sm font-headline-sm transition-colors">
+<span class="material-symbols-outlined text-[17px]">assignment_add</span>
+<span>Log deposit</span>
+</button>
+<div class="px-2.5 h-9 rounded-lg bg-surface-container flex items-center gap-1 text-label-caps font-label-caps text-primary-container border border-outline-variant" title="Verified against weighbridge sensor">
+<span class="material-symbols-outlined text-primary-container text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Synced</span>
+</div>
+</div>
+</div>
+<!-- CARD 3: COLLECTION POINTS -->
+<div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">pin_drop</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Collection points</h2>
+</div>
+<span class="px-2 py-0.5 rounded-full text-label-caps font-label-caps bg-surface-container text-on-surface border border-outline-variant">
+              5 stops
+            </span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mb-3">
+            Click the map to add a stop or drag to reorder dispatch sequence.
+          </p>
+<!-- Stops List -->
+<div class="space-y-2">
+<!-- Stop 0 (DEPOT) -->
+<div class="p-2.5 rounded-lg border border-outline-variant/80 bg-surface-container-low flex items-start gap-2.5 hover:bg-surface-container transition-colors">
+<div class="shrink-0 mt-0.5">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider bg-primary-container text-white">DEPOT</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="font-headline-sm text-[13px] font-semibold text-on-surface truncate">Central MRF Depot (Sirhind Rd)</div>
+<div class="text-[11px] font-code-hash text-outline truncate">30.3421° N, 76.3892° E · Start &amp; End Base</div>
+</div>
+<div class="shrink-0 text-outline">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+</div>
+<!-- Stop 1 -->
+<div class="p-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest flex items-start gap-2.5 hover:border-outline transition-colors">
+<div class="w-5 h-5 rounded-full bg-emerald-100 text-primary-container font-headline-sm text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                1
+              </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-[13px] font-semibold text-on-surface truncate">Model Town Market</span>
+<button class="text-outline hover:text-on-surface text-body-md leading-none">⋯</button>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-primary font-medium">Org:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="240 kg"/>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-secondary font-medium">Dry:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="180 kg"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Stop 2 -->
+<div class="p-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest flex items-start gap-2.5 hover:border-outline transition-colors">
+<div class="w-5 h-5 rounded-full bg-emerald-100 text-primary-container font-headline-sm text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                2
+              </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-[13px] font-semibold text-on-surface truncate">Leela Bhawan Chowk</span>
+<button class="text-outline hover:text-on-surface text-body-md leading-none">⋯</button>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-primary font-medium">Org:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="310 kg"/>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-secondary font-medium">Dry:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="220 kg"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Stop 3 -->
+<div class="p-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest flex items-start gap-2.5 hover:border-outline transition-colors">
+<div class="w-5 h-5 rounded-full bg-emerald-100 text-primary-container font-headline-sm text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                3
+              </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-[13px] font-semibold text-on-surface truncate">Urban Estate Ph-II</span>
+<button class="text-outline hover:text-on-surface text-body-md leading-none">⋯</button>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-primary font-medium">Org:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="420 kg"/>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-secondary font-medium">Dry:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="350 kg"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Stop 4 -->
+<div class="p-2.5 rounded-lg border border-outline-variant/60 bg-surface-container-lowest flex items-start gap-2.5 hover:border-outline transition-colors">
+<div class="w-5 h-5 rounded-full bg-emerald-100 text-primary-container font-headline-sm text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                4
+              </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<span class="font-headline-sm text-[13px] font-semibold text-on-surface truncate">Tripuri Road Commercial</span>
+<button class="text-outline hover:text-on-surface text-body-md leading-none">⋯</button>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-primary font-medium">Org:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="190 kg"/>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-data-tabular bg-surface-container-low px-2 py-0.5 rounded">
+<span class="text-secondary font-medium">Dry:</span>
+<input class="w-14 bg-transparent p-0 border-none font-semibold text-[11px] focus:ring-0" type="text" value="160 kg"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- FOOTER AUDIT STATUS -->
+<div class="p-3 border-t border-outline-variant bg-surface-container-low flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-1.5 text-outline">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="text-label-caps font-label-caps">CPCB EPR Compliant</span>
+</div>
+<span class="font-code-hash text-[11px] text-on-surface-variant font-medium">BATCH: #PT-2025-W14</span>
+</div>
+</aside>
+<!-- RIGHT GIS MAP VIEW -->
+<main class="flex-1 relative h-full bg-[#f5f3ef] overflow-hidden select-none">
+<!-- TOP BANNER OVERLAY: ROUTE OPTIMIZATION RESULT -->
+<div class="absolute top-4 left-6 right-6 z-20 pointer-events-none flex justify-center">
+<div class="pointer-events-auto bg-surface-container-lowest/95 backdrop-blur-md border border-emerald-300 shadow-md rounded-xl px-4 py-2.5 flex items-center justify-between gap-4 max-w-2xl w-full transition-all">
+<div class="flex items-center gap-3">
+<div class="w-7 h-7 rounded-full bg-emerald-100 text-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-container text-[18px]">check</span>
+</div>
+<div>
+<p class="font-headline-sm text-body-md font-semibold text-on-surface">
+                Route optimized — <span class="text-primary-container font-bold">27% distance saved</span> vs. fixed route
+              </p>
+<p class="text-body-sm font-data-tabular text-outline">
+                Saved 6.8 km &amp; 4.2 kg CO₂ emission · Estimated run time: 42 mins
+              </p>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-md hover:bg-surface-container transition-colors" title="Dismiss notification">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- FLOATING STATS CARD (TOP-RIGHT) -->
+<div class="absolute top-4 right-6 z-10 hidden xl:block">
+<div class="bg-surface-container-lowest/95 backdrop-blur-sm border border-outline-variant/80 rounded-xl p-4 shadow-md min-w-[280px]">
+<div class="flex items-center justify-between text-label-caps font-label-caps text-outline mb-1.5">
+<span>DISPATCH METRICS</span>
+<span class="flex items-center gap-1 text-primary-container font-semibold">
+<span class="material-symbols-outlined text-[14px]">bolt</span> ACTIVE
+            </span>
+</div>
+<div class="font-data-metric text-[22px] font-bold text-on-surface tabular-nums tracking-tight">
+            18.4 km · 3 vehicles · 42 min
+          </div>
+<div class="text-[11px] text-outline mt-1 font-body-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span>Calculated via TSP Dijkstra heuristic</span>
+</div>
+<div class="mt-3 pt-2.5 border-t border-surface-container grid grid-cols-2 gap-2 text-body-sm font-data-tabular">
+<div>
+<span class="text-outline text-[11px] block">Total Waste Weight</span>
+<span class="font-bold text-on-surface">2.18 Metric Tons</span>
+</div>
+<div>
+<span class="text-outline text-[11px] block">Est. Completion</span>
+<span class="font-bold text-on-surface">11:45 AM IST</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MAP CONTROLS & ZOOM (MID-RIGHT) -->
+<div class="absolute right-6 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+<button class="w-9 h-9 flex items-center justify-center hover:bg-surface-container text-on-surface border-b border-outline-variant transition-colors" title="Zoom in">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center hover:bg-surface-container text-on-surface transition-colors" title="Zoom out">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+</div>
+<button class="w-9 h-9 bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm flex items-center justify-center hover:bg-surface-container text-on-surface transition-colors" title="Recenter to Ward 14">
+<span class="material-symbols-outlined text-[18px]">my_location</span>
+</button>
+<button class="w-9 h-9 bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm flex items-center justify-center hover:bg-surface-container text-on-surface transition-colors" title="Layer switcher">
+<span class="material-symbols-outlined text-[18px]">layers</span>
+</button>
+</div>
+<!-- FLOATING LEGEND CHIP (BOTTOM-LEFT) -->
+<div class="absolute bottom-6 left-6 z-10 bg-surface-container-lowest/95 backdrop-blur-sm border border-outline-variant rounded-lg px-3.5 py-2 shadow-sm text-body-sm font-data-tabular flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded bg-primary-container inline-block"></span>
+<span class="text-on-surface font-medium">Depot Base</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-4 h-4 rounded-full bg-emerald-700 inline-block text-[10px] text-white flex items-center justify-center font-bold">1</span>
+<span class="text-on-surface">Collection stops (1-4)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-4 h-1 bg-primary-container rounded-full inline-block"></span>
+<span class="text-on-surface font-medium">Optimized TSP Path</span>
+</div>
+<div class="flex items-center gap-1.5 text-outline">
+<span class="w-4 h-0.5 border-t border-dashed border-outline-variant inline-block"></span>
+<span>Municipal Ward Boundary</span>
+</div>
+</div>
+<!-- FULL VECTOR GIS CANVAS / MAP FOR PATIALA -->
+<svg class="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing" preserveaspectratio="xMidYMid slice" viewbox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- City Block Grid Pattern -->
+<pattern height="70" id="street-grid" patternunits="userSpaceOnUse" width="70">
+<rect fill="#f5f2ec" height="70" width="70"></rect>
+<path d="M 70 0 L 0 0 0 70" fill="none" stroke="#ede8e0" stroke-width="1.2"></path>
+</pattern>
+<lineargradient id="route-gradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#166534"></stop>
+<stop offset="50%" stop-color="#047857"></stop>
+<stop offset="100%" stop-color="#004c22"></stop>
+</lineargradient>
+<filter height="140%" id="shadow" width="140%" x="-20%" y="-20%">
+<fedropshadow dx="0" dy="2" flood-opacity="0.16" stddeviation="3"></fedropshadow>
+</filter>
+<filter height="140%" id="route-glow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Map Base Background -->
+<rect fill="url(#street-grid)" height="100%" width="100%"></rect>
+<!-- Realistic Municipal Ward Area Fill -->
+<polygon fill="#fbf9f6" opacity="0.7" points="120,80 780,50 1140,240 1080,720 450,760 110,640"></polygon>
+<!-- Natural Features: River & Canals -->
+<!-- Badi Nadi River Corridor -->
+<path d="M 980,0 C 920,180 850,320 890,540 C 920,680 960,760 1030,800" fill="none" stroke="#e0eef7" stroke-linecap="round" stroke-width="32"></path>
+<path d="M 980,0 C 920,180 850,320 890,540 C 920,680 960,760 1030,800" fill="none" stroke="#b8d7eb" stroke-linecap="round" stroke-width="14"></path>
+<text fill="#699ebf" font-family="Inter" font-size="11" font-weight="600" letter-spacing="0.14em" transform="rotate(78 900 340)" x="900" y="340">BADI NADI RIVER CORRIDOR</text>
+<!-- Green Zones / Urban Parks -->
+<!-- Baradari Gardens -->
+<rect fill="#d9ebd9" height="110" rx="16" stroke="#c0dec0" stroke-width="1.5" width="160" x="520" y="240"></rect>
+<circle cx="560" cy="300" fill="#c7e3c7" r="14"></circle>
+<circle cx="630" cy="270" fill="#c7e3c7" r="18"></circle>
+<text fill="#356844" font-family="Inter" font-size="11" font-weight="600" x="548" y="295">Baradari Gardens</text>
+<!-- NIS Sports Complex Grounds -->
+<rect fill="#d9ebd9" height="130" rx="16" stroke="#c0dec0" stroke-width="1.5" width="180" x="220" y="470"></rect>
+<text fill="#356844" font-family="Inter" font-size="11" font-weight="600" x="240" y="535">National Institute of Sports (NIS)</text>
+<!-- Sheesh Mahal Heritage precinct -->
+<rect fill="#e5efe3" height="70" rx="10" stroke="#cde3cb" stroke-width="1" width="100" x="490" y="380"></rect>
+<text fill="#3f724e" font-family="Inter" font-size="10" font-weight="600" x="500" y="420">Sheesh Mahal</text>
+<!-- Ward Boundary Dotted Line -->
+<polygon fill="none" opacity="0.65" points="120,80 780,50 1140,240 1080,720 450,760 110,640" stroke="#94a3b8" stroke-dasharray="6 6" stroke-width="1.5"></polygon>
+<text fill="#64748b" font-family="Inter" font-size="11" font-weight="600" letter-spacing="0.05em" x="140" y="110">WARD 14 BOUNDARY (PMC TELEMETRY)</text>
+<!-- Minor City Road Grid System -->
+<g fill="none" stroke="#fcfbf9" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+<path d="M 200,120 L 200,700"></path>
+<path d="M 320,80 L 320,680"></path>
+<path d="M 440,90 L 440,740"></path>
+<path d="M 640,60 L 640,750"></path>
+<path d="M 850,80 L 850,700"></path>
+<path d="M 100,220 L 1100,220"></path>
+<path d="M 100,320 L 1100,320"></path>
+<path d="M 100,480 L 1100,480"></path>
+<path d="M 100,620 L 1100,620"></path>
+</g>
+<!-- Major City Arterial Roads (Patiala) Underlay Borders -->
+<g fill="none" stroke="#dfd9cd" stroke-linecap="round" stroke-linejoin="round" stroke-width="9">
+<path d="M 180,180 L 460,260 L 710,230 L 940,190"></path>
+<path d="M 280,360 L 510,380 L 800,430 L 1050,490"></path>
+<path d="M 680,60 L 740,290 L 780,580 L 820,780"></path>
+<path d="M 120,440 L 360,420 L 580,520 L 780,580"></path>
+<path d="M 140,680 L 340,540 L 480,440 L 620,180"></path>
+<path d="M 720,110 L 580,220 L 460,260"></path>
+<path d="M 460,260 L 360,420 L 660,480 L 720,110"></path>
+</g>
+<!-- Major City Arterial Roads Foreground -->
+<g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="6">
+<path d="M 180,180 L 460,260 L 710,230 L 940,190"></path>
+<path d="M 280,360 L 510,380 L 800,430 L 1050,490"></path>
+<path d="M 680,60 L 740,290 L 780,580 L 820,780"></path>
+<path d="M 120,440 L 360,420 L 580,520 L 780,580"></path>
+<path d="M 140,680 L 340,540 L 480,440 L 620,180"></path>
+<path d="M 720,110 L 580,220 L 460,260"></path>
+<path d="M 460,260 L 360,420 L 660,480 L 720,110"></path>
+</g>
+<!-- Road Labels -->
+<text fill="#888175" font-family="Inter" font-size="10" font-weight="600" letter-spacing="0.06em" x="310" y="210">BHUPINDRA ROAD</text>
+<text fill="#888175" font-family="Inter" font-size="10" font-weight="600" letter-spacing="0.06em" x="320" y="350">THE MALL ROAD</text>
+<text fill="#888175" font-family="Inter" font-size="10" font-weight="600" letter-spacing="0.06em" transform="rotate(76 750 160)" x="750" y="160">SIRHIND BYPASS / RAJPURA RD</text>
+<text fill="#888175" font-family="Inter" font-size="10" font-weight="600" letter-spacing="0.06em" transform="rotate(-34 180 620)" x="180" y="620">NABHA ROAD</text>
+<!-- Key Landmark Markers -->
+<g fill="#6a635a">
+<circle cx="510" cy="380" r="3.5"></circle>
+<text font-family="Inter" font-size="10" font-weight="500" x="520" y="375">Sheesh Mahal Heritage</text>
+<circle cx="740" cy="290" r="3.5"></circle>
+<text font-family="Inter" font-size="10" font-weight="500" x="750" y="294">Fountain Chowk</text>
+<circle cx="480" cy="440" r="3.5"></circle>
+<text font-family="Inter" font-size="10" font-weight="500" x="490" y="445">Thapar Institute Tech Hub</text>
+</g>
+<!-- CLEAN OPTIMIZED FLEET ROUTE POLYLINE (NO ARTIFACTS / NO ERRANT POLYGONS) -->
+<!-- Loop: Depot (720,110) -> Stop 1 (580,220) -> Stop 2 (460,260) -> Stop 3 (360,420) -> Stop 4 (660,480) -> Depot (720,110) -->
+<!-- Route Path Shadow / Soft Glow -->
+<path d="M 720,110 L 580,220 L 460,260 L 360,420 L 660,480 Z" fill="none" stroke="#166534" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.22" stroke-width="12"></path>
+<!-- Route Solid Vector Polyline -->
+<path d="M 720,110 L 580,220 L 460,260 L 360,420 L 660,480 Z" fill="none" id="route-path" stroke="url(#route-gradient)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></path>
+<!-- Animated Directional Dash Indicator -->
+<path d="M 720,110 L 580,220 L 460,260 L 360,420 L 660,480 Z" fill="none" stroke="#a6f4b5" stroke-dasharray="10 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+<animate attributename="stroke-dashoffset" dur="4.5s" from="340" repeatcount="indefinite" to="0"></animate>
+</path>
+<!-- Leg Distance Badges -->
+<g font-family="Inter" font-size="11" font-weight="600" text-anchor="middle">
+<!-- Leg 1: Depot to Stop 1 -->
+<g transform="translate(650, 165)">
+<rect fill="#ffffff" filter="url(#shadow)" height="20" rx="5" stroke="#c0dec0" stroke-width="1.2" width="48" x="-24" y="-10"></rect>
+<text fill="#166534" x="0" y="4">3.2 km</text>
+</g>
+<!-- Leg 2: Stop 1 to Stop 2 -->
+<g transform="translate(520, 240)">
+<rect fill="#ffffff" filter="url(#shadow)" height="20" rx="5" stroke="#c0dec0" stroke-width="1.2" width="48" x="-24" y="-10"></rect>
+<text fill="#166534" x="0" y="4">2.4 km</text>
+</g>
+<!-- Leg 3: Stop 2 to Stop 3 -->
+<g transform="translate(410, 340)">
+<rect fill="#ffffff" filter="url(#shadow)" height="20" rx="5" stroke="#c0dec0" stroke-width="1.2" width="48" x="-24" y="-10"></rect>
+<text fill="#166534" x="0" y="4">4.1 km</text>
+</g>
+<!-- Leg 4: Stop 3 to Stop 4 -->
+<g transform="translate(510, 450)">
+<rect fill="#ffffff" filter="url(#shadow)" height="20" rx="5" stroke="#c0dec0" stroke-width="1.2" width="48" x="-24" y="-10"></rect>
+<text fill="#166534" x="0" y="4">3.8 km</text>
+</g>
+<!-- Return Leg: Stop 4 to Depot -->
+<g transform="translate(690, 295)">
+<rect fill="#ffffff" filter="url(#shadow)" height="20" rx="5" stroke="#c0dec0" stroke-width="1.2" width="48" x="-24" y="-10"></rect>
+<text fill="#166534" x="0" y="4">4.9 km</text>
+</g>
+</g>
+<!-- MOVING VEHICLE INDICATOR (Truck PB-01) -->
+<g filter="url(#shadow)" transform="translate(515, 242)">
+<circle cx="0" cy="0" fill="#166534" r="15" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ffffff" font-family="'Material Symbols Outlined'" font-size="14" text-anchor="middle" x="0" y="4">local_shipping</text>
+<!-- Vehicle callout tooltip -->
+<g transform="translate(20, -14)">
+<rect fill="#1f1b17" height="26" rx="5" width="138" x="0" y="0"></rect>
+<text fill="#ffffff" font-family="Inter" font-size="11" font-weight="600" x="10" y="17">Truck PB-01 · 24 km/h</text>
+</g>
+</g>
+<!-- STOP PINS & CALLOUTS -->
+<!-- STOP 0: CENTRAL DEPOT -->
+<g filter="url(#shadow)" transform="translate(720, 110)">
+<circle cx="0" cy="0" fill="#004c22" r="18" stroke="#ffffff" stroke-width="3"></circle>
+<text fill="#ffffff" font-family="'Material Symbols Outlined'" font-size="18" font-variation-settings="'FILL' 1" text-anchor="middle" x="0" y="6">warehouse</text>
+<!-- Depot Header Badge -->
+<g transform="translate(-100, -42)">
+<rect fill="#004c22" height="28" rx="6" stroke="#ffffff" stroke-width="1.5" width="200" x="0" y="0"></rect>
+<text fill="#ffffff" font-family="Inter" font-size="11" font-weight="700" letter-spacing="0.04em" text-anchor="middle" x="100" y="18">CENTRAL MRF DEPOT (SIRHIND)</text>
+<polygon fill="#004c22" points="95,28 105,28 100,33"></polygon>
+</g>
+</g>
+<!-- STOP 1: MODEL TOWN MARKET -->
+<g filter="url(#shadow)" transform="translate(580, 220)">
+<circle cx="0" cy="0" fill="#166534" r="14" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ffffff" font-family="Inter" font-size="12" font-weight="700" text-anchor="middle" x="0" y="4.5">1</text>
+<g transform="translate(20, -14)">
+<rect fill="#ffffff" height="28" rx="6" stroke="#c0dec0" stroke-width="1" width="145" x="0" y="0"></rect>
+<text fill="#1f1b17" font-family="Inter" font-size="11" font-weight="600" x="10" y="14">Model Town Market</text>
+<text fill="#707a6f" font-family="Inter" font-size="9" font-weight="500" x="10" y="24">420 kg · Est. 10:15 AM</text>
+</g>
+</g>
+<!-- STOP 2: LEELA BHAWAN CHOWK -->
+<g filter="url(#shadow)" transform="translate(460, 260)">
+<circle cx="0" cy="0" fill="#166534" r="14" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ffffff" font-family="Inter" font-size="12" font-weight="700" text-anchor="middle" x="0" y="4.5">2</text>
+<g transform="translate(-155, -14)">
+<rect fill="#ffffff" height="28" rx="6" stroke="#c0dec0" stroke-width="1" width="145" x="0" y="0"></rect>
+<text fill="#1f1b17" font-family="Inter" font-size="11" font-weight="600" x="10" y="14">Leela Bhawan Chowk</text>
+<text fill="#707a6f" font-family="Inter" font-size="9" font-weight="500" x="10" y="24">530 kg · Est. 10:35 AM</text>
+</g>
+</g>
+<!-- STOP 3: URBAN ESTATE PH-II -->
+<g filter="url(#shadow)" transform="translate(360, 420)">
+<circle cx="0" cy="0" fill="#166534" r="14" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ffffff" font-family="Inter" font-size="12" font-weight="700" text-anchor="middle" x="0" y="4.5">3</text>
+<g transform="translate(20, -10)">
+<rect fill="#ffffff" height="28" rx="6" stroke="#c0dec0" stroke-width="1" width="145" x="0" y="0"></rect>
+<text fill="#1f1b17" font-family="Inter" font-size="11" font-weight="600" x="10" y="14">Urban Estate Ph-II</text>
+<text fill="#707a6f" font-family="Inter" font-size="9" font-weight="500" x="10" y="24">770 kg · High Density</text>
+</g>
+</g>
+<!-- STOP 4: TRIPURI ROAD COMMERCIAL -->
+<g filter="url(#shadow)" transform="translate(660, 480)">
+<circle cx="0" cy="0" fill="#166534" r="14" stroke="#ffffff" stroke-width="2.5"></circle>
+<text fill="#ffffff" font-family="Inter" font-size="12" font-weight="700" text-anchor="middle" x="0" y="4.5">4</text>
+<g transform="translate(20, -10)">
+<rect fill="#ffffff" height="28" rx="6" stroke="#c0dec0" stroke-width="1" width="155" x="0" y="0"></rect>
+<text fill="#1f1b17" font-family="Inter" font-size="11" font-weight="600" x="10" y="14">Tripuri Rd Commercial</text>
+<text fill="#707a6f" font-family="Inter" font-size="9" font-weight="500" x="10" y="24">350 kg · Commercial Sort</text>
+</g>
+</g>
+<!-- Cartographic Compass Rose (Bottom-Right) -->
+<g filter="url(#shadow)" opacity="0.75" transform="translate(1130, 720)">
+<circle cx="0" cy="0" fill="#ffffff" r="22" stroke="#c0dec0" stroke-width="1.5"></circle>
+<polygon fill="#ba1a1a" points="0,-16 4,-3 0,0"></polygon>
+<polygon fill="#ea8686" points="0,-16 -4,-3 0,0"></polygon>
+<polygon fill="#707a6f" points="0,16 4,3 0,0"></polygon>
+<polygon fill="#bfc9bd" points="0,16 -4,3 0,0"></polygon>
+<text fill="#ba1a1a" font-family="Inter" font-size="9" font-weight="700" text-anchor="middle" x="0" y="-19">N</text>
+</g>
+</svg>
+</main>
+</div>
+</body></html>

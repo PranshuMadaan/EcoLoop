@@ -7,7 +7,7 @@
   <meta name="description" content="Next-generation transparent B2B scrap marketplace connecting waste pickers, DWCCs, and certified recyclers with real-time UPI payouts and cryptographic CPCB EPR compliance tokens." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
@@ -67,9 +67,9 @@
             </select>
             <button class="btn btn-primary" id="btn-demo-login" style="padding: 0.45rem 0.8rem; font-size: 0.8rem;">Sign In</button>
           </div>
-          <div id="auth-user-chip" class="hidden" style="display: none; align-items: center; gap: 0.5rem; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 999px; padding: 0.35rem 0.7rem;">
-            <span style="font-size: 0.78rem; color: #10b981; font-weight: 600;" id="auth-user-label"></span>
-            <button id="btn-demo-logout" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.75rem;">Sign out</button>
+          <div id="auth-user-chip" class="hidden" style="display: none; align-items: center; gap: 0.5rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 999px; padding: 0.35rem 0.7rem;">
+            <span style="font-size: 0.78rem; color: #166534; font-weight: 600;" id="auth-user-label"></span>
+            <button id="btn-demo-logout" style="background: none; border: none; color: #a8a29e; cursor: pointer; font-size: 0.75rem;">Sign out</button>
           </div>
           <div class="api-status-badge" id="api-status">
             <span class="status-dot"></span>
@@ -407,21 +407,21 @@
           <button class="btn-close" id="modal-payment-close">&times;</button>
         </div>
         <div class="modal-body">
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem;">
+          <div style="background: #fcf2eb; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span class="text-muted" style="font-size: 0.8rem;">Escrow Target Lot:</span>
-              <strong id="escrow-modal-lot" style="color: #38bdf8;">Loading...</strong>
+              <strong id="escrow-modal-lot" style="color: #166534;">Loading...</strong>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
               <span class="text-muted" style="font-size: 0.8rem;">Required Escrow Deposit:</span>
-              <strong id="escrow-modal-amount" style="font-size: 1.25rem; color: #10b981;">₹0</strong>
+              <strong id="escrow-modal-amount" style="font-size: 1.25rem; color: #166534;">₹0</strong>
             </div>
           </div>
 
           <div class="payment-methods-grid">
             <!-- Method 1: Mobile UPI Intent -->
             <div>
-              <strong style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option A: 1-Tap Mobile UPI Intent</strong>
+              <strong style="color: #1f1b17; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option A: 1-Tap Mobile UPI Intent</strong>
               <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 0.5rem;">Directly opens installed banking apps (GPay, PhonePe, Paytm, BHIM, Cred).</p>
               <a id="escrow-upi-intent-link" href="#" class="btn btn-primary btn-block" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
@@ -431,7 +431,7 @@
 
             <!-- Method 2: Dynamic QR -->
             <div>
-              <strong style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option B: Scan Dynamic Payment QR</strong>
+              <strong style="color: #1f1b17; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option B: Scan Dynamic Payment QR</strong>
               <div class="qr-container">
                 <img id="escrow-modal-qr-img" src="" alt="Dynamic UPI Payment QR" />
                 <span class="qr-caption">Scan with any UPI app on your phone</span>
@@ -440,30 +440,30 @@
 
             <!-- Method 3: Corporate B2B RTGS/NEFT Rail -->
             <div>
-              <strong style="color: #fff; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option C: High-Value B2B Rail (RTGS / NEFT)</strong>
+              <strong style="color: #1f1b17; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Option C: High-Value B2B Rail (RTGS / NEFT)</strong>
               <div class="van-box">
                 <span class="van-label">Beneficiary Account Name</span>
-                <span style="color: #fff;">EcoLoop Clearing & Escrow Services</span>
+                <span style="color: #1f1b17;">EcoLoop Clearing & Escrow Services</span>
 
                 <span class="van-label" style="margin-top: 0.35rem;">Dedicated Virtual Account Number (VAN)</span>
                 <span class="van-value" id="escrow-van-number">ECOP4444...</span>
 
                 <span class="van-label" style="margin-top: 0.35rem;">Bank / IFSC Code</span>
-                <span style="color: #fff;">ICICI Bank Corporate Clearing / <strong style="color: #38bdf8;">ICIC0000104</strong></span>
+                <span style="color: #1f1b17;">ICICI Bank Corporate Clearing / <strong style="color: #166534;">ICIC0000104</strong></span>
               </div>
             </div>
           </div>
 
-          <div style="margin-top: 1rem; background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.25); border-radius: var(--radius-md); padding: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
+          <div style="margin-top: 1rem; background: #fff7ed; border: 1px solid #fed7aa; border-radius: var(--radius-md); padding: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
             <div>
               <span class="text-muted" style="display: block; font-size: 0.7rem;">DEPOSIT REFERENCE (BANK WEBHOOK KEY)</span>
-              <span class="font-mono" id="escrow-deposit-ref" style="font-size: 0.78rem; color: #38bdf8;">--</span>
+              <span class="font-mono" id="escrow-deposit-ref" style="font-size: 0.78rem; color: #d97706;">--</span>
             </div>
             <button type="button" class="btn btn-primary" id="btn-confirm-deposit" style="white-space: nowrap;">
               Simulate Bank Confirmation
             </button>
           </div>
-          <div id="escrow-funded-state" class="hidden" style="margin-top: 0.6rem; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.35); border-radius: var(--radius-md); padding: 0.75rem; color: #10b981; font-weight: 600; font-size: 0.85rem;">
+          <div id="escrow-funded-state" class="hidden" style="margin-top: 0.6rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 0.75rem; color: #166534; font-weight: 600; font-size: 0.85rem;">
             ✅ Escrow funded. The seller can now finalize this auction.
           </div>
 

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>EcoLoop Worker — Digital Ledger &amp; Scale</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config verbatum from specification -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed-dim": "#ffb77d",
+            "secondary-fixed": "#ffdcc3",
+            "primary-fixed-dim": "#8bd79b",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#f0e6e0",
+            "error-container": "#ffdad6",
+            "on-surface-variant": "#404940",
+            "on-surface": "#1f1b17",
+            "secondary-container": "#fe932c",
+            "on-error-container": "#93000a",
+            "on-primary-container": "#93e0a2",
+            "surface-bright": "#fff8f5",
+            "primary-fixed": "#a6f4b5",
+            "on-tertiary": "#ffffff",
+            "error": "#ba1a1a",
+            "inverse-primary": "#8bd79b",
+            "tertiary-fixed-dim": "#62df7d",
+            "on-tertiary-container": "#6ae784",
+            "inverse-on-surface": "#f9efe8",
+            "surface-tint": "#1f6c3a",
+            "tertiary-fixed": "#7ffc97",
+            "surface-container-highest": "#eae1da",
+            "secondary": "#904d00",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#2f1500",
+            "surface": "#fff8f5",
+            "primary-container": "#166534",
+            "on-tertiary-fixed": "#002109",
+            "primary": "#004c22",
+            "background": "#fff8f5",
+            "surface-container-low": "#fcf2eb",
+            "outline-variant": "#bfc9bd",
+            "on-secondary-container": "#663500",
+            "tertiary-container": "#00662a",
+            "on-secondary-fixed-variant": "#6e3900",
+            "on-error": "#ffffff",
+            "inverse-surface": "#342f2b",
+            "on-primary-fixed": "#00210b",
+            "outline": "#707a6f",
+            "on-secondary": "#ffffff",
+            "tertiary": "#004b1d",
+            "on-background": "#1f1b17",
+            "surface-variant": "#eae1da",
+            "on-primary-fixed-variant": "#005226",
+            "surface-dim": "#e2d8d2",
+            "on-tertiary-fixed-variant": "#005320",
+            "surface-container": "#f6ece6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-desktop": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin": "1rem",
+            "margin-desktop": "2rem",
+            "space-lg": "1.25rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "space-md": "0.75rem",
+            "space-xl": "1.75rem"
+          },
+          "fontFamily": {
+            "code-hash": ["JetBrains Mono"],
+            "headline-xl": ["Inter"],
+            "headline-md": ["Inter"],
+            "data-tabular": ["Inter"],
+            "label-caps": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "data-metric": ["Inter"]
+          },
+          "fontSize": {
+            "code-hash": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "data-tabular": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "500" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+            "data-metric": ["28px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1;
+    }
+    /* Touch Target & Native Mobile Ergonomics */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex justify-center selection:bg-primary-fixed">
+<!-- Mobile Viewport Constraint: Max 390px Width Container -->
+<div class="w-full max-w-[390px] min-h-screen bg-surface flex flex-col relative pb-20 shadow-xl overflow-x-hidden border-x border-outline-variant/30">
+<!-- 1. Top Status Area / Shared Component TopAppBar -->
+<header class="fixed top-0 left-0 w-full max-w-[390px] mx-auto z-50 flex items-center justify-between px-4 bg-surface border-b border-outline-variant h-14 shadow-sm" style="left: 50%; transform: translateX(-50%);">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary border border-outline-variant/60">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">recycling</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-primary font-bold tracking-tight leading-none">EcoLoop Pune</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            Ward 14 • Shivajinagar
+          </span>
+</div>
+</div>
+<!-- Trailing Action: Bilingual Language Toggle -->
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-full border border-outline-variant bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface active:scale-95 duration-150 shadow-sm" title="Switch Language">
+<span class="material-symbols-outlined text-base text-primary">translate</span>
+<span class="font-headline-sm text-xs font-semibold tracking-wide">मराठी / ENG</span>
+</button>
+</header>
+<!-- Main Scrollable Canvas Content -->
+<main class="flex-1 px-4 pt-16 flex flex-col gap-4">
+<!-- 2. Earnings Hero Card -->
+<section class="mt-2 rounded-xl bg-primary-fixed/20 border border-primary-fixed-dim/60 p-4 shadow-sm relative overflow-hidden">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">Today's Earnings</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-xl text-[36px] font-extrabold text-primary tabular-nums tracking-tight">₹680</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">/ 3 lots</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm border border-outline-variant/40">
+<span class="material-symbols-outlined text-xl font-bold" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+</div>
+<!-- Fair-Wage Uplift Line -->
+<div class="mt-3 pt-2.5 border-t border-primary-fixed-dim/40 flex items-center gap-1.5">
+<div class="w-5 h-5 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm font-bold">north_east</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-semibold tracking-tight">
+<span class="text-primary font-bold">+₹180 more</span> than local kabadiwala rate
+          </p>
+</div>
+</section>
+<!-- 3. Main "Weigh-in" Card (Interactive centerpiece) -->
+<section class="rounded-2xl bg-surface-container-lowest border border-outline-variant/60 p-4 shadow-sm flex flex-col">
+<!-- Scale Header & Status Indicator -->
+<div class="flex items-center justify-between pb-3 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary-container"></span>
+</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase font-bold">Live Bluetooth Scale</span>
+</div>
+<span class="font-code-hash text-code-hash text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant/40 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary">bluetooth_connected</span>
+            SCALE-04
+          </span>
+</div>
+<!-- Giant Centered Weight Readout -->
+<div class="py-4 flex flex-col items-center justify-center">
+<div class="flex items-baseline justify-center gap-2">
+<span class="font-headline-xl text-[54px] leading-tight font-extrabold text-on-surface tabular-nums tracking-tighter" id="scaleWeight">14.8</span>
+<span class="font-headline-md text-headline-md text-on-surface-variant font-bold">kg</span>
+</div>
+<div class="flex items-center gap-1 text-primary-container text-xs font-semibold mt-0.5">
+<span class="material-symbols-outlined text-sm">lock_clock</span>
+<span>Stable Reading • Certified Load</span>
+</div>
+</div>
+<!-- Oversized Touch Controls (Minus / Tare / Plus) -->
+<div class="flex items-center justify-between gap-3 pt-1 pb-3">
+<!-- Minus Action -->
+<button aria-label="Decrease weight" class="h-14 w-14 rounded-full border border-outline-variant bg-surface-container hover:bg-surface-container-high active:scale-90 transition-transform duration-100 flex items-center justify-center text-on-surface font-headline-lg font-bold shadow-sm" id="btnMinus">
+<span class="material-symbols-outlined text-2xl">remove</span>
+</button>
+<!-- Tare Zero Action Button -->
+<button class="h-14 flex-1 px-5 rounded-full border-2 border-primary bg-surface-container-lowest hover:bg-surface-container active:scale-95 transition-transform duration-100 text-primary font-headline-sm font-bold flex items-center justify-center gap-1.5 shadow-sm" id="btnTare">
+<span class="material-symbols-outlined text-xl">restart_alt</span>
+<span>TARE ZERO</span>
+</button>
+<!-- Plus Action -->
+<button aria-label="Increase weight" class="h-14 w-14 rounded-full border border-outline-variant bg-surface-container hover:bg-surface-container-high active:scale-90 transition-transform duration-100 flex items-center justify-center text-on-surface font-headline-lg font-bold shadow-sm" id="btnPlus">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+<!-- Material Quick Category Selector -->
+<div class="mt-2 pt-3 border-t border-surface-container">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant font-semibold uppercase">Select Scrap Material</span>
+<span class="font-body-sm text-[11px] text-primary font-medium">Daily Govt Mandate</span>
+</div>
+<div class="grid grid-cols-4 gap-2">
+<!-- Active Material: PET -->
+<button class="flex flex-col items-center justify-center p-2 rounded-xl border-2 border-primary-container bg-primary-fixed/20 text-on-surface relative shadow-sm transition-all">
+<span class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-xs font-bold">check</span>
+</span>
+<span class="material-symbols-outlined text-2xl text-primary mb-1">local_drink</span>
+<span class="font-headline-sm text-xs font-bold leading-none">PET</span>
+<span class="font-code-hash text-[11px] text-primary font-semibold mt-1 tabular-nums">₹28.5</span>
+</button>
+<!-- Inactive: HDPE -->
+<button class="flex flex-col items-center justify-center p-2 rounded-xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant mb-1">water_drop</span>
+<span class="font-headline-sm text-xs font-semibold leading-none text-on-surface">HDPE</span>
+<span class="font-code-hash text-[11px] text-on-surface-variant mt-1 tabular-nums">₹34.0</span>
+</button>
+<!-- Inactive: Paper -->
+<button class="flex flex-col items-center justify-center p-2 rounded-xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant mb-1">newspaper</span>
+<span class="font-headline-sm text-xs font-semibold leading-none text-on-surface">Paper</span>
+<span class="font-code-hash text-[11px] text-on-surface-variant mt-1 tabular-nums">₹14.0</span>
+</button>
+<!-- Inactive: E-Waste -->
+<button class="flex flex-col items-center justify-center p-2 rounded-xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant mb-1">memory</span>
+<span class="font-headline-sm text-xs font-semibold leading-none text-on-surface">E-Waste</span>
+<span class="font-code-hash text-[11px] text-on-surface-variant mt-1 tabular-nums">₹65.0</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 4. Payout Equation Strip & Instant UPI Trigger -->
+<section class="rounded-xl bg-surface-container-lowest border border-outline-variant/60 p-3.5 shadow-sm flex flex-col gap-3">
+<!-- Transparent Equation Block -->
+<div class="rounded-lg bg-surface-container p-3 border border-outline-variant/40 flex items-center justify-between">
+<div class="flex items-center gap-1.5 font-code-hash text-xs font-semibold text-on-surface-variant">
+<span class="tabular-nums text-on-surface">14.8 kg</span>
+<span>×</span>
+<span class="tabular-nums text-on-surface">₹28.50</span>
+</div>
+<div class="flex items-center gap-1 font-headline-md text-headline-md font-extrabold text-primary">
+<span>=</span>
+<span class="tabular-nums text-primary-container">₹421.80</span>
+</div>
+</div>
+<!-- Big Instant UPI CTA Trigger -->
+<button class="w-full min-h-[56px] rounded-xl bg-primary-container hover:bg-primary text-on-primary font-headline-sm font-bold flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all duration-150">
+<div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-lg font-extrabold">bolt</span>
+</div>
+<span class="text-base tracking-wide">Get paid via UPI (₹421.80)</span>
+</button>
+<div class="flex items-center justify-center gap-1.5 text-center">
+<span class="material-symbols-outlined text-sm text-primary">verified</span>
+<span class="font-label-caps text-[11px] text-on-surface-variant font-medium">Instant 10-second Direct Bank Transfer (NPCI)</span>
+</div>
+</section>
+<!-- 5. Recent Activity List -->
+<section class="mt-1 flex flex-col gap-2 pb-6">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Recent activity</h2>
+<button class="font-body-sm text-body-sm text-primary font-semibold hover:underline">View all</button>
+</div>
+<!-- Activity Rows -->
+<div class="flex flex-col gap-2">
+<!-- Row 1: QR Doorstep Scan -->
+<div class="rounded-xl bg-surface-container-lowest border border-outline-variant/50 p-3 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed/30 border border-primary-fixed-dim/60 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Household QR scan — Flat 402</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Today • 10:45 AM</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed/40 border border-primary-fixed-dim font-headline-sm text-xs font-bold text-primary tabular-nums">+15 pts</span>
+<span class="text-[10px] text-on-surface-variant">Verified</span>
+</div>
+</div>
+<!-- Row 2: Weight Batch Payout -->
+<div class="rounded-xl bg-surface-container-lowest border border-outline-variant/50 p-3 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed/40 border border-secondary-fixed-dim/60 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-xl">scale</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Weigh-in PET 6.2 kg</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Today • 09:30 AM</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-xs font-extrabold text-on-surface tabular-nums">₹176.70</span>
+<span class="text-[10px] text-primary-container font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]">check_circle</span> Settled
+              </span>
+</div>
+</div>
+<!-- Row 3: Quality Audit Bonus -->
+<div class="rounded-xl bg-surface-container-lowest border border-outline-variant/50 p-3 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-surface-container border border-outline-variant/70 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-xl">military_tech</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-xs font-bold text-on-surface">Grade A audit bonus</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Yesterday • Facility Hub</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed/40 border border-primary-fixed-dim font-headline-sm text-xs font-bold text-primary tabular-nums">+15 pts</span>
+<span class="text-[10px] text-on-surface-variant">EPR Cert</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- 6. Bottom Navigation Bar (Shared Component BottomNavBar) -->
+<!-- Active Intent: "Weigh" destination -->
+<nav class="fixed bottom-0 left-0 w-full max-w-[390px] z-50 flex justify-around items-center h-16 px-2 bg-surface border-t border-outline-variant" style="left: 50%; transform: translateX(-50%);">
+<!-- Tab 1: Weigh (ACTIVE) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1.5 font-bold min-w-[72px] active:scale-90 transition-transform duration-100 shadow-sm">
+<span class="material-symbols-outlined text-2xl text-on-primary font-bold" style="font-variation-settings: 'FILL' 1;">scale</span>
+<span class="font-headline-sm text-[11px] leading-tight text-on-primary mt-0.5">Weigh</span>
+</button>
+<!-- Tab 2: Jobs (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 min-w-[64px] active:scale-90 transition-transform duration-100 hover:bg-surface-container-high rounded-lg">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant">assignment</span>
+<span class="font-body-md text-[11px] leading-tight text-on-surface-variant mt-0.5">Jobs</span>
+</button>
+<!-- Tab 3: Rates (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 min-w-[64px] active:scale-90 transition-transform duration-100 hover:bg-surface-container-high rounded-lg">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant">currency_rupee</span>
+<span class="font-body-md text-[11px] leading-tight text-on-surface-variant mt-0.5">Rates</span>
+</button>
+<!-- Tab 4: Profile (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-2 py-1 min-w-[64px] active:scale-90 transition-transform duration-100 hover:bg-surface-container-high rounded-lg">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant">person</span>
+<span class="font-body-md text-[11px] leading-tight text-on-surface-variant mt-0.5">Profile</span>
+</button>
+</nav>
+</div>
+<!-- Lightweight Inline Vanilla JS for Scale Touch Interactions -->
+<script>
+    let currentWeight = 14.8;
+    const weightDisplay = document.getElementById('scaleWeight');
+    const btnMinus = document.getElementById('btnMinus');
+    const btnPlus = document.getElementById('btnPlus');
+    const btnTare = document.getElementById('btnTare');
+
+    function updateDisplay() {
+      weightDisplay.textContent = currentWeight.toFixed(1);
+    }
+
+    btnMinus.addEventListener('click', () => {
+      if (currentWeight > 0.1) {
+        currentWeight = Math.max(0, currentWeight - 0.5);
+        updateDisplay();
+      }
+    });
+
+    btnPlus.addEventListener('click', () => {
+      currentWeight += 0.5;
+      updateDisplay();
+    });
+
+    btnTare.addEventListener('click', () => {
+      currentWeight = 0.0;
+      updateDisplay();
+    });
+  </script>
+</body></html>

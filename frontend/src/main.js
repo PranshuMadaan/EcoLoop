@@ -238,18 +238,18 @@ function renderListings(listings) {
 
             ${
               item.mstc_lot_no
-                ? `<div style="font-size: 0.72rem; font-family: monospace; color: #38bdf8; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.25); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 0.4rem;">🏛️ ${item.mstc_lot_no}</div>`
+                ? `<div style="font-size: 0.72rem; font-family: monospace; color: #b45309; background: rgba(180,83,9,0.1); border: 1px solid rgba(180,83,9,0.25); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 0.4rem;">🏛️ ${item.mstc_lot_no}</div>`
                 : ''
             }
             ${
               item.origin_location
-                ? `<div style="font-size: 0.78rem; color: #94a3b8; margin: 0.35rem 0 0.5rem 0;">📍 ${item.origin_location}</div>`
+                ? `<div style="font-size: 0.78rem; color: #78716c; margin: 0.35rem 0 0.5rem 0;">📍 ${item.origin_location}</div>`
                 : ''
             }
 
             <div class="listing-meta-row" style="margin-top: 0.4rem;">
               <span class="text-muted">Available Weight:</span>
-              <span class="listing-weight">${(item.weight_kg / 1000).toFixed(1)} MT <span style="font-size: 0.75rem; color: #94a3b8;">(${item.weight_kg.toLocaleString()} kg)</span></span>
+              <span class="listing-weight">${(item.weight_kg / 1000).toFixed(1)} MT <span style="font-size: 0.75rem; color: #78716c;">(${item.weight_kg.toLocaleString()} kg)</span></span>
             </div>
 
             <div class="listing-price-box">
@@ -268,10 +268,10 @@ function renderListings(listings) {
             <div class="seller-info">
               <div class="seller-avatar">${item.seller.role ? item.seller.role[0] : 'U'}</div>
               <div>
-                <strong style="color: #fff; font-size: 0.85rem; display: block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.seller.organization_name || item.seller.role}">
+                <strong style="color: #1f1b17; font-size: 0.85rem; display: block; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.seller.organization_name || item.seller.role}">
                   ${item.seller.organization_name || item.seller.role}
                 </strong>
-                <div style="font-size: 0.72rem; color: #10b981;">
+                <div style="font-size: 0.72rem; color: #166534;">
                   ${item.seller.cpcb_reg_number ? `CPCB: ${item.seller.cpcb_reg_number}` : (item.seller.verification_status || 'VERIFIED')}
                 </div>
               </div>
@@ -372,7 +372,7 @@ async function loadListingBids(listingId) {
         (b, i) => `
         <div class="bid-row-item">
           <div>
-            <strong style="color: #fff;">₹${b.bid_amount.toLocaleString('en-IN')}</strong>
+            <strong style="color: #1f1b17;">₹${b.bid_amount.toLocaleString('en-IN')}</strong>
             <span class="text-muted" style="font-size: 0.75rem; margin-left: 0.5rem;">(${b.bidder.role})</span>
           </div>
           <div>
@@ -467,14 +467,14 @@ async function handleAcceptBid(listingId) {
 function renderSettlementReceipt(data) {
   const { payout, epr_token } = data;
   elements.settlementReceiptContent.innerHTML = `
-    <div style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
+    <div style="background: rgba(22,101,52,0.06); border: 1px solid rgba(22,101,52,0.3); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <span class="text-muted" style="font-size: 0.8rem;">DISPATCH STATUS</span>
-        <span class="status-tag SOLD" style="background: rgba(16,185,129,0.2); color: #10b981; font-weight: 600;">UPI INSTANT SETTLED</span>
+        <span class="status-tag SOLD" style="background: rgba(22,101,52,0.2); color: #166534; font-weight: 600;">UPI INSTANT SETTLED</span>
       </div>
       <div style="margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: baseline;">
-        <span style="color: #fff; font-size: 0.9rem;">Gross Auction Settlement:</span>
-        <strong style="color: #10b981; font-size: 1.35rem;">₹${Number(payout.gross_amount_inr).toLocaleString('en-IN')}</strong>
+        <span style="color: #1f1b17; font-size: 0.9rem;">Gross Auction Settlement:</span>
+        <strong style="color: #166534; font-size: 1.35rem;">₹${Number(payout.gross_amount_inr).toLocaleString('en-IN')}</strong>
       </div>
     </div>
 
@@ -489,43 +489,43 @@ function renderSettlementReceipt(data) {
       <tbody>
         <tr>
           <td>
-            <strong style="color: #fff;">Seller Net Proceeds</strong>
+            <strong style="color: #1f1b17;">Seller Net Proceeds</strong>
             <div class="text-muted" style="font-size: 0.72rem;">Beneficiary VPA: ${payout.payee_vpa}</div>
           </td>
-          <td style="text-align: right; color: #10b981; font-weight: 600;">98.5%</td>
-          <td style="text-align: right; font-weight: 700; color: #10b981;">₹${Number(payout.seller_net_amount_inr).toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #166534; font-weight: 600;">98.5%</td>
+          <td style="text-align: right; font-weight: 700; color: #166534;">₹${Number(payout.seller_net_amount_inr).toLocaleString('en-IN')}</td>
         </tr>
         <tr>
           <td>
-            <strong style="color: #fff;">Platform Clearing Fee</strong>
+            <strong style="color: #1f1b17;">Platform Clearing Fee</strong>
             <div class="text-muted" style="font-size: 0.72rem;">Escrow processing, KYC & smart contracts</div>
           </td>
-          <td style="text-align: right; color: #38bdf8;">1.0%</td>
-          <td style="text-align: right; font-weight: 600; color: #38bdf8;">₹${Number(payout.platform_fee_inr).toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #b45309;">1.0%</td>
+          <td style="text-align: right; font-weight: 600; color: #b45309;">₹${Number(payout.platform_fee_inr).toLocaleString('en-IN')}</td>
         </tr>
         <tr>
           <td>
-            <strong style="color: #fff;">Informal Waste Picker Welfare</strong>
+            <strong style="color: #1f1b17;">Informal Waste Picker Welfare</strong>
             <div class="text-muted" style="font-size: 0.72rem;">Health micro-insurance & safety equipment pool</div>
           </td>
-          <td style="text-align: right; color: #fbbf24;">0.5%</td>
-          <td style="text-align: right; font-weight: 600; color: #fbbf24;">₹${Number(payout.welfare_levy_inr).toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #d97706;">0.5%</td>
+          <td style="text-align: right; font-weight: 600; color: #d97706;">₹${Number(payout.welfare_levy_inr).toLocaleString('en-IN')}</td>
         </tr>
       </tbody>
     </table>
 
-    <div style="margin-top: 1rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem; font-size: 0.75rem; font-family: monospace;">
+    <div style="margin-top: 1rem; background: rgba(31,27,23,0.04); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem; font-size: 0.75rem; font-family: monospace;">
       <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
         <span class="text-muted">BANK RRN:</span>
-        <span style="color: #fff;">${payout.bank_rrn}</span>
+        <span style="color: #1f1b17;">${payout.bank_rrn}</span>
       </div>
       <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
         <span class="text-muted">GATEWAY TXN ID:</span>
-        <span style="color: #fff;">${payout.transaction_id}</span>
+        <span style="color: #1f1b17;">${payout.transaction_id}</span>
       </div>
       <div style="display: flex; justify-content: space-between;">
         <span class="text-muted">CPCB EPR LEDGER HASH:</span>
-        <span style="color: #38bdf8; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${epr_token ? epr_token.cpcb_certificate_hash : 'VERIFIED'}</span>
+        <span style="color: #b45309; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${epr_token ? epr_token.cpcb_certificate_hash : 'VERIFIED'}</span>
       </div>
     </div>
   `;
@@ -561,25 +561,25 @@ async function handleVerifyVpa() {
     state.lastVerifiedVpa = body.data;
 
     elements.vpaVerificationFeedback.className = 'penny-drop-card';
-    elements.vpaVerificationFeedback.style.borderColor = 'rgba(16,185,129,0.4)';
-    elements.vpaVerificationFeedback.style.background = 'rgba(16,185,129,0.06)';
+    elements.vpaVerificationFeedback.style.borderColor = 'rgba(22,101,52,0.4)';
+    elements.vpaVerificationFeedback.style.background = 'rgba(22,101,52,0.06)';
     elements.vpaVerificationFeedback.innerHTML = `
       <div class="penny-drop-header">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        <strong style="color: #10b981;">Penny-Drop Reverse Lookup Succeeded</strong>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <strong style="color: #166534;">Penny-Drop Reverse Lookup Succeeded</strong>
       </div>
       <div style="font-size: 0.82rem; margin-top: 0.4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
         <div>
           <span class="text-muted" style="display: block; font-size: 0.7rem;">LEGAL BANK ACCOUNT HOLDER</span>
-          <strong style="color: #fff;">${body.data.account_holder_name}</strong>
+          <strong style="color: #1f1b17;">${body.data.account_holder_name}</strong>
         </div>
         <div>
           <span class="text-muted" style="display: block; font-size: 0.7rem;">ISSUING PSP / BANK</span>
-          <span style="color: #38bdf8;">${body.data.bank_name}</span>
+          <span style="color: #b45309;">${body.data.bank_name}</span>
         </div>
       </div>
-      <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 0.4rem;">
-        Verified at: ${new Date(body.data.verified_at || body.data.timestamp).toLocaleTimeString('en-IN')} &bull; Status: <span style="color: #10b981; font-weight: 600;">ACTIVE_NPCI</span>
+      <div style="font-size: 0.72rem; color: #78716c; margin-top: 0.4rem;">
+        Verified at: ${new Date(body.data.verified_at || body.data.timestamp).toLocaleTimeString('en-IN')} &bull; Status: <span style="color: #166534; font-weight: 600;">ACTIVE_NPCI</span>
       </div>
     `;
     elements.vpaVerificationFeedback.classList.remove('hidden');
@@ -795,7 +795,7 @@ async function handleVerifyHash() {
     elements.eprVerificationResult.innerHTML = `
       <div class="certificate-header">
         <div>
-          <h3 style="color: #fff;">CPCB Verified Recycling Credit</h3>
+          <h3 style="color: #1f1b17;">CPCB Verified Recycling Credit</h3>
           <p class="text-muted" style="font-size: 0.8rem;">Ministry of Environment, Forest and Climate Change (MoEFCC)</p>
         </div>
         <span class="cert-badge">OFFICIALLY REGISTERED</span>
@@ -804,7 +804,7 @@ async function handleVerifyHash() {
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem; margin-bottom: 1.5rem;">
         <div>
           <span class="text-muted" style="display: block; font-size: 0.75rem;">MATERIAL GRADE</span>
-          <strong style="color: #fff; font-size: 1.1rem;">${cert.material_grade}</strong>
+          <strong style="color: #1f1b17; font-size: 1.1rem;">${cert.material_grade}</strong>
         </div>
         <div>
           <span class="text-muted" style="display: block; font-size: 0.75rem;">VERIFIED WEIGHT</span>
@@ -958,12 +958,12 @@ async function loadPayouts() {
         (p) => `
         <tr>
           <td style="white-space: nowrap;">${new Date(p.created_at).toLocaleDateString('en-IN')}</td>
-          <td class="font-mono" style="font-size: 0.72rem; color: #38bdf8;">${p.mstc_lot_no || p.listing_id.slice(0, 8)}</td>
+          <td class="font-mono" style="font-size: 0.72rem; color: #b45309;">${p.mstc_lot_no || p.listing_id.slice(0, 8)}</td>
           <td>${p.material_grade}</td>
           <td style="text-align: right;">₹${p.gross_amount_inr.toLocaleString('en-IN')}</td>
-          <td style="text-align: right; color: #10b981; font-weight: 600;">₹${p.seller_net_amount_inr.toLocaleString('en-IN')}</td>
-          <td style="text-align: right; color: #38bdf8;">₹${p.platform_fee_inr.toLocaleString('en-IN')}</td>
-          <td style="text-align: right; color: #fbbf24;">₹${p.welfare_levy_inr.toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #166534; font-weight: 600;">₹${p.seller_net_amount_inr.toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #b45309;">₹${p.platform_fee_inr.toLocaleString('en-IN')}</td>
+          <td style="text-align: right; color: #d97706;">₹${p.welfare_levy_inr.toLocaleString('en-IN')}</td>
           <td class="font-mono" style="font-size: 0.72rem;">${p.bank_rrn}</td>
           <td><span class="status-tag ${p.status === 'SUCCESS' ? 'SOLD' : 'OPEN'}">${p.status}</span></td>
           <td>
@@ -1011,7 +1011,7 @@ function renderSellerSummary(data) {
     <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
       <div>
         <span class="text-muted" style="display: block; font-size: 0.72rem;">TOTAL SETTLED (GROSS)</span>
-        <strong style="color: #fff; font-size: 1.2rem;">₹${data.total_gross_inr.toLocaleString('en-IN')}</strong>
+        <strong style="color: #1f1b17; font-size: 1.2rem;">₹${data.total_gross_inr.toLocaleString('en-IN')}</strong>
       </div>
       <div>
         <span class="text-muted" style="display: block; font-size: 0.72rem;">TOTAL RECEIVED (NET)</span>
@@ -1019,7 +1019,7 @@ function renderSellerSummary(data) {
       </div>
       <div>
         <span class="text-muted" style="display: block; font-size: 0.72rem;">LEDGER ENTRIES</span>
-        <strong style="color: #fff; font-size: 1.2rem;">${data.total}</strong>
+        <strong style="color: #1f1b17; font-size: 1.2rem;">${data.total}</strong>
       </div>
     </div>
   `;

@@ -354,7 +354,7 @@ export default function OptimizerPage() {
           height: '100%',
           overflowY: 'auto',
           backgroundColor: '#ffffff',
-          borderRight: '1px solid #e2e8f0',
+          borderRight: '1px solid #eae1da',
           padding: '20px',
           display: 'flex',
           flexDirection: 'column',
@@ -367,7 +367,7 @@ export default function OptimizerPage() {
           <h2 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 700, color: '#1a202c' }}>
             Spatial Route Optimizer
           </h2>
-          <p style={{ margin: 0, fontSize: '12px', color: '#718096' }}>
+          <p style={{ margin: 0, fontSize: '12px', color: '#78716c' }}>
             C++ VRP municipal fleet routing • Patiala Ward
           </p>
         </div>
@@ -387,7 +387,7 @@ export default function OptimizerPage() {
             gap: '8px',
             width: '100%',
             padding: '11px 16px', 
-            backgroundColor: isOptimizing ? '#a0aec0' : '#38a169',
+            backgroundColor: isOptimizing ? '#a8a29e' : '#166534',
             color: 'white', 
             border: 'none',
             borderRadius: '6px',
@@ -411,9 +411,9 @@ export default function OptimizerPage() {
               alignItems: 'flex-start',
               gap: '8px', 
               padding: '10px 12px',
-              backgroundColor: '#fffaf0',
-              color: '#dd6b20', 
-              border: '1px solid #fbd38d',
+              backgroundColor: '#fff7ed',
+              color: '#d97706', 
+              border: '1px solid #fcd34d',
               borderRadius: '6px',
               fontSize: '12px',
               lineHeight: '1.4'
@@ -428,22 +428,22 @@ export default function OptimizerPage() {
         <div
           style={{
             padding: '12px',
-            backgroundColor: '#f7fafc',
-            border: '1px solid #edf2f7',
+            backgroundColor: '#fff8f5',
+            border: '1px solid #f6ece6',
             borderRadius: '6px',
             fontSize: '12px',
-            color: '#4a5568'
+            color: '#57534e'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#2d3748', marginBottom: '8px' }}>
-            <Truck size={14} color="#3182ce" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#1f1b17', marginBottom: '8px' }}>
+            <Truck size={14} color="#b45309" />
             <span>Active Fleet ({vehicles.length} Vehicle)</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <div>
               <label
                 htmlFor="vehicle-capacity-organic"
-                style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
+                style={{ fontSize: '11px', color: '#78716c', display: 'block', marginBottom: '3px', fontWeight: 500 }}
               >
                 Organic Cap (kg)
               </label>
@@ -459,17 +459,17 @@ export default function OptimizerPage() {
                   boxSizing: 'border-box',
                   padding: '6px 8px',
                   fontSize: '12px',
-                  border: '1px solid #cbd5e0',
+                  border: '1px solid #d8ccc2',
                   borderRadius: '4px',
                   backgroundColor: '#ffffff',
-                  color: '#2d3748'
+                  color: '#1f1b17'
                 }}
               />
             </div>
             <div>
               <label
                 htmlFor="vehicle-capacity-dry"
-                style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
+                style={{ fontSize: '11px', color: '#78716c', display: 'block', marginBottom: '3px', fontWeight: 500 }}
               >
                 Dry Cap (kg)
               </label>
@@ -485,10 +485,10 @@ export default function OptimizerPage() {
                   boxSizing: 'border-box',
                   padding: '6px 8px',
                   fontSize: '12px',
-                  border: '1px solid #cbd5e0',
+                  border: '1px solid #d8ccc2',
                   borderRadius: '4px',
                   backgroundColor: '#ffffff',
-                  color: '#2d3748'
+                  color: '#1f1b17'
                 }}
               />
             </div>
@@ -499,14 +499,14 @@ export default function OptimizerPage() {
         <div
           style={{
             padding: '12px',
-            backgroundColor: '#f7fafc',
-            border: '1px solid #edf2f7',
+            backgroundColor: '#fff8f5',
+            border: '1px solid #f6ece6',
             borderRadius: '6px',
             fontSize: '12px',
-            color: '#4a5568'
+            color: '#57534e'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#2d3748', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#1f1b17', marginBottom: '8px' }}>
             <ClipboardList size={14} color="#d69e2e" />
             <span>Tier 3: Depot Intake (No Phone)</span>
           </div>
@@ -515,7 +515,7 @@ export default function OptimizerPage() {
               <div>
                 <label
                   htmlFor="worker-id-input"
-                  style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
+                  style={{ fontSize: '11px', color: '#78716c', display: 'block', marginBottom: '3px', fontWeight: 500 }}
                 >
                   Worker ID
                 </label>
@@ -530,17 +530,17 @@ export default function OptimizerPage() {
                     boxSizing: 'border-box',
                     padding: '6px 8px',
                     fontSize: '12px',
-                    border: '1px solid #cbd5e0',
+                    border: '1px solid #d8ccc2',
                     borderRadius: '4px',
                     backgroundColor: '#ffffff',
-                    color: '#2d3748'
+                    color: '#1f1b17'
                   }}
                 />
               </div>
               <div>
                 <label
                   htmlFor="deposit-volume-input"
-                  style={{ fontSize: '11px', color: '#718096', display: 'block', marginBottom: '3px', fontWeight: 500 }}
+                  style={{ fontSize: '11px', color: '#78716c', display: 'block', marginBottom: '3px', fontWeight: 500 }}
                 >
                   Segregated Volume (kg)
                 </label>
@@ -557,10 +557,10 @@ export default function OptimizerPage() {
                     boxSizing: 'border-box',
                     padding: '6px 8px',
                     fontSize: '12px',
-                    border: '1px solid #cbd5e0',
+                    border: '1px solid #d8ccc2',
                     borderRadius: '4px',
                     backgroundColor: '#ffffff',
-                    color: '#2d3748'
+                    color: '#1f1b17'
                   }}
                 />
               </div>
@@ -571,7 +571,7 @@ export default function OptimizerPage() {
               style={{
                 width: '100%',
                 padding: '7px 12px',
-                backgroundColor: '#3182ce',
+                backgroundColor: '#b45309',
                 color: 'white',
                 border: 'none',
                 borderRadius: '5px',
@@ -590,10 +590,10 @@ export default function OptimizerPage() {
         {/* Nodes Form Header & Map Click Hint */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#2d3748' }}>
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1f1b17' }}>
               Collection Points & Demands
             </h3>
-            <span style={{ fontSize: '11px', color: '#718096' }}>
+            <span style={{ fontSize: '11px', color: '#78716c' }}>
               {nodes.length} stops (incl. Depot)
             </span>
           </div>
@@ -604,8 +604,8 @@ export default function OptimizerPage() {
               alignItems: 'center',
               gap: '4px',
               padding: '4px 8px',
-              backgroundColor: '#ebf8ff',
-              color: '#2b6cb0',
+              backgroundColor: '#f0fdf4',
+              color: '#b45309',
               border: '1px dashed #90cdf4',
               borderRadius: '6px',
               fontSize: '11px',
@@ -626,9 +626,9 @@ export default function OptimizerPage() {
                 key={node.id}
                 style={{
                   padding: '12px',
-                  backgroundColor: isDepot ? '#f7fafc' : '#ffffff',
-                  border: isDepot ? '1px solid #cbd5e0' : '1px solid #e2e8f0',
-                  borderLeft: isDepot ? '4px solid #3182ce' : '4px solid #38a169',
+                  backgroundColor: isDepot ? '#fff8f5' : '#ffffff',
+                  border: isDepot ? '1px solid #d8ccc2' : '1px solid #eae1da',
+                  borderLeft: isDepot ? '4px solid #b45309' : '4px solid #166534',
                   borderRadius: '6px',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
                 }}
@@ -642,8 +642,8 @@ export default function OptimizerPage() {
                         fontWeight: 700,
                         padding: '2px 6px',
                         borderRadius: '4px',
-                        backgroundColor: isDepot ? '#ebf8ff' : '#f0fff4',
-                        color: isDepot ? '#2b6cb0' : '#276749',
+                        backgroundColor: isDepot ? '#f0fdf4' : '#f0fdf4',
+                        color: isDepot ? '#b45309' : '#004c22',
                         flexShrink: 0
                       }}
                     >
@@ -653,7 +653,7 @@ export default function OptimizerPage() {
                       style={{
                         fontSize: '12px',
                         fontWeight: 600,
-                        color: '#2d3748',
+                        color: '#1f1b17',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis'
@@ -663,7 +663,7 @@ export default function OptimizerPage() {
                       {node.name || `Collection Point ${node.id}`}
                     </span>
                   </div>
-                  <span style={{ fontSize: '10px', color: '#a0aec0', fontFamily: 'monospace', flexShrink: 0 }}>
+                  <span style={{ fontSize: '10px', color: '#a8a29e', fontFamily: 'monospace', flexShrink: 0 }}>
                     {Number(node.lat).toFixed(4)}, {Number(node.lon).toFixed(4)}
                   </span>
                 </div>
@@ -673,7 +673,7 @@ export default function OptimizerPage() {
                   <div>
                     <label
                       htmlFor={`organic-${node.id}`}
-                      style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#718096', marginBottom: '3px' }}
+                      style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#78716c', marginBottom: '3px' }}
                     >
                       Organic (kg)
                     </label>
@@ -688,10 +688,10 @@ export default function OptimizerPage() {
                         width: '100%',
                         boxSizing: 'border-box',
                         padding: '6px 8px',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid #eae1da',
                         borderRadius: '4px',
                         fontSize: '12px',
-                        color: '#2d3748',
+                        color: '#1f1b17',
                         backgroundColor: '#ffffff'
                       }}
                     />
@@ -699,7 +699,7 @@ export default function OptimizerPage() {
                   <div>
                     <label
                       htmlFor={`dry-${node.id}`}
-                      style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#718096', marginBottom: '3px' }}
+                      style={{ display: 'block', fontSize: '11px', fontWeight: 500, color: '#78716c', marginBottom: '3px' }}
                     >
                       Dry (kg)
                     </label>
@@ -714,10 +714,10 @@ export default function OptimizerPage() {
                         width: '100%',
                         boxSizing: 'border-box',
                         padding: '6px 8px',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid #eae1da',
                         borderRadius: '4px',
                         fontSize: '12px',
-                        color: '#2d3748',
+                        color: '#1f1b17',
                         backgroundColor: '#ffffff'
                       }}
                     />
@@ -743,16 +743,16 @@ export default function OptimizerPage() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {routePoints.length > 0 && (
-            <Polyline positions={routePoints} color="#38a169" weight={5} opacity={0.85} />
+            <Polyline positions={routePoints} color="#166534" weight={5} opacity={0.85} />
           )}
           {nodes.map((node) => (
             <Marker key={node.id} position={[Number(node.lat), Number(node.lon)]}>
               <Popup>
                 <div style={{ fontSize: '13px', lineHeight: '1.4' }}>
-                  <strong style={{ color: node.id === 0 ? '#2b6cb0' : '#276749' }}>
+                  <strong style={{ color: node.id === 0 ? '#b45309' : '#004c22' }}>
                     {node.id === 0 ? 'DWCC Central Hub (Depot)' : (node.name || `Collection Point ${node.id}`)}
                   </strong>
-                  <div style={{ marginTop: '4px', color: '#4a5568' }}>
+                  <div style={{ marginTop: '4px', color: '#57534e' }}>
                     <div><strong>Node ID:</strong> {node.id}</div>
                     <div><strong>Organic Waste:</strong> {node.organic} kg</div>
                     <div><strong>Dry Waste:</strong> {node.dry} kg</div>
